@@ -1,0 +1,148 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: auction-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: auction_user
+      POSTGRES_PASSWORD: auction_password
+      POSTGRES_DB: online_auction_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - auction-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auction_user -d online_auction_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: auction-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - auction-net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  bid-validation-grpc:
+    build:
+      context: .
+      dockerfile: src/BidValidation.Grpc/Dockerfile
+    container_name: bid-validation-grpc
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Server__GrpcPort: "5051"
+      Server__HealthPort: "5151"
+    ports:
+      - "5051:5051"
+      - "5151:5151"
+    networks:
+      - auction-net
+
+  auction-api:
+    build:
+      context: .
+      dockerfile: src/Auction.Api/Dockerfile
+    container_name: auction-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      bid-validation-grpc:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Server__Port: "5050"
+      Database__Provider: "PostgreSQL"
+      ConnectionStrings__AuctionDb: "Host=postgres;Port=5432;Database=online_auction_db;Username=auction_user;Password=auction_password"
+      GrpcServices__BidValidationUrl: "http://bid-validation-grpc:5051"
+      RabbitMQ__HostName: "rabbitmq"
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UserName: "guest"
+      RabbitMQ__Password: "guest"
+      RabbitMQ__ExchangeName: "auction.events"
+      Resilience__EnableLocalFallbackValidation: "true"
+    ports:
+      - "5050:5050"
+    networks:
+      - auction-net
+
+  auction-hub:
+    build:
+      context: .
+      dockerfile: src/Auction.Hub/Dockerfile
+    container_name: auction-hub
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      auction-api:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Server__Port: "5052"
+      Database__Provider: "PostgreSQL"
+      ConnectionStrings__AuctionDb: "Host=postgres;Port=5432;Database=online_auction_db;Username=auction_user;Password=auction_password"
+      RabbitMQ__HostName: "rabbitmq"
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UserName: "guest"
+      RabbitMQ__Password: "guest"
+      RabbitMQ__ExchangeName: "auction.events"
+      RabbitMQ__HubQueueName: "auction.hub.queue"
+      ClientConfig__PublicAuctionApiUrl: "http://localhost:5050"
+    ports:
+      - "5052:5052"
+    networks:
+      - auction-net
+
+  audit-worker:
+    build:
+      context: .
+      dockerfile: src/Audit.Worker/Dockerfile
+    container_name: audit-worker
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      Database__Provider: "PostgreSQL"
+      ConnectionStrings__AuctionDb: "Host=postgres;Port=5432;Database=online_auction_db;Username=auction_user;Password=auction_password"
+      RabbitMQ__HostName: "rabbitmq"
+      RabbitMQ__Port: "5672"
+      RabbitMQ__UserName: "guest"
+      RabbitMQ__Password: "guest"
+      RabbitMQ__ExchangeName: "auction.events"
+      RabbitMQ__DeadLetterExchangeName: "auction.dlx"
+      RabbitMQ__AuditQueueName: "auction.audit.queue"
+      RabbitMQ__AuditDeadLetterQueueName: "auction.audit.dlq"
+      RabbitMQ__MaxRetryCount: "3"
+    networks:
+      - auction-net
+
+networks:
+  auction-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
