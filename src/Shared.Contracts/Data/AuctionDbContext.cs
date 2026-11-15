@@ -91,85 +91,97 @@ public static class DatabaseExtensions
 
     public static async Task EnsureAuctionDatabaseSeededAsync(this IServiceProvider services)
     {
-        using var scope = services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<AuctionDbContext>();
-        await db.Database.EnsureCreatedAsync();
-
-        // Bật chế độ WAL cho SQLite để nhiều process (API, Hub, Worker) truy cập đồng thời mượt mà
-        if (db.Database.ProviderName?.Contains("Sqlite", StringComparison.OrdinalIgnoreCase) == true)
+        for (var attempt = 1; attempt <= 5; attempt++)
         {
-            await db.Database.ExecuteSqlRawAsync("PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;");
-        }
-
-        if (!await db.Auctions.AnyAsync())
-        {
-            var now = DateTime.UtcNow;
-            var sampleAuctions = new List<AuctionItem>
+            try
             {
-                new()
+                using var scope = services.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<AuctionDbContext>();
+                await db.Database.EnsureCreatedAsync();
+
+                // Bật chế độ WAL cho SQLite để nhiều process (API, Hub, Worker) truy cập đồng thời mượt mà
+                if (db.Database.ProviderName?.Contains("Sqlite", StringComparison.OrdinalIgnoreCase) == true)
                 {
-                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-                    ProductName = "MacBook Pro 16-inch M4 Max (64GB RAM, 2TB SSD)",
-                    ProductDescription = "Máy trạm di động hiệu năng cao nguyên seal, bảo hành chính hãng Apple Care+ 3 năm.",
-                    ImageUrl = "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&auto=format&fit=crop&q=80",
-                    StartingPrice = 45_000_000m,
-                    CurrentPrice = 45_000_000m,
-                    MinIncrement = 500_000m,
-                    CurrentWinner = null,
-                    TotalBids = 0,
-                    StartTimeUtc = now.AddMinutes(-15),
-                    EndTimeUtc = now.AddHours(4),
-                    Status = "Open",
-                    CreatedAtUtc = now.AddMinutes(-15)
-                },
-                new()
+                    await db.Database.ExecuteSqlRawAsync("PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;");
+                }
+
+                if (!await db.Auctions.AnyAsync())
                 {
-                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
-                    ProductName = "Đồng hồ cơ Omega Speedmaster Moonwatch Professional",
-                    ProductDescription = "Phiên bản kỷ niệm Apollo 11, mặt kính Sapphire nguyên khối, đầy đủ hộp sổ thẻ quốc tế.",
-                    ImageUrl = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80",
-                    StartingPrice = 120_000_000m,
-                    CurrentPrice = 125_000_000m,
-                    MinIncrement = 1_000_000m,
-                    CurrentWinner = "Nguyễn Minh Quân",
-                    TotalBids = 1,
-                    StartTimeUtc = now.AddMinutes(-30),
-                    EndTimeUtc = now.AddHours(2),
-                    Status = "Open",
-                    CreatedAtUtc = now.AddMinutes(-30),
-                    Bids = new List<BidRecord>
+                    var now = DateTime.UtcNow;
+                    var sampleAuctions = new List<AuctionItem>
                     {
                         new()
                         {
-                            Id = Guid.NewGuid(),
-                            AuctionId = Guid.Parse("22222222-2222-2222-2222-222222222222"),
-                            BidderName = "Nguyễn Minh Quân",
-                            Amount = 125_000_000m,
-                            PlacedAtUtc = now.AddMinutes(-10),
-                            CorrelationId = "seed-corr-001"
+                            Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                            ProductName = "MacBook Pro 16-inch M4 Max (64GB RAM, 2TB SSD)",
+                            ProductDescription = "Máy trạm di động hiệu năng cao nguyên seal, bảo hành chính hãng Apple Care+ 3 năm.",
+                            ImageUrl = "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&auto=format&fit=crop&q=80",
+                            StartingPrice = 45_000_000m,
+                            CurrentPrice = 45_000_000m,
+                            MinIncrement = 500_000m,
+                            CurrentWinner = null,
+                            TotalBids = 0,
+                            StartTimeUtc = now.AddMinutes(-15),
+                            EndTimeUtc = now.AddHours(4),
+                            Status = "Open",
+                            CreatedAtUtc = now.AddMinutes(-15)
+                        },
+                        new()
+                        {
+                            Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                            ProductName = "Đồng hồ cơ Omega Speedmaster Moonwatch Professional",
+                            ProductDescription = "Phiên bản kỷ niệm Apollo 11, mặt kính Sapphire nguyên khối, đầy đủ hộp sổ thẻ quốc tế.",
+                            ImageUrl = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80",
+                            StartingPrice = 120_000_000m,
+                            CurrentPrice = 125_000_000m,
+                            MinIncrement = 1_000_000m,
+                            CurrentWinner = "Nguyễn Minh Quân",
+                            TotalBids = 1,
+                            StartTimeUtc = now.AddMinutes(-30),
+                            EndTimeUtc = now.AddHours(2),
+                            Status = "Open",
+                            CreatedAtUtc = now.AddMinutes(-30),
+                            Bids = new List<BidRecord>
+                            {
+                                new()
+                                {
+                                    Id = Guid.NewGuid(),
+                                    AuctionId = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                                    BidderName = "Nguyễn Minh Quân",
+                                    Amount = 125_000_000m,
+                                    PlacedAtUtc = now.AddMinutes(-10),
+                                    CorrelationId = "seed-corr-001"
+                                }
+                            }
+                        },
+                        new()
+                        {
+                            Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
+                            ProductName = "Bàn phím cơ Custom Keycult No.2 Rev.1 Brass Edition",
+                            ProductDescription = "Bàn phím cơ giới hạn 50 chiếc toàn cầu, lắp sẵn switch Nixies vintage đã lube & film.",
+                            ImageUrl = "https://images.unsplash.com/photo-1595225476474-87563907a212?w=800&auto=format&fit=crop&q=80",
+                            StartingPrice = 25_000_000m,
+                            CurrentPrice = 25_000_000m,
+                            MinIncrement = 200_000m,
+                            CurrentWinner = null,
+                            TotalBids = 0,
+                            StartTimeUtc = now.AddMinutes(-5),
+                            EndTimeUtc = now.AddMinutes(45),
+                            Status = "Open",
+                            CreatedAtUtc = now.AddMinutes(-5)
                         }
-                    }
-                },
-                new()
-                {
-                    Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
-                    ProductName = "Bàn phím cơ Custom Keycult No.2 Rev.1 Brass Edition",
-                    ProductDescription = "Bàn phím cơ giới hạn 50 chiếc toàn cầu, lắp sẵn switch Nixies vintage đã lube & film.",
-                    ImageUrl = "https://images.unsplash.com/photo-1595225476474-87563907a212?w=800&auto=format&fit=crop&q=80",
-                    StartingPrice = 25_000_000m,
-                    CurrentPrice = 25_000_000m,
-                    MinIncrement = 200_000m,
-                    CurrentWinner = null,
-                    TotalBids = 0,
-                    StartTimeUtc = now.AddMinutes(-5),
-                    EndTimeUtc = now.AddMinutes(45),
-                    Status = "Open",
-                    CreatedAtUtc = now.AddMinutes(-5)
-                }
-            };
+                    };
 
-            db.Auctions.AddRange(sampleAuctions);
-            await db.SaveChangesAsync();
+                    db.Auctions.AddRange(sampleAuctions);
+                    await db.SaveChangesAsync();
+                }
+
+                break;
+            }
+            catch (Exception) when (attempt < 5)
+            {
+                await Task.Delay(300 * attempt);
+            }
         }
     }
 }

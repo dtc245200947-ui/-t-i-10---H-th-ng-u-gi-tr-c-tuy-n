@@ -1,0 +1,23 @@
+[
+  {
+    "Name": "Chạy Toàn Bộ Hệ Thống Đấu Giá",
+    "Projects": [
+      {
+        "Path": "src\\BidValidation.Grpc\\BidValidation.Grpc.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\Auction.Api\\Auction.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\Auction.Hub\\Auction.Hub.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\Audit.Worker\\Audit.Worker.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
