@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LIVE AUCTION - Sàn Đấu Giá Trực Tuyến (.NET 10 Distributed System)</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+  <style>
+    :root {
+      --bg-deep: #040814;
+      --bg-card: rgba(11, 19, 42, 0.92);
+      --cyan: #00e5ff;
+      --purple: #b537f2;
+      --text-main: #f8fafc;
+      --text-sub: #cbd5e1;
+      --text-gray: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --grad-btn: linear-gradient(90deg, #00d2ff 0%, #6366f1 50%, #c026d3 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-deep);
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(0, 229, 255, 0.11) 0%, transparent 40%),
+        radial-gradient(circle at 85% 25%, rgba(181, 55, 242, 0.13) 0%, transparent 45%),
+        linear-gradient(180deg, #040814 0%, #091229 50%, #040814 100%);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding-bottom: 50px;
+    }
+
+    /* ======================== TOP NAVBAR ======================== */
+    .cyber-header {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(6, 11, 26, 0.95);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(0, 229, 255, 0.3);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.65);
+    }
+
+    .cyber-header::after {
+      content: "";
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan) 0%, transparent 25%, transparent 75%, var(--purple) 100%);
+    }
+
+    .nav-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: nowrap;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .brand-icon-wrap {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.75));
+    }
+
+    .brand-text-title {
+      font-size: 1.35rem;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, #00f2fe 0%, #60a5fa 45%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+    }
+
+    .brand-text-sub {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      margin-top: 2px;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 1120px) {
+      .nav-menu {
+        display: none;
+      }
+    }
+
+    .nav-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 14px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 10px;
+      position: relative;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .nav-link svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--cyan);
+      background: rgba(0, 229, 255, 0.07);
+    }
+
+    .nav-link.active::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 12%;
+      right: 12%;
+      height: 3px;
+      background: var(--cyan);
+      border-radius: 99px;
+      box-shadow: 0 0 12px var(--cyan);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .user-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 0.83rem;
+      color: #f8fafc;
+      white-space: nowrap;
+    }
+
+    .role-badge-pill {
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .role-badge-pill.customer {
+      background: rgba(0, 229, 255, 0.2);
+      color: #00e5ff;
+      border: 1px solid rgba(0, 229, 255, 0.45);
+    }
+
+    .role-badge-pill.staff {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.45);
+    }
+
+    .role-badge-pill.admin {
+      background: rgba(217, 70, 239, 0.22);
+      color: #f0abfc;
+      border: 1px solid rgba(217, 70, 239, 0.5);
+    }
+
+    .btn-logout {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 9px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .btn-logout:hover {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+
+    /* ======================== ROLE SWITCHER BAR (XEM DEMO 3 VAI TRÒ) ======================== */
+    .main-container {
+      max-width: 1440px;
+      margin: 20px auto 0;
+      padding: 0 24px;
+    }
+
+    .demo-role-switcher {
+      background: linear-gradient(90deg, rgba(12, 22, 48, 0.95) 0%, rgba(18, 16, 48, 0.95) 100%);
+      border: 1.5px solid rgba(0, 229, 255, 0.38);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+      border-radius: 15px;
+      padding: 14px 20px;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .role-switcher-left {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .role-switcher-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .role-switcher-desc {
+      font-size: 0.81rem;
+      color: #94a3b8;
+    }
+
+    .role-tabs-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .role-switch-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      background: rgba(7, 12, 28, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: #cbd5e1;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s ease;
+    }
+
+    .role-switch-btn.active.customer {
+      background: rgba(0, 229, 255, 0.16);
+      border-color: #00e5ff;
+      color: #00e5ff;
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.35);
+    }
+
+    .role-switch-btn.active.staff {
+      background: rgba(245, 158, 11, 0.18);
+      border-color: #fbbf24;
+      color: #fbbf24;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.35);
+    }
+
+    .role-switch-btn.active.admin {
+      background: rgba(217, 70, 239, 0.2);
+      border-color: #e879f9;
+      color: #f0abfc;
+      box-shadow: 0 0 18px rgba(217, 70, 239, 0.4);
+    }
+
+    /* Role-Specific Top Banner */
+    .role-context-banner {
+      border-radius: 14px;
+      padding: 14px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .role-context-banner.customer {
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+    }
+
+    .role-context-banner.staff {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .role-context-banner.admin {
+      background: rgba(192, 38, 211, 0.12);
+      border: 1px solid rgba(232, 121, 249, 0.45);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(0, 229, 255, 0.14);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      white-space: nowrap;
+    }
+
+    .badge.ok {
+      background: rgba(16, 185, 129, 0.16);
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+
+    .badge.closed {
+      background: rgba(239, 68, 68, 0.16);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .grid-main {
+      display: grid;
+      grid-template-columns: 1.08fr 1.52fr;
+      gap: 22px;
+    }
+
+    @media (max-width: 1024px) {
+      .grid-main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid rgba(0, 229, 255, 0.24);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 11px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .panel-header h3 {
+      font-size: 1.04rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .auction-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .auction-card {
+      background: rgba(7, 13, 30, 0.94);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      border-radius: 13px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .auction-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.2);
+    }
+
+    .auction-card.active {
+      border: 1.5px solid var(--cyan);
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.12) 0%, rgba(181, 55, 242, 0.1) 100%);
+      box-shadow: 0 0 22px rgba(0, 229, 255, 0.25);
+    }
+
+    .auction-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .auction-title {
+      font-weight: 700;
+      font-size: 0.96rem;
+      color: #f1f5f9;
+    }
+
+    .price-highlight {
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: #00e5ff;
+      text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      margin-top: 6px;
+    }
+
+    .detail-box {
+      background: rgba(6, 11, 26, 0.95);
+      border: 1px solid rgba(0, 229, 255, 0.28);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stat-item {
+      background: rgba(13, 22, 48, 0.9);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      padding: 12px;
+      border-radius: 11px;
+    }
+
+    .stat-label {
+      font-size: 0.73rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .bid-controls {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.08) 0%, rgba(181, 55, 242, 0.08) 100%);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      border-radius: 13px;
+      padding: 16px;
+      margin-top: 14px;
+    }
+
+    .quick-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .bid-form-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    input, textarea, select {
+      background: rgba(6, 11, 25, 0.95);
+      border: 1px solid rgba(56, 189, 248, 0.32);
+      color: var(--text-main);
+      padding: 9px 13px;
+      border-radius: 9px;
+      font-size: 0.92rem;
+      outline: none;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+    }
+
+    .bid-form-row input {
+      flex: 1;
+      min-width: 180px;
+      font-size: 1.02rem;
+      font-weight: 700;
+    }
+
+    button {
+      background: var(--grad-btn);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 9px;
+      font-weight: 700;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.35);
+    }
+
+    button.secondary {
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #e2e8f0;
+    }
+
+    button.secondary:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    button.warning {
+      background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%);
+      color: #050914;
+    }
+
+    button.danger {
+      background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%);
+    }
+
+    .alert-box {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 9px;
+      font-size: 0.88rem;
+      display: none;
+    }
+
+    .alert-box.success {
+      display: block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #6ee7b7;
+    }
+
+    .alert-box.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 10px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    th {
+      color: #7dd3fc;
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .log-stream {
+      max-height: 240px;
+      overflow-y: auto;
+      font-family: Consolas, monospace;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .log-entry {
+      background: rgba(5, 10, 24, 0.92);
+      border-left: 3px solid var(--cyan);
+      padding: 8px 11px;
+      border-radius: 5px;
+    }
+
+    .log-entry.event-bid { border-left-color: var(--success); }
+    .log-entry.event-end { border-left-color: var(--warning); }
+
+    /* Modal Tạo phiên */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(3, 7, 18, 0.78);
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .cyber-modal {
+      width: 100%;
+      max-width: 520px;
+      background: linear-gradient(180deg, rgba(13, 22, 48, 0.98) 0%, rgba(9, 15, 35, 0.99) 100%);
+      border-radius: 16px;
+      border: 1.5px solid rgba(0, 229, 255, 0.55);
+      box-shadow: 0 0 35px rgba(0, 229, 255, 0.3);
+      padding: 22px 26px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group label {
+      font-size: 0.84rem;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======================== TOP CYBER NAVBAR ======================== -->
+  <header class="cyber-header">
+    <div class="nav-inner">
+      <a class="brand-logo" href="index.html" title="Quay về Trang Chủ / Đăng nhập">
+        <div class="brand-icon-wrap">
+          <svg viewBox="0 0 64 64" width="42" height="42" fill="none">
+            <defs>
+              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f2fe" />
+                <stop offset="100%" stop-color="#b537f2" />
+              </linearGradient>
+            </defs>
+            <rect x="22" y="10" width="24" height="12" rx="3" transform="rotate(-35 22 10)" stroke="url(#logoGrad)" stroke-width="3.5" fill="rgba(0,229,255,0.18)" />
+            <line x1="29" y1="22" x2="52" y2="45" stroke="url(#logoGrad)" stroke-width="4" stroke-linecap="round" />
+            <path d="M10 50 H38 M6 55 H42" stroke="#00f2fe" stroke-width="3.5" stroke-linecap="round" />
+          </svg>
+        </div>
+        <div>
+          <div class="brand-text-title">LIVE AUCTION</div>
+          <div class="brand-text-sub">Sàn Đấu Giá Trực Tuyến</div>
+        </div>
+      </a>
+
+      <nav class="nav-menu">
+        <a class="nav-link" href="index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 10.5L12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-10.5z"/></svg>
+          <span>Trang chủ</span>
+        </a>
+        <a class="nav-link active" href="#auction-floor">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 4l6 6-4 4-6-6 4-4zM4 20l7-7M2 22h10"/></svg>
+          <span>Đấu giá</span>
+        </a>
+        <a class="nav-link" href="#auction-floor">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM4 6h3v3a3 3 0 0 1-3-3zM20 6h-3v3a3 3 0 0 0 3-3z"/></svg>
+          <span>Danh mục</span>
+        </a>
+        <a class="nav-link" href="#roleBanner">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>Phân quyền</span>
+        </a>
+        <a class="nav-link" href="#adminAuditPanel">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M21 14a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2v2zM3 14a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2v2z"/></svg>
+          <span>Giám sát</span>
+        </a>
+      </nav>
+
+      <div class="nav-actions">
+        <span id="signalrStatus" class="badge">SignalR: Đang kết nối...</span>
+
+        <div class="user-pill">
+          <span>👤 <strong id="currentBidderLabel">Trần Đức Nhân</strong></span>
+          <span id="headerRoleBadge" class="role-badge-pill customer">Khách hàng</span>
+        </div>
+
+        <button id="headerCreateBtn" onclick="openCreateModal()" style="display:none;">+ Tạo phiên mới</button>
+
+        <a href="index.html" class="btn-logout" title="Đăng xuất về Trang 1">
+          <span>🚪</span>
+          <span>Đăng xuất</span>
+        </a>
+
+        <input id="bidderNameInput" type="hidden" value="Trần Đức Nhân" />
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================== NỘI DUNG CHÍNH ======================== -->
+  <main id="auction-floor" class="main-container">
+
+    <!-- THANH CHUYỂN ĐỔI NHANH DEMO 3 PHÂN QUYỀN: KHÁCH HÀNG - NHÂN VIÊN - ADMIN -->
+    <div class="demo-role-switcher">
+      <div class="role-switcher-left">
+        <div class="role-switcher-title">
+          <span>🎭 CHẾ ĐỘ XEM DEMO PHÂN QUYỀN HỆ THỐNG:</span>
+          <span id="activeRoleTitleText" style="color:var(--cyan);">🛍️ Khách hàng (Người tham gia đấu giá)</span>
+        </div>
+        <div id="activeRoleDescText" class="role-switcher-desc">
+          Quyền hạn: Xem danh sách phiên đấu giá, tham gia phòng SignalR Realtime, gửi mức trả giá mới (kiểm tra qua gRPC) và xem lịch sử trả giá.
+        </div>
+      </div>
+
+      <div class="role-tabs-group">
+        <button id="btnRoleCustomer" class="role-switch-btn customer active" onclick="switchDemoRole('customer')">
+          <span>🛍️</span>
+          <span>Demo Khách hàng</span>
+        </button>
+        <button id="btnRoleStaff" class="role-switch-btn staff" onclick="switchDemoRole('staff')">
+          <span>💼</span>
+          <span>Demo Nhân viên</span>
+        </button>
+        <button id="btnRoleAdmin" class="role-switch-btn admin" onclick="switchDemoRole('admin')">
+          <span>👑</span>
+          <span>Demo Admin</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- BANNER CHỨC NĂNG THEO VAI TRÒ HIỆN TẠI -->
+    <div id="roleBanner" class="role-context-banner customer"></div>
+
+    <div class="grid-main">
+      <!-- Cột trái: Danh sách phiên đấu giá & Luồng sự kiện SignalR -->
+      <div>
+        <div class="panel">
+          <div class="panel-header">
+            <h3>📦 Danh sách Phiên đấu giá Trực tuyến</h3>
+            <span id="auctionCountBadge" class="badge">0 phiên</span>
+          </div>
+          <div id="auctionList" class="auction-list">
+            <p style="color:var(--text-gray);">Đang tải danh sách phiên đấu giá...</p>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top: 22px;">
+          <div class="panel-header">
+            <h3>📡 Luồng Sự kiện Realtime (SignalR Hub :5052)</h3>
+            <button class="secondary" style="padding:4px 10px;font-size:0.76rem;" onclick="clearRealtimeLogs()">Xóa log</button>
+          </div>
+          <div id="realtimeStream" class="log-stream"></div>
+        </div>
+      </div>
+
+      <!-- Cột phải: Phòng đấu giá trực tiếp, Lịch sử trả giá & Bảng Quản trị -->
+      <div>
+        <div class="panel">
+          <div class="panel-header">
+            <h3>🔥 Phòng Đấu giá Trực tiếp (Live Room)</h3>
+            <span id="selectedRoomStatus" class="badge">Chưa chọn phiên</span>
+          </div>
+
+          <div id="selectedAuctionDetail" class="detail-box">
+            <p style="color:var(--text-gray);">Hãy chọn một phiên đấu giá bên trái để tham gia theo dõi và đặt giá.</p>
+          </div>
+
+          <!-- Lịch sử lượt trả giá (Ai cũng xem được để minh bạch) -->
+          <div class="panel-header" style="margin-top: 18px;">
+            <h3>📜 Lịch sử Lượt trả giá của Phiên (`GET /auctions/{id}/bids`)</h3>
+            <span id="bidCountBadge" class="badge">0 lượt</span>
+          </div>
+          <div style="max-height: 240px; overflow-y: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Thời gian</th>
+                  <th>Người trả giá</th>
+                  <th>Mức giá (VNĐ)</th>
+                  <th>Correlation ID</th>
+                </tr>
+              </thead>
+              <tbody id="bidsTableBody">
+                <tr><td colspan="4" style="color:var(--text-gray);">Chưa có dữ liệu</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- BẢNG DÀNH RIÊNG CHO NHÂN VIÊN & ADMIN: NHẬT KÝ AUDIT WORKER -->
+          <div id="adminAuditPanel" style="display:none; margin-top: 22px;">
+            <div class="panel-header">
+              <h3>🛡️ Nhật ký Audit Worker (Idempotent Consumer &amp; DLQ - Chỉ Nhân viên / Admin)</h3>
+              <button class="secondary" style="padding:4px 10px;font-size:0.76rem;" onclick="loadAuditLogs()">🔄 Làm mới Audit Log</button>
+            </div>
+            <div style="max-height: 220px; overflow-y: auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Sự kiện</th>
+                    <th>Chi tiết</th>
+                    <th>Event ID (Idempotency)</th>
+                    <th>Correlation ID</th>
+                  </tr>
+                </thead>
+                <tbody id="auditTableBody">
+                  <tr><td colspan="4" style="color:var(--text-gray);">Chưa có bản ghi Audit</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- BẢNG DÀNH RIÊNG CHO ADMIN: QUẢN LÝ TÀI KHOẢN ĐÃ ĐĂNG KÝ -->
+          <div id="adminUsersPanel" style="display:none; margin-top: 22px;">
+            <div class="panel-header">
+              <h3>👑 Quản lý Danh sách Tài khoản Hệ thống (Chỉ Admin)</h3>
+              <span id="userCountBadge" class="badge">3 tài khoản</span>
+            </div>
+            <div style="max-height: 200px; overflow-y: auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Họ và tên hiển thị</th>
+                    <th>Tài khoản / Email</th>
+                    <th>Phân quyền</th>
+                    <th>Thao tác Demo</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Tạo phiên đấu giá mới (Dành cho Nhân viên & Admin) -->
+  <div id="createModal" class="modal-backdrop" onclick="if(event.target.id==='createModal') closeCreateModal()">
+    <div class="cyber-modal">
+      <div class="panel-header">
+        <h3>➕ Tạo Phiên Đấu Giá Mới (`POST /auctions`)</h3>
+        <button class="secondary" onclick="closeCreateModal()">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Tên sản phẩm đấu giá (*)</label>
+        <input id="newProductName" type="text" value="iPhone 17 Pro Max 1TB Desert Titanium" />
+      </div>
+      <div class="form-group">
+        <label>Mô tả sản phẩm</label>
+        <textarea id="newProductDesc" rows="2">Sản phẩm nguyên seal chính hãng VN/A, bảo hành 24 tháng.</textarea>
+      </div>
+      <div class="form-group">
+        <label>Giá khởi điểm (VNĐ) (*)</label>
+        <input id="newStartingPrice" type="number" value="30000000" step="500000" />
+      </div>
+      <div class="form-group">
+        <label>Bước giá tối thiểu (VNĐ) (*)</label>
+        <input id="newMinIncrement" type="number" value="500000" step="100000" />
+      </div>
+      <div class="form-group">
+        <label>Thời lượng phiên đấu giá (Phút)</label>
+        <input id="newDurationMinutes" type="number" value="30" min="1" />
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px;">
+        <button class="secondary" onclick="closeCreateModal()">Hủy</button>
+        <button onclick="submitCreateAuction()">🚀 Tạo phiên đấu giá</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let auctionApiUrl = "http://localhost:5050";
+    let hubBaseUrl = (window.location.protocol === "file:" || window.location.port !== "5052")
+      ? "http://localhost:5052/hubs/auction"
+      : "/hubs/auction";
+    let hubConnection = null;
+    let auctions = [];
+    let selectedAuctionId = null;
+    let currentRole = localStorage.getItem("live_auction_role") || "customer";
+
+    const roleProfiles = {
+      customer: {
+        defaultName: "Trần Đức Nhân (Khách hàng)",
+        badgeText: "🛍️ Khách hàng",
+        title: "🛍️ Khách hàng (Người tham gia đấu giá)",
+        desc: "Quyền hạn: Xem phiên đấu giá, nhận thông báo giá mới qua SignalR, đặt giá trực tiếp (kiểm tra bước giá qua gRPC) và xem lịch sử trả giá."
+      },
+      staff: {
+        defaultName: "Lê Hoàng Nam (Nhân viên)",
+        badgeText: "💼 Nhân viên",
+        title: "💼 Nhân viên Đấu giá (Staff / Auctioneer)",
+        desc: "Quyền hạn: Tạo phiên đấu giá mới (POST /auctions), điều hành & chốt kết thúc phiên đấu giá (POST /auctions/{id}/end), kiểm tra nhật ký Audit."
+      },
+      admin: {
+        defaultName: "Nguyễn Quản Trị (Admin)",
+        badgeText: "👑 Admin",
+        title: "👑 Quản trị viên Hệ thống (System Admin)",
+        desc: "Toàn quyền: Quản lý phiên đấu giá, giám sát 4 dịch vụ phân tán (.NET 10, gRPC, RabbitMQ, SignalR), xem Audit Log Idempotent & Quản lý tài khoản."
+      }
+    };
+
+    const sampleCustomerNames = [
+      "Trần Đức Nhân", "Nguyễn Thảo Vy", "Phạm Minh Tuấn", "Vũ Quốc Khánh", "Đỗ Hải Đăng"
+    ];
+
+    function switchDemoRole(role, customName = null) {
+      if (!roleProfiles[role]) role = "customer";
+      currentRole = role;
+      localStorage.setItem("live_auction_role", role);
+
+      const profile = roleProfiles[role];
+      const userName = customName || profile.defaultName;
+      localStorage.setItem("live_auction_user", userName);
+
+      document.getElementById("bidderNameInput").value = userName;
+      document.getElementById("currentBidderLabel").textContent = userName;
+
+      // Cập nhật badge trên Header
+      const badge = document.getElementById("headerRoleBadge");
+      badge.className = `role-badge-pill ${role}`;
+      badge.textContent = profile.badgeText;
+
+      // Cập nhật trạng thái 3 nút chuyển Role
+      document.getElementById("btnRoleCustomer").classList.toggle("active", role === "customer");
+      document.getElementById("btnRoleStaff").classList.toggle("active", role === "staff");
+      document.getElementById("btnRoleAdmin").classList.toggle("active", role === "admin");
+
+      document.getElementById("activeRoleTitleText").textContent = profile.title;
+      document.getElementById("activeRoleDescText").textContent = profile.desc;
+
+      // Ẩn/hiện nút Tạo phiên trên Header (Chỉ Nhân viên & Admin)
+      document.getElementById("headerCreateBtn").style.display = (role === "staff" || role === "admin") ? "inline-flex" : "none";
+
+      // Ẩn/hiện bảng Audit Log (Nhân viên & Admin) và Quản lý User (Chỉ Admin)
+      document.getElementById("adminAuditPanel").style.display = (role === "staff" || role === "admin") ? "block" : "none";
+      document.getElementById("adminUsersPanel").style.display = (role === "admin") ? "block" : "none";
+
+      renderRoleContextBanner();
+      renderSelectedAuctionDetail();
+      if (role === "admin") {
+        renderRegisteredUsersTable();
+      }
+    }
+
+    function renderRoleContextBanner() {
+      const banner = document.getElementById("roleBanner");
+      banner.className = `role-context-banner ${currentRole}`;
+
+      if (currentRole === "customer") {
+        banner.innerHTML = `
+          <div>
+            <strong style="color:#00e5ff;">🛍️ Bảng điều khiển Khách hàng:</strong>
+            <span style="font-size:0.84rem;color:#cbd5e1;margin-left:6px;">
+              Chọn phiên đấu giá bên dưới và đặt mức giá cao hơn bước giá tối thiểu. Bạn có thể đổi sang tên khách hàng khác để đấu giá cạnh tranh!
+            </span>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="secondary" onclick="randomizeCustomerBidder()">🎲 Đổi sang Khách hàng khác để đấu giá</button>
+            <button class="secondary" onclick="refreshAll()">🔄 Làm mới</button>
+          </div>
+        `;
+      } else if (currentRole === "staff") {
+        banner.innerHTML = `
+          <div>
+            <strong style="color:#fbbf24;">💼 Bảng điều hành Nhân viên Đấu giá:</strong>
+            <span style="font-size:0.84rem;color:#cbd5e1;margin-left:6px;">
+              Bạn có quyền mở phiên đấu giá mới, giám sát các lượt trả giá hợp lệ và bấm chốt kết thúc phiên để công bố người thắng.
+            </span>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="openCreateModal()">➕ Tạo Phiên Đấu Giá Mới</button>
+            <button class="secondary" onclick="refreshAll()">🔄 Làm mới dữ liệu</button>
+          </div>
+        `;
+      } else {
+        banner.innerHTML = `
+          <div>
+            <strong style="color:#f0abfc;">👑 Trung tâm Quản trị Hệ thống Phân tán (Admin):</strong>
+            <span style="font-size:0.84rem;color:#cbd5e1;margin-left:6px;">
+              REST API (<code>:5050</code>) ➔ gRPC BidValidation (<code>:5051</code>) ➔ RabbitMQ (<code>auction.events</code>) ➔ SignalR (<code>:5052</code>) &amp; Audit Worker (DLQ).
+            </span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button onclick="openCreateModal()">➕ Tạo Phiên Mới</button>
+            <button class="warning" onclick="runWebAutoDemo()">⚡ Chạy Kịch Bản Auto-Demo Toàn Trình</button>
+            <button class="secondary" onclick="refreshAll()">🔄 Làm mới</button>
+          </div>
+        `;
+      }
+    }
+
+    function randomizeCustomerBidder() {
+      const rand = sampleCustomerNames[Math.floor(Math.random() * sampleCustomerNames.length)] + " #" + Math.floor(10 + Math.random() * 89);
+      document.getElementById("bidderNameInput").value = rand;
+      document.getElementById("currentBidderLabel").textContent = rand;
+      renderSelectedAuctionDetail();
+      appendRealtimeLog(`Đã đổi người đấu giá sang khách hàng '${rand}'.`);
+    }
+
+    function renderRegisteredUsersTable() {
+      const tbody = document.getElementById("usersTableBody");
+      if (!tbody) return;
+      let accounts = [];
+      try {
+        accounts = JSON.parse(localStorage.getItem("live_auction_accounts") || "[]");
+      } catch {}
+      if (!accounts.length) {
+        accounts = [
+          { fullName: "Trần Đức Nhân", account: "khachhang@auction.vn", role: "customer" },
+          { fullName: "Lê Hoàng Nam (Nhân viên)", account: "nhanvien@auction.vn", role: "staff" },
+          { fullName: "Nguyễn Quản Trị (Admin)", account: "admin@auction.vn", role: "admin" }
+        ];
+      }
+      document.getElementById("userCountBadge").textContent = `${accounts.length} tài khoản`;
+      tbody.innerHTML = accounts.map(u => {
+        const rName = u.role === "admin" ? "👑 Admin" : u.role === "staff" ? "💼 Nhân viên" : "🛍️ Khách hàng";
+        return `
+          <tr>
+            <td><strong>${u.fullName}</strong></td>
+            <td><code>${u.account}</code></td>
+            <td><span class="role-badge-pill ${u.role}">${rName}</span></td>
+            <td>
+              <button class="secondary" style="padding:3px 9px;font-size:0.74rem;" onclick="switchDemoRole('${u.role}', '${u.fullName.replace(/'/g, "\\'")}')">
+                Chuyển sang TK này
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function formatCurrency(val) {
+      return Number(val || 0).toLocaleString("vi-VN") + " ₫";
+    }
+
+    function formatTime(utcStr) {
+      if (!utcStr) return "-";
+      return new Date(utcStr).toLocaleTimeString("vi-VN");
+    }
+
+    function appendRealtimeLog(text, cssClass = "") {
+      const stream = document.getElementById("realtimeStream");
+      const div = document.createElement("div");
+      div.className = "log-entry " + cssClass;
+      div.textContent = `[${new Date().toLocaleTimeString("vi-VN")}] ${text}`;
+      stream.prepend(div);
+    }
+
+    function clearRealtimeLogs() {
+      document.getElementById("realtimeStream").innerHTML = "";
+    }
+
+    async function initApp() {
+      const savedUser = localStorage.getItem("live_auction_user");
+      const savedRole = localStorage.getItem("live_auction_role") || "customer";
+      switchDemoRole(savedRole, savedUser);
+
+      if (window.location.protocol !== "file:") {
+        try {
+          const cfgRes = await fetch("/client-config");
+          if (cfgRes.ok) {
+            const cfg = await cfgRes.json();
+            auctionApiUrl = cfg.auctionApiUrl || auctionApiUrl;
+          }
+        } catch (e) {
+          console.warn("Sử dụng cấu hình API mặc định:", auctionApiUrl);
+        }
+      }
+
+      await loadAuctions();
+      await loadAuditLogs();
+      await connectSignalR();
+
+      setInterval(() => {
+        auctions.forEach(a => {
+          if (a.isActive && a.remainingSeconds > 0) {
+            a.remainingSeconds = Math.max(0, a.remainingSeconds - 1);
+          }
+        });
+        renderAuctionList();
+      }, 1000);
+    }
+
+    async function connectSignalR() {
+      const badge = document.getElementById("signalrStatus");
+      hubConnection = new signalR.HubConnectionBuilder()
+        .withUrl(hubBaseUrl)
+        .withAutomaticReconnect()
+        .build();
+
+      hubConnection.on("JoinedAuctionRoom", (data) => {
+        appendRealtimeLog(`Đã tham gia phòng SignalR cho phiên ${data.auctionId.substring(0, 8)}...`);
+      });
+
+      hubConnection.on("BidAccepted", async (data) => {
+        appendRealtimeLog(
+          `[BidAccepted] '${data.bidderName}' vừa đặt giá ${formatCurrency(data.bidAmount)} cho "${data.productName}" (CorrID: ${data.correlationId})`,
+          "event-bid"
+        );
+        await loadAuctions();
+        if (selectedAuctionId && data.auctionId.toLowerCase() === selectedAuctionId.toLowerCase()) {
+          await loadBidsForSelectedAuction(selectedAuctionId);
+        }
+        setTimeout(loadAuditLogs, 400);
+      });
+
+      hubConnection.on("AuctionEnded", async (data) => {
+        const winnerText = data.winnerName
+          ? `Người chiến thắng: ${data.winnerName} (${formatCurrency(data.finalPrice)})`
+          : "Không có người trả giá";
+        appendRealtimeLog(
+          `[AuctionEnded] Phiên "${data.productName}" đã kết thúc! ${winnerText} (CorrID: ${data.correlationId})`,
+          "event-end"
+        );
+        await loadAuctions();
+        setTimeout(loadAuditLogs, 400);
+      });
+
+      hubConnection.onreconnecting(() => {
+        badge.className = "badge closed";
+        badge.textContent = "SignalR: Đang kết nối lại...";
+      });
+
+      hubConnection.onreconnected(() => {
+        badge.className = "badge ok";
+        badge.textContent = "🟢 SignalR Realtime";
+        if (selectedAuctionId) {
+          hubConnection.invoke("JoinAuction", selectedAuctionId);
+        }
+      });
+
+      try {
+        await hubConnection.start();
+        badge.className = "badge ok";
+        badge.textContent = "🟢 SignalR Realtime";
+        appendRealtimeLog("Đã kết nối thành công tới Auction SignalR Hub.");
+        if (selectedAuctionId) {
+          await hubConnection.invoke("JoinAuction", selectedAuctionId);
+        }
+      } catch (err) {
+        badge.className = "badge closed";
+        badge.textContent = "SignalR: Chờ dịch vụ :5052";
+        console.error(err);
+      }
+    }
+
+    async function loadAuctions() {
+      try {
+        const res = await fetch(`${auctionApiUrl}/auctions`);
+        auctions = await res.json();
+        document.getElementById("auctionCountBadge").textContent = `${auctions.length} phiên`;
+
+        if (!selectedAuctionId && auctions.length > 0) {
+          await selectAuction(auctions[0].id);
+        } else {
+          renderAuctionList();
+          renderSelectedAuctionDetail();
+        }
+      } catch (err) {
+        console.error("Không thể tải danh sách đấu giá:", err);
+      }
+    }
+
+    async function selectAuction(id) {
+      if (selectedAuctionId && hubConnection && hubConnection.state === "Connected") {
+        try { await hubConnection.invoke("LeaveAuction", selectedAuctionId); } catch {}
+      }
+      selectedAuctionId = id;
+      if (hubConnection && hubConnection.state === "Connected") {
+        try { await hubConnection.invoke("JoinAuction", selectedAuctionId); } catch {}
+      }
+      renderAuctionList();
+      renderSelectedAuctionDetail();
+      await loadBidsForSelectedAuction(id);
+      await loadAuditLogs();
+    }
+
+    function formatDuration(sec) {
+      sec = Math.max(0, Math.floor(sec));
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function renderAuctionList() {
+      const container = document.getElementById("auctionList");
+      if (!auctions.length) {
+        container.innerHTML = `<p style="color:var(--text-gray);">Chưa có phiên đấu giá nào.</p>`;
+        return;
+      }
+
+      container.innerHTML = auctions.map(a => {
+        const isSelected = a.id === selectedAuctionId;
+        const statusBadge = a.isActive
+          ? `<span class="badge ok">Đang mở (${formatDuration(a.remainingSeconds)})</span>`
+          : `<span class="badge closed">Đã kết thúc</span>`;
+
+        return `
+          <div class="auction-card ${isSelected ? 'active' : ''}" onclick="selectAuction('${a.id}')">
+            <div class="auction-card-top">
+              <div class="auction-title">${a.productName}</div>
+              ${statusBadge}
+            </div>
+            <div class="price-highlight">${formatCurrency(a.currentPrice)}</div>
+            <div class="meta-row">
+              <span>👑 Dẫn đầu: <strong style="color:#e2e8f0;">${a.currentWinner || 'Chưa có'}</strong></span>
+              <span>🔨 ${a.totalBids} lượt trả giá</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderSelectedAuctionDetail() {
+      const box = document.getElementById("selectedAuctionDetail");
+      const statusBadge = document.getElementById("selectedRoomStatus");
+      const auction = auctions.find(a => a.id === selectedAuctionId);
+
+      if (!auction) {
+        box.innerHTML = `<p style="color:var(--text-gray);">Hãy chọn một phiên đấu giá bên trái.</p>`;
+        return;
+      }
+
+      statusBadge.className = auction.isActive ? "badge ok" : "badge closed";
+      statusBadge.textContent = auction.isActive ? "ĐANG MỞ ĐẤU GIÁ" : "ĐÃ KẾT THÚC";
+
+      const hasWinner = Boolean(auction.currentWinner);
+      const minNextBid = hasWinner
+        ? auction.currentPrice + auction.minIncrement
+        : auction.startingPrice;
+
+      const currentInput = document.getElementById("bidAmountInput");
+      const currentInputVal = currentInput ? Number(currentInput.value) : 0;
+      const defaultBidAmount = currentInputVal >= minNextBid ? currentInputVal : minNextBid;
+      const currentBidder = document.getElementById("bidderNameInput").value || "Trần Đức Nhân";
+
+      // Chỉ Nhân viên (staff) và Admin mới thấy nút "Kết thúc phiên & Chốt người thắng"
+      const canEndAuction = (currentRole === "staff" || currentRole === "admin");
+
+      box.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+          <div>
+            <h3 style="font-size:1.25rem;color:#fff;margin-bottom:4px;">${auction.productName}</h3>
+            <p style="color:#94a3b8;font-size:0.88rem;">${auction.productDescription}</p>
+            <p style="color:#64748b;font-size:0.76rem;margin-top:4px;">ID phiên: <code>${auction.id}</code></p>
+          </div>
+          <div style="display:flex;gap:8px;">
+            ${auction.isActive
+              ? (canEndAuction
+                  ? `<button class="danger" onclick="endSelectedAuction('${auction.id}')">⏹ Kết thúc phiên &amp; Chốt người thắng (Nhân viên/Admin)</button>`
+                  : `<span class="badge ok">Đang nhận trả giá trực tiếp</span>`)
+              : `<span class="badge closed">Phiên đã đóng</span>`
+            }
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-label">Giá hiện tại</div>
+            <div class="stat-value" style="color:#00e5ff;">${formatCurrency(auction.currentPrice)}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Người đang dẫn đầu / Thắng</div>
+            <div class="stat-value" style="color:#c084fc;">${auction.currentWinner || "Chưa có"}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Giá đặt tối thiểu tiếp theo</div>
+            <div class="stat-value" style="color:#34d399;">${formatCurrency(minNextBid)}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Bước giá tối thiểu</div>
+            <div class="stat-value">${formatCurrency(auction.minIncrement)}</div>
+          </div>
+        </div>
+
+        ${auction.isActive ? `
+          <div class="bid-controls">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+              <span style="font-size:0.86rem;font-weight:700;color:#e2e8f0;">
+                ⚡ Đặt giá trực tiếp (REST API ➔ gRPC BidValidation ➔ RabbitMQ &amp; SignalR):
+              </span>
+              <span style="font-size:0.8rem;color:#94a3b8;">
+                Người đặt giá: <strong style="color:var(--cyan);">${currentBidder}</strong>
+              </span>
+            </div>
+            <div class="quick-buttons">
+              <button class="secondary" onclick="setBidAmount(${minNextBid})">Mức tối thiểu (${formatCurrency(minNextBid)})</button>
+              <button class="secondary" onclick="setBidAmount(${minNextBid + auction.minIncrement})">+1 Bước giá (${formatCurrency(minNextBid + auction.minIncrement)})</button>
+              <button class="secondary" onclick="setBidAmount(${minNextBid + auction.minIncrement * 2})">+2 Bước giá (${formatCurrency(minNextBid + auction.minIncrement * 2)})</button>
+              <button class="warning" onclick="setBidAmount(${Math.max(1000, auction.currentPrice - 10000)})">🧪 Thử giá thấp (Test gRPC từ chối)</button>
+            </div>
+            <div class="bid-form-row">
+              <input id="bidAmountInput" type="number" value="${defaultBidAmount}" step="${auction.minIncrement}" />
+              <button onclick="submitBid('${auction.id}')">🔨 Gửi Mức Giá Mới (POST /bids)</button>
+            </div>
+            <div id="bidFeedback" class="alert-box"></div>
+          </div>
+        ` : `
+          <div class="alert-box success" style="display:block;margin-top:12px;">
+            🏆 <strong>KẾT QUẢ PHIÊN ĐẤU GIÁ:</strong>
+            ${auction.currentWinner
+              ? `Người chiến thắng chung cuộc là <strong>${auction.currentWinner}</strong> với mức giá chốt <strong>${formatCurrency(auction.currentPrice)}</strong> (${auction.totalBids} lượt trả giá).`
+              : `Phiên đấu giá đã kết thúc mà không có người trả giá nào.`}
+          </div>
+        `}
+      `;
+    }
+
+    function setBidAmount(amount) {
+      const input = document.getElementById("bidAmountInput");
+      if (input) input.value = amount;
+    }
+
+    async function submitBid(auctionId) {
+      const bidderName = document.getElementById("bidderNameInput").value.trim() || "Trần Đức Nhân";
+      const amount = Number(document.getElementById("bidAmountInput").value);
+      const feedback = document.getElementById("bidFeedback");
+
+      try {
+        const res = await fetch(`${auctionApiUrl}/auctions/${auctionId}/bids`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bidderName, amount })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          feedback.className = "alert-box success";
+          feedback.textContent = `✅ ${data.message} (CorrelationId: ${data.correlationId})`;
+          await loadAuctions();
+          await loadBidsForSelectedAuction(auctionId);
+          setTimeout(loadAuditLogs, 350);
+        } else {
+          feedback.className = "alert-box error";
+          feedback.textContent = `❌ Bị từ chối bởi gRPC BidValidation [${data.errorCode || 'ERROR'}]: ${data.message} (CorrelationId: ${data.correlationId || '-'})`;
+        }
+      } catch (err) {
+        feedback.className = "alert-box error";
+        feedback.textContent = `❌ Lỗi kết nối tới Auction API: ${err.message}`;
+      }
+    }
+
+    async function endSelectedAuction(auctionId) {
+      try {
+        const res = await fetch(`${auctionApiUrl}/auctions/${auctionId}/end`, { method: "POST" });
+        if (res.ok) {
+          const result = await res.json();
+          appendRealtimeLog(`Đã yêu cầu kết thúc phiên đấu giá: ${result.resultSummary}`, "event-end");
+          await loadAuctions();
+          setTimeout(loadAuditLogs, 400);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadBidsForSelectedAuction(auctionId) {
+      try {
+        const res = await fetch(`${auctionApiUrl}/auctions/${auctionId}/bids`);
+        if (!res.ok) return;
+        const bids = await res.json();
+        document.getElementById("bidCountBadge").textContent = `${bids.length} lượt`;
+        const tbody = document.getElementById("bidsTableBody");
+
+        if (!bids.length) {
+          tbody.innerHTML = `<tr><td colspan="4" style="color:var(--text-gray);">Chưa có lượt trả giá nào cho phiên này.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = bids.map((b, idx) => `
+          <tr>
+            <td>${formatTime(b.placedAtUtc)}</td>
+            <td><strong>${b.bidderName}</strong> ${idx === 0 ? '<span class="badge ok">Cao nhất</span>' : ''}</td>
+            <td style="color:#00e5ff;font-weight:700;">${formatCurrency(b.amount)}</td>
+            <td><code>${b.correlationId}</code></td>
+          </tr>
+        `).join("");
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadAuditLogs() {
+      try {
+        const url = selectedAuctionId
+          ? `${auctionApiUrl}/audit-logs?auctionId=${selectedAuctionId}`
+          : `${auctionApiUrl}/audit-logs`;
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const logs = await res.json();
+        const tbody = document.getElementById("auditTableBody");
+
+        if (!logs.length) {
+          tbody.innerHTML = `<tr><td colspan="4" style="color:var(--text-gray);">Đang chờ Audit Worker ghi nhận sự kiện...</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = logs.map(l => `
+          <tr>
+            <td><span class="badge ${l.eventType === 'BidAccepted' ? 'ok' : 'closed'}">${l.eventType}</span></td>
+            <td>${l.summary}</td>
+            <td><code>${l.eventId.substring(0, 10)}...</code></td>
+            <td><code>${l.correlationId}</code></td>
+          </tr>
+        `).join("");
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function openCreateModal() {
+      document.getElementById("createModal").classList.add("open");
+    }
+
+    function closeCreateModal() {
+      document.getElementById("createModal").classList.remove("open");
+    }
+
+    async function submitCreateAuction() {
+      const productName = document.getElementById("newProductName").value.trim();
+      const productDescription = document.getElementById("newProductDesc").value.trim();
+      const startingPrice = Number(document.getElementById("newStartingPrice").value);
+      const minIncrement = Number(document.getElementById("newMinIncrement").value);
+      const durationMinutes = Number(document.getElementById("newDurationMinutes").value);
+
+      const res = await fetch(`${auctionApiUrl}/auctions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productName,
+          productDescription,
+          startingPrice,
+          minIncrement,
+          durationMinutes
+        })
+      });
+
+      if (res.ok) {
+        const created = await res.json();
+        closeCreateModal();
+        await loadAuctions();
+        await selectAuction(created.id);
+        appendRealtimeLog(`Đã tạo phiên đấu giá mới "${created.productName}" với giá khởi điểm ${formatCurrency(created.startingPrice)}.`);
+      }
+    }
+
+    // Kịch bản Auto-Demo chạy trực tiếp trên Web dành cho Admin / Báo cáo
+    async function runWebAutoDemo() {
+      appendRealtimeLog(">>> [AUTO-DEMO] Bắt đầu kịch bản kiểm thử toàn trình (Admin)...");
+      try {
+        const createRes = await fetch(`${auctionApiUrl}/auctions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            productName: "ASUS ROG Astral RTX 5090 32GB OC Edition",
+            productDescription: "Card đồ họa flagship tạo tự động từ kịch bản Demo phân tán",
+            startingPrice: 60000000,
+            minIncrement: 1000000,
+            durationMinutes: 45
+          })
+        });
+        const created = await createRes.json();
+        await loadAuctions();
+        await selectAuction(created.id);
+
+        await new Promise(r => setTimeout(r, 700));
+        await fetch(`${auctionApiUrl}/auctions/${created.id}/bids`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bidderName: "Trần Đức Nhân (Khách hàng)", amount: 61000000 })
+        });
+
+        await new Promise(r => setTimeout(r, 700));
+        await fetch(`${auctionApiUrl}/auctions/${created.id}/bids`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bidderName: "Nguyễn Thảo Vy (Khách hàng)", amount: 63000000 })
+        });
+
+        await refreshAll();
+        appendRealtimeLog(">>> [AUTO-DEMO] Đã tạo phiên & mô phỏng 2 khách hàng đấu giá thành công!", "event-bid");
+      } catch (err) {
+        appendRealtimeLog(`>>> [AUTO-DEMO] Lỗi: ${err.message}`, "event-end");
+      }
+    }
+
+    async function refreshAll() {
+      await loadAuctions();
+      if (selectedAuctionId) {
+        await loadBidsForSelectedAuction(selectedAuctionId);
+      }
+      await loadAuditLogs();
+    }
+
+    window.addEventListener("DOMContentLoaded", initApp);
+  </script>
+</body>
+</html>
