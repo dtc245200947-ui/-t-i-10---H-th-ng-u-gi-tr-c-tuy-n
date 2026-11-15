@@ -61,6 +61,15 @@ app.Use(async (context, next) =>
 app.MapHealthChecks("/health");
 
 // ============================================================================
+// 0. GET / - Kiểm tra trạng thái hoạt động của dịch vụ (Health Check JSON)
+// ============================================================================
+app.MapGet("/", () => Results.Ok(new
+{
+    service = "Auction.Api",
+    status = "running"
+}));
+
+// ============================================================================
 // 1. GET /auctions - Tra cứu danh sách các phiên đấu giá
 // ============================================================================
 app.MapGet("/auctions", async (string? status, AuctionDbContext db) =>

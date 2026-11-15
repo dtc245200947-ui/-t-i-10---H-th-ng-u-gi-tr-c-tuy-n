@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cẩm nang Thực hành Kiểm thử Postman - Đề tài 10: Hệ thống Đấu giá Trực tuyến</title>
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --accent: #ea580c;
+      --accent-soft: #fff7ed;
+      --border: #cbd5e1;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --code-bg: #0f172a;
+      --code-fg: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.65;
+      padding: 28px 16px 60px;
+    }
+    .page {
+      max-width: 1020px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 40px 44px;
+      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--ink);
+      margin-bottom: 24px;
+    }
+    .kicker {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    h1 { font-size: 1.8rem; line-height: 1.25; margin-top: 4px; }
+    .subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 20px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      background: var(--accent);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+    .btn.secondary { background: #e2e8f0; color: var(--ink); }
+    .section { margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--border); }
+    .section-num {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 2px 9px;
+      border-radius: 6px;
+      margin-right: 8px;
+    }
+    h2 { font-size: 1.3rem; margin-bottom: 12px; display: flex; align-items: center; }
+    h3 { font-size: 1.04rem; margin: 14px 0 8px; }
+    p, li { font-size: 0.95rem; margin-bottom: 8px; }
+    ul, ol { padding-left: 22px; }
+    .callout {
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin: 14px 0;
+      font-size: 0.92rem;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      padding: 15px 18px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: Consolas, monospace;
+      font-size: 0.84rem;
+      line-height: 1.55;
+      margin: 10px 0;
+    }
+    code {
+      font-family: Consolas, monospace;
+      background: #e2e8f0;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.88em;
+    }
+    pre code { background: transparent; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.9rem; }
+    th, td { border: 1px solid var(--border); padding: 9px 12px; text-align: left; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .page { box-shadow: none; border: none; padding: 10px; }
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="top-bar">
+      <div>
+        <div class="kicker">CẨM NANG THỰC HÀNH • ASP.NET CORE MINIMAL API (.NET 10)</div>
+        <h1>HƯỚNG DẪN CHI TIẾT KIỂM THỬ API BẰNG POSTMAN DESKTOP</h1>
+      </div>
+      <div class="no-print" style="display:flex;gap:8px;flex-wrap:wrap;">
+        <a class="btn secondary" href="/">⬅ Giao diện Đấu giá</a>
+        <a class="btn secondary" href="/guide.html">📖 Giải thích Code</a>
+        <a class="btn" href="javascript:window.print()">🖨️ In / Xuất PDF</a>
+      </div>
+    </div>
+
+    <p class="subtitle">
+      Thao tác từng bước – dữ liệu thử nghiệm – kịch bản đúng/sai – tự động kiểm tra bằng JavaScript (<code>Post-response</code>) – chạy Collection Runner cho <strong>Đề tài 10: Hệ thống Đấu giá Trực tuyến</strong>.
+    </p>
+
+    <div class="callout">
+      <strong>🎁 Đã tạo sẵn file Postman Collection tự động:</strong> Bạn có thể mở Postman Desktop ➔ nhấn <strong>Import</strong> ➔ chọn file
+      <code>OnlineAuctionSystem.postman_collection.json</code> nằm ngay trong thư mục gốc dự án <code>D:\Đề tài 10 - Hệ thống đấu giá trực tuyến</code> để có sẵn toàn bộ 10 Request kèm Script kiểm thử tự động!
+    </div>
+
+    <!-- MỤC 01 -->
+    <div class="section">
+      <h2><span class="section-num">01</span> Chuẩn bị &amp; Xác định địa chỉ cổng (`baseUrl`)</h2>
+      <p>Hệ thống Đấu giá Trực tuyến của bạn chạy ở các cổng cố định sau:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Dịch vụ</th>
+            <th>Địa chỉ lắng nghe</th>
+            <th>Vai trò khi kiểm thử Postman</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Auction.Api (Minimal API)</strong></td>
+            <td><code>http://localhost:5050</code></td>
+            <td>Đây là giá trị biến <code>{{baseUrl}}</code> dùng để gửi tất cả request GET/POST trong Postman.</td>
+          </tr>
+          <tr>
+            <td><strong>BidValidation.Grpc</strong></td>
+            <td><code>http://localhost:5051</code> (Health: <code>5151</code>)</td>
+            <td>Được <code>Auction.Api</code> gọi ngầm qua gRPC khi bạn test <code>POST /auctions/{id}/bids</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Auction.Hub (Web &amp; SignalR)</strong></td>
+            <td><code>http://localhost:5052</code></td>
+            <td>Mở song song trên trình duyệt để thấy giá nhảy trực tiếp khi bạn bấm <strong>Send</strong> trong Postman.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- MỤC 02 -->
+    <div class="section">
+      <h2><span class="section-num">02</span> Tổ chức Collection và Biến `{{baseUrl}}`, `{{auctionId}}`</h2>
+      <p>Trong thẻ <strong>Variables</strong> của Collection <code>Online Auction API - Lab (Đề tài 10)</code>, khai báo 2 biến:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Value</th>
+            <th>Giải thích</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>baseUrl</code></td>
+            <td><code>http://localhost:5050</code></td>
+            <td>Địa chỉ gốc của <code>Auction.Api</code>.</td>
+          </tr>
+          <tr>
+            <td><code>auctionId</code></td>
+            <td><code>11111111-1111-1111-1111-111111111111</code></td>
+            <td>Mã GUID của phiên đấu giá mẫu (và sẽ được tự động cập nhật khi chạy Request 03 tạo phiên mới).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- MỤC 03 -->
+    <div class="section">
+      <h2><span class="section-num">03</span> Chi tiết các Request GET/POST và Post-response Scripts</h2>
+
+      <h3>Request 01 — Health check (<code>GET {{baseUrl}}/</code>)</h3>
+      <pre><code>// Post-response Script:
+pm.test("GET / trả về 200", function () {
+  pm.response.to.have.status(200);
+});
+pm.test("Tên dịch vụ và trạng thái đúng", function () {
+  const data = pm.response.json();
+  pm.expect(data.service).to.equal("Auction.Api");
+  pm.expect(data.status).to.equal("running");
+});</code></pre>
+
+      <h3>Request 02 — Lấy danh sách phiên đấu giá (<code>GET {{baseUrl}}/auctions</code>)</h3>
+      <pre><code>// Post-response Script:
+pm.test("GET /auctions trả về 200", function () {
+  pm.response.to.have.status(200);
+});
+pm.test("Kết quả là mảng JSON các phiên đấu giá", function () {
+  const data = pm.response.json();
+  pm.expect(Array.isArray(data)).to.equal(true);
+  pm.expect(data.length).to.be.greaterThan(0);
+});</code></pre>
+
+      <h3>Request 03 — Tạo phiên đấu giá hợp lệ (<code>POST {{baseUrl}}/auctions</code>)</h3>
+      <p>Chọn <strong>Body ➔ raw ➔ JSON</strong>:</p>
+      <pre><code>{
+  "productName": "  Laptop ASUS ROG Zephyrus G16 2026  ",
+  "productDescription": "Chính hãng bảo hành 24 tháng",
+  "startingPrice": 50000000,
+  "minIncrement": 1000000,
+  "durationMinutes": 60
+}</code></pre>
+      <p><strong>Post-response Script (Kiểm tra 201 Created, Location Header và lưu <code>auctionId</code>):</strong></p>
+      <pre><code>pm.test("Tạo phiên đấu giá trả về 201 Created", function () {
+  pm.response.to.have.status(201);
+});
+pm.test("JSON có dữ liệu phản hồi hợp lệ", function () {
+  const data = pm.response.json();
+  pm.expect(data.id).to.be.a("string");
+  pm.expect(data.productName).to.equal("Laptop ASUS ROG Zephyrus G16 2026");
+  pm.expect(data.startingPrice).to.equal(50000000);
+  pm.expect(data.status).to.equal("Open");
+});
+pm.test("Location header chứa đường dẫn phiên đấu giá", () =&gt; {
+  const location = pm.response.headers.get("Location");
+  pm.expect(location).to.include("/auctions/");
+});
+const response = pm.response.json();
+pm.collectionVariables.set("auctionId", response.id);</code></pre>
+
+      <h3>Request 07 — Đặt giá HỢP LỆ qua gRPC &amp; RabbitMQ (<code>POST {{baseUrl}}/auctions/{{auctionId}}/bids</code>)</h3>
+      <pre><code>// Body (raw JSON):
+{
+  "bidderName": "Trần Đức Nhân",
+  "amount": 52000000
+}
+
+// Post-response Script:
+pm.test("Đặt giá hợp lệ trả về 200 OK", () =&gt; {
+  pm.response.to.have.status(200);
+});
+pm.test("Phản hồi xác nhận thành công và có CorrelationId", () =&gt; {
+  const data = pm.response.json();
+  pm.expect(data.success).to.equal(true);
+  pm.expect(data.currentPrice).to.equal(52000000);
+  pm.expect(data.currentWinner).to.equal("Trần Đức Nhân");
+  pm.expect(data.correlationId).to.be.a("string");
+});</code></pre>
+
+      <h3>Request 08 — Đặt giá THẤP bị gRPC từ chối (<code>POST {{baseUrl}}/auctions/{{auctionId}}/bids</code>)</h3>
+      <pre><code>// Body (raw JSON - Giá 52.1tr thấp hơn mức tối thiểu 53tr):
+{
+  "bidderName": "Lê Hoàng Nam",
+  "amount": 52100000
+}
+
+// Post-response Script:
+pm.test("Giá đặt thấp hơn bước giá bị gRPC từ chối 400", () =&gt; {
+  pm.response.to.have.status(400);
+});
+pm.test("Mã lỗi trả về từ gRPC là BID_TOO_LOW", () =&gt; {
+  const data = pm.response.json();
+  pm.expect(data.success).to.equal(false);
+  pm.expect(data.errorCode).to.equal("BID_TOO_LOW");
+});</code></pre>
+    </div>
+
+    <!-- MỤC 04 -->
+    <div class="section">
+      <h2><span class="section-num">04</span> Phiếu thực hành 12 Test Cases &amp; Đáp án câu hỏi thảo luận</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Nhiệm vụ kiểm thử</th>
+            <th>Mã HTTP kỳ vọng</th>
+            <th>Giải thích theo mã nguồn C#</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td><code>GET /</code> kiểm tra trạng thái dịch vụ</td><td><code>200 OK</code></td><td>Khớp <code>app.MapGet("/", ...)</code></td></tr>
+          <tr><td>2</td><td><code>GET /auctions</code> lấy danh sách</td><td><code>200 OK</code></td><td>Trả mảng JSON từ <code>db.Auctions</code></td></tr>
+          <tr><td>3</td><td><code>POST /auctions</code> hợp lệ</td><td><code>201 Created</code></td><td>Sinh <code>Guid.NewGuid()</code>, lưu DB, trả header <code>Location</code></td></tr>
+          <tr><td>4</td><td><code>POST /auctions</code> với <code>productName = "  "</code></td><td><code>400 Bad Request</code></td><td><code>string.IsNullOrWhiteSpace(request.ProductName)</code> đúng</td></tr>
+          <tr><td>5</td><td><code>POST /auctions</code> với <code>startingPrice = 0</code></td><td><code>400 Bad Request</code></td><td><code>request.StartingPrice &lt;= 0</code> đúng</td></tr>
+          <tr><td>6</td><td><code>GET /auctions/{id}</code> với ID không tồn tại</td><td><code>404 Not Found</code></td><td><code>FirstOrDefaultAsync</code> trả về <code>null</code></td></tr>
+          <tr><td>7</td><td><code>GET /auctions/abc</code> (sai định dạng GUID)</td><td><code>404 Not Found</code></td><td>Bị chặn ngay ở Route Constraint <code>{id:guid}</code></td></tr>
+          <tr><td>8</td><td><code>POST /auctions/{id}/bids</code> hợp lệ</td><td><code>200 OK</code></td><td>gRPC trả <code>IsValid = true</code>, lưu DB và phát RabbitMQ</td></tr>
+          <tr><td>9</td><td><code>POST /auctions/{id}/bids</code> giá thấp</td><td><code>400 Bad Request</code></td><td>gRPC trả <code>IsValid = false</code>, <code>errorCode = "BID_TOO_LOW"</code></td></tr>
+          <tr><td>10</td><td><code>POST /auctions/{id}/bids</code> tên người trả giá rỗng</td><td><code>400 Bad Request</code></td><td>gRPC trả <code>errorCode = "INVALID_BIDDER"</code></td></tr>
+          <tr><td>11</td><td><code>GET /auctions/{id}/bids</code> xem lịch sử trả giá</td><td><code>200 OK</code></td><td>Chỉ chứa các lượt trả giá hợp lệ đã qua gRPC</td></tr>
+          <tr><td>12</td><td><code>POST /auctions/{id}/end</code> kết thúc phiên</td><td><code>200 OK</code></td><td>Chuyển <code>Status = "Closed"</code>, phát sự kiện <code>AuctionEnded</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
