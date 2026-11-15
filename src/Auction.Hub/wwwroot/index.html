@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LIVE AUCTION - Hệ thống Đấu giá Trực tuyến (.NET 10 Distributed System)</title>
+  <title>LIVE AUCTION - Hệ thống Đấu giá Trực tuyến Cao cấp</title>
   <style>
     :root {
       --bg-deep: #040814;
+      --bg-card: rgba(10, 18, 40, 0.92);
       --cyan: #00e5ff;
       --cyan-bright: #00f2fe;
       --purple: #b537f2;
@@ -15,6 +16,7 @@
       --text-sub: #cbd5e1;
       --text-gray: #94a3b8;
       --success: #10b981;
+      --warning: #f59e0b;
       --grad-btn: linear-gradient(90deg, #00d2ff 0%, #6366f1 50%, #c026d3 100%);
     }
 
@@ -24,30 +26,32 @@
       padding: 0;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--bg-deep);
       background-image:
-        radial-gradient(circle at 20% 25%, rgba(0, 229, 255, 0.14) 0%, transparent 42%),
-        radial-gradient(circle at 80% 30%, rgba(181, 55, 242, 0.16) 0%, transparent 45%),
-        radial-gradient(circle at 50% 75%, rgba(37, 99, 235, 0.14) 0%, transparent 55%),
-        linear-gradient(180deg, #040711 0%, #09132c 55%, #040711 100%);
+        radial-gradient(circle at 20% 15%, rgba(0, 229, 255, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(181, 55, 242, 0.15) 0%, transparent 42%),
+        radial-gradient(circle at 50% 65%, rgba(37, 99, 235, 0.12) 0%, transparent 50%),
+        linear-gradient(180deg, #040711 0%, #09132c 50%, #040711 100%);
       color: var(--text-main);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
       overflow-x: hidden;
     }
 
-    /* ======================== TOP NAVBAR (1 HÀNG NGANG) ======================== */
+    /* ======================== TOP NAVBAR ======================== */
     .cyber-header {
-      position: relative;
-      background: rgba(6, 11, 26, 0.94);
+      position: sticky;
+      top: 0;
+      background: rgba(6, 11, 26, 0.95);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid rgba(0, 229, 255, 0.32);
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7);
-      z-index: 50;
+      z-index: 100;
     }
 
     .cyber-header::after {
@@ -117,7 +121,7 @@
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      padding: 6px 16px;
+      padding: 6px 15px;
       color: #94a3b8;
       text-decoration: none;
       font-size: 0.82rem;
@@ -158,6 +162,28 @@
       align-items: center;
       gap: 10px;
       flex-shrink: 0;
+    }
+
+    .btn-watchlist-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 9px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(244, 63, 94, 0.45);
+      color: #fda4af;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-watchlist-nav:hover {
+      background: rgba(244, 63, 94, 0.16);
+      border-color: #fb7185;
+      color: #ffffff;
     }
 
     .btn-login-nav {
@@ -206,14 +232,10 @@
 
     /* ======================== HERO LANDING STAGE ======================== */
     .landing-stage {
-      flex: 1;
       max-width: 1440px;
       width: 100%;
       margin: 0 auto;
-      padding: 18px 28px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      padding: 20px 28px 40px;
     }
 
     .cyber-stage-frame {
@@ -226,6 +248,7 @@
       border: 1px solid rgba(0, 229, 255, 0.35);
       box-shadow: 0 20px 65px rgba(0, 0, 0, 0.8), inset 0 0 45px rgba(0, 229, 255, 0.06);
       overflow: hidden;
+      margin-bottom: 34px;
     }
 
     .cyber-stage-frame::before {
@@ -240,22 +263,20 @@
       pointer-events: none;
     }
 
-    /* Khi ẩn Auth Box: 2 cột rộng rãi (Chữ bên trái + Búa 3D bên phải) */
     .stage-grid {
       display: grid;
       grid-template-columns: 1.1fr 1fr;
       align-items: center;
       gap: 28px;
-      padding: 44px 52px 36px;
+      padding: 40px 50px 32px;
       position: relative;
       z-index: 2;
       transition: all 0.25s ease;
     }
 
-    /* Khi bấm nút hiện Auth Box: 3 cột giống ảnh mẫu */
     .stage-grid.with-auth {
       grid-template-columns: 1.02fr 0.88fr 430px;
-      padding: 32px 38px 26px;
+      padding: 30px 36px 26px;
       gap: 18px;
     }
 
@@ -268,7 +289,7 @@
       }
     }
 
-    @media (max-width: 860px) {
+    @media (max-width: 900px) {
       .stage-grid,
       .stage-grid.with-auth {
         grid-template-columns: 1fr;
@@ -279,9 +300,8 @@
       }
     }
 
-    /* Left Column */
     .hero-subtitle-top {
-      font-size: 1.65rem;
+      font-size: 1.6rem;
       font-weight: 800;
       letter-spacing: 2px;
       color: #ffffff;
@@ -290,7 +310,7 @@
     }
 
     .hero-title-main {
-      font-size: clamp(2rem, 3.2vw, 3.15rem);
+      font-size: clamp(2rem, 3.2vw, 3.1rem);
       font-weight: 900;
       font-style: italic;
       text-transform: uppercase;
@@ -305,18 +325,18 @@
     }
 
     .hero-slogan {
-      font-size: 1.16rem;
+      font-size: 1.14rem;
       color: #cbd5e1;
       font-weight: 500;
       letter-spacing: 0.5px;
-      margin-bottom: 26px;
+      margin-bottom: 24px;
     }
 
     .hero-features {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      margin-bottom: 28px;
+      gap: 15px;
+      margin-bottom: 26px;
     }
 
     .hero-feature-item {
@@ -326,8 +346,8 @@
     }
 
     .hex-icon {
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       border-radius: 13px;
       background: radial-gradient(circle, rgba(0, 229, 255, 0.24) 0%, rgba(15, 23, 42, 0.92) 100%);
       border: 1.5px solid var(--cyan);
@@ -339,40 +359,39 @@
     }
 
     .hex-icon svg {
-      width: 23px;
-      height: 23px;
+      width: 22px;
+      height: 22px;
       stroke: var(--cyan);
       filter: drop-shadow(0 0 5px var(--cyan));
     }
 
     .feature-text h4 {
-      font-size: 1rem;
+      font-size: 0.98rem;
       font-weight: 700;
       color: #f8fafc;
     }
 
     .feature-text p {
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       color: #94a3b8;
     }
 
-    /* Quick Demo Role Buttons on Hero */
     .demo-roles-box {
-      margin-top: 20px;
-      padding: 14px 16px;
+      margin-top: 18px;
+      padding: 13px 16px;
       border-radius: 14px;
-      background: rgba(8, 15, 36, 0.85);
-      border: 1px solid rgba(0, 229, 255, 0.3);
-      max-width: 520px;
+      background: rgba(8, 15, 36, 0.88);
+      border: 1px solid rgba(0, 229, 255, 0.32);
+      max-width: 530px;
     }
 
     .demo-roles-title {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       color: #7dd3fc;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 10px;
+      margin-bottom: 9px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -429,7 +448,7 @@
       background: linear-gradient(90deg, rgba(0, 229, 255, 0.16) 0%, rgba(181, 55, 242, 0.28) 100%);
       border: 1.5px solid var(--cyan);
       color: #ffffff;
-      font-size: 0.96rem;
+      font-size: 0.94rem;
       font-weight: 700;
       cursor: pointer;
       box-shadow: 0 0 22px rgba(0, 229, 255, 0.35), inset 0 0 12px rgba(181, 55, 242, 0.3);
@@ -456,19 +475,18 @@
       background: rgba(0, 229, 255, 0.15);
     }
 
-    /* Center Column: 3D Cyber Neon Gavel Artwork */
     .center-gavel-art {
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 380px;
+      min-height: 360px;
     }
 
     .hud-ring-outer {
       position: absolute;
-      width: 330px;
-      height: 330px;
+      width: 320px;
+      height: 320px;
       border-radius: 50%;
       border: 1.5px dashed rgba(0, 229, 255, 0.38);
       box-shadow: 0 0 45px rgba(0, 229, 255, 0.2), inset 0 0 35px rgba(0, 229, 255, 0.12);
@@ -477,8 +495,8 @@
 
     .hud-ring-inner {
       position: absolute;
-      width: 255px;
-      height: 255px;
+      width: 250px;
+      height: 250px;
       border-radius: 50%;
       border: 1px solid rgba(181, 55, 242, 0.42);
       box-shadow: 0 0 25px rgba(181, 55, 242, 0.25);
@@ -493,7 +511,7 @@
       position: relative;
       z-index: 3;
       width: 100%;
-      max-width: 420px;
+      max-width: 410px;
       filter: drop-shadow(0 14px 32px rgba(0, 229, 255, 0.5));
     }
 
@@ -550,7 +568,7 @@
     }
 
     .auth-tab-btn {
-      padding: 14px 14px;
+      padding: 14px;
       background: transparent;
       border: none;
       color: #94a3b8;
@@ -571,12 +589,12 @@
     }
 
     .auth-body {
-      padding: 22px 24px 20px;
+      padding: 20px 24px;
     }
 
     .auth-title {
       text-align: center;
-      font-size: 1.2rem;
+      font-size: 1.18rem;
       font-weight: 800;
       color: #ffffff;
       margin-bottom: 3px;
@@ -584,7 +602,7 @@
 
     .auth-subtitle {
       text-align: center;
-      font-size: 0.82rem;
+      font-size: 0.81rem;
       color: #94a3b8;
       margin-bottom: 14px;
     }
@@ -593,7 +611,7 @@
       display: none;
       padding: 9px 12px;
       border-radius: 9px;
-      font-size: 0.81rem;
+      font-size: 0.8rem;
       margin-bottom: 12px;
       text-align: center;
     }
@@ -614,7 +632,7 @@
 
     .input-icon-group {
       position: relative;
-      margin-bottom: 11px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       background: rgba(6, 11, 26, 0.96);
@@ -645,7 +663,7 @@
       border: none;
       color: #f8fafc;
       padding: 10px 12px;
-      font-size: 0.88rem;
+      font-size: 0.87rem;
       outline: none;
     }
 
@@ -667,7 +685,7 @@
       justify-content: space-between;
       font-size: 0.8rem;
       color: #cbd5e1;
-      margin: 4px 0 14px;
+      margin: 4px 0 13px;
     }
 
     .auth-options-row label {
@@ -690,7 +708,7 @@
       border: none;
       background: linear-gradient(90deg, #00e5ff 0%, #6366f1 50%, #c026d3 100%);
       color: #ffffff;
-      font-size: 0.95rem;
+      font-size: 0.94rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -710,7 +728,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin: 14px 0 10px;
+      margin: 13px 0 9px;
       color: #94a3b8;
       font-size: 0.76rem;
     }
@@ -727,7 +745,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 7px;
-      margin-bottom: 14px;
+      margin-bottom: 13px;
     }
 
     .demo-acc-btn {
@@ -751,7 +769,7 @@
 
     .auth-switch-footer {
       text-align: center;
-      font-size: 0.82rem;
+      font-size: 0.81rem;
       color: #cbd5e1;
     }
 
@@ -760,10 +778,6 @@
       font-weight: 700;
       text-decoration: none;
       cursor: pointer;
-    }
-
-    .auth-switch-footer a:hover {
-      text-decoration: underline;
     }
 
     /* Bottom 5-Item Trust & Stats Bar */
@@ -827,14 +841,490 @@
       font-size: 0.76rem;
       color: #94a3b8;
     }
+
+    /* ======================== SECTIONS BELOW HERO ======================== */
+    .section-block {
+      margin-bottom: 44px;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 1.55rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, #00f2fe 0%, #93c5fd 50%, #e879f9 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-sub {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    /* Category Pills */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1100px) {
+      .category-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .cat-card {
+      background: rgba(10, 19, 42, 0.9);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      border-radius: 14px;
+      padding: 14px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .cat-card:hover,
+    .cat-card.active {
+      border-color: var(--cyan);
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.16) 0%, rgba(181, 55, 242, 0.14) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 229, 255, 0.22);
+    }
+
+    .cat-icon {
+      font-size: 1.65rem;
+      margin-bottom: 6px;
+    }
+
+    .cat-name {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+
+    .cat-count {
+      font-size: 0.74rem;
+      color: #7dd3fc;
+      margin-top: 3px;
+    }
+
+    /* Filter Bar */
+    .filter-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(9, 16, 36, 0.92);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 22px;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 240px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(4, 9, 22, 0.95);
+      border: 1px solid rgba(71, 85, 105, 0.6);
+      border-radius: 10px;
+      padding: 8px 14px;
+    }
+
+    .search-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #f8fafc;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .toolbar-select {
+      background: rgba(4, 9, 22, 0.95);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      color: #f8fafc;
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Product Showcase Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 1240px) {
+      .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 580px) {
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .product-card {
+      background: linear-gradient(180deg, rgba(11, 20, 44, 0.96) 0%, rgba(7, 13, 30, 0.98) 100%);
+      border: 1px solid rgba(0, 229, 255, 0.26);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.25s ease;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--cyan);
+      box-shadow: 0 14px 36px rgba(0, 229, 255, 0.25), 0 0 24px rgba(181, 55, 242, 0.2);
+    }
+
+    .product-img-wrap {
+      position: relative;
+      height: 205px;
+      width: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle, #1e293b 0%, #091124 100%);
+    }
+
+    .product-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .product-card:hover .product-img-wrap img {
+      transform: scale(1.07);
+    }
+
+    .img-badge-top {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .cat-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: rgba(5, 10, 24, 0.86);
+      border: 1px solid rgba(0, 229, 255, 0.5);
+      color: var(--cyan);
+      backdrop-filter: blur(6px);
+    }
+
+    .fav-btn {
+      pointer-events: auto;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(5, 10, 24, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+
+    .fav-btn.liked {
+      background: rgba(244, 63, 94, 0.25);
+      border-color: #fb7185;
+      color: #fb7185;
+    }
+
+    .timer-pill-bottom {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(4, 9, 22, 0.88);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #34d399;
+      backdrop-filter: blur(6px);
+    }
+
+    .product-body {
+      padding: 15px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .verified-line {
+      font-size: 0.72rem;
+      color: #6ee7b7;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .product-title {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.35;
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 2.65em;
+    }
+
+    .product-desc {
+      font-size: 0.79rem;
+      color: #94a3b8;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .price-box {
+      background: rgba(5, 10, 24, 0.9);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      border-radius: 10px;
+      padding: 9px 11px;
+      margin-bottom: 11px;
+    }
+
+    .price-row-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: #94a3b8;
+    }
+
+    .price-row-val {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 2px;
+    }
+
+    .current-price {
+      font-size: 1.08rem;
+      font-weight: 900;
+      color: var(--cyan);
+    }
+
+    .buynow-price {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #f0abfc;
+    }
+
+    .card-meta-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+    }
+
+    .card-actions {
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 8px;
+    }
+
+    .btn-card-detail {
+      padding: 8px 10px;
+      border-radius: 9px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: #e2e8f0;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-card-detail:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .btn-card-bid {
+      padding: 8px 10px;
+      border-radius: 9px;
+      background: var(--grad-btn);
+      border: none;
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.3);
+    }
+
+    .btn-card-bid:hover {
+      filter: brightness(1.12);
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.55);
+    }
+
+    /* Leaderboard & Steps Grid */
+    .dual-feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    @media (max-width: 960px) {
+      .dual-feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .feature-panel {
+      background: var(--bg-card);
+      border: 1px solid rgba(0, 229, 255, 0.28);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    .leader-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 14px;
+      border-radius: 11px;
+      background: rgba(6, 11, 26, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      margin-bottom: 10px;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 14px;
+      padding: 11px 14px;
+      border-radius: 11px;
+      background: rgba(6, 11, 26, 0.9);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      margin-bottom: 10px;
+    }
+
+    .step-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--grad-btn);
+      color: #fff;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Product Detail Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(3, 7, 18, 0.82);
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .product-modal {
+      width: 100%;
+      max-width: 820px;
+      background: linear-gradient(180deg, rgba(12, 21, 46, 0.99) 0%, rgba(7, 12, 28, 0.99) 100%);
+      border-radius: 18px;
+      border: 1.5px solid rgba(0, 229, 255, 0.55);
+      box-shadow: 0 0 40px rgba(0, 229, 255, 0.35);
+      overflow: hidden;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 22px;
+      padding: 22px;
+    }
+
+    @media (max-width: 760px) {
+      .modal-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
-<body>
+<body id="top">
 
   <!-- ======================== TOP CYBER NAVBAR ======================== -->
   <header class="cyber-header">
     <div class="nav-inner">
-      <a class="brand-logo" href="index.html">
+      <a class="brand-logo" href="#top">
         <div class="brand-icon-wrap">
           <svg viewBox="0 0 64 64" width="44" height="44" fill="none">
             <defs>
@@ -855,7 +1345,7 @@
       </a>
 
       <nav class="nav-menu">
-        <a class="nav-link active" href="index.html">
+        <a class="nav-link active" href="#top">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 10.5L12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-10.5z"/></svg>
           <span>Trang chủ</span>
         </a>
@@ -863,22 +1353,29 @@
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 4l6 6-4 4-6-6 4-4zM4 20l7-7M2 22h10"/></svg>
           <span>Sàn Đấu Giá</span>
         </a>
-        <a class="nav-link" href="auction.html#postman-lab-section">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          <span>Kiểm thử Postman</span>
+        <a class="nav-link" href="#featured-products">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          <span>Sản phẩm</span>
         </a>
-        <a class="nav-link" href="auction.html#code-guide-section">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          <span>Giải thích Code</span>
+        <a class="nav-link" href="#categories-section">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM4 6h3v3a3 3 0 0 1-3-3zM20 6h-3v3a3 3 0 0 0 3-3z"/></svg>
+          <span>Danh mục</span>
         </a>
-        <a class="nav-link" href="postman-guide.html">
+        <a class="nav-link" href="#guide-section">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-          <span>Tài liệu Full</span>
+          <span>Hướng dẫn</span>
+        </a>
+        <a class="nav-link" href="#support-section">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M21 14a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2v2zM3 14a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2v2z"/></svg>
+          <span>Hỗ trợ</span>
         </a>
       </nav>
 
-      <!-- Nút bấm để mở Khung Đăng nhập / Đăng ký khi cần -->
       <div class="nav-actions">
+        <button class="btn-watchlist-nav" onclick="filterByWatchlist()" title="Xem sản phẩm đã thả tim yêu thích">
+          <span>❤️</span>
+          <span>Yêu thích (<span id="favCountNav">0</span>)</span>
+        </button>
         <button class="btn-login-nav" onclick="openAuthCard('login')">
           <span>➔</span>
           <span>Đăng nhập</span>
@@ -891,8 +1388,8 @@
     </div>
   </header>
 
-  <!-- ======================== TRANG 1: HERO BANNER + KHUNG ĐĂNG NHẬP / ĐĂNG KÝ (ẨN MẶC ĐỊNH) ======================== -->
   <main class="landing-stage">
+    <!-- ======================== HERO BANNER + KHUNG ĐĂNG NHẬP / ĐĂNG KÝ (ẨN MẶC ĐỊNH) ======================== -->
     <div class="cyber-stage-frame">
       <div id="stageGrid" class="stage-grid">
         <!-- Cột 1: Thông tin Hệ thống & Bộ nút Xem nhanh Demo 3 Vai trò -->
@@ -911,7 +1408,7 @@
               </div>
               <div class="feature-text">
                 <h4>Đấu giá minh bạch</h4>
-                <p>Bảo mật tuyệt đối</p>
+                <p>Bảo mật tuyệt đối &ndash; Thẩm định chính hãng 100%</p>
               </div>
             </div>
 
@@ -923,7 +1420,7 @@
               </div>
               <div class="feature-text">
                 <h4>Tham gia dễ dàng</h4>
-                <p>Mọi lúc, mọi nơi</p>
+                <p>Cập nhật giá Realtime &ndash; Hỗ trợ Auto-Bid &amp; Mua Ngay</p>
               </div>
             </div>
 
@@ -935,7 +1432,7 @@
               </div>
               <div class="feature-text">
                 <h4>Trải nghiệm hiện đại</h4>
-                <p>Công nghệ tiên tiến</p>
+                <p>Ví đặt cọc thông minh &ndash; Hoàn cọc tự động tức thì</p>
               </div>
             </div>
           </div>
@@ -946,6 +1443,9 @@
               <span>Khám phá ngay</span>
               <span>➔</span>
             </button>
+            <a href="#featured-products" class="btn-login-nav" style="text-decoration:none;padding:11px 20px;border-radius:999px;">
+              🔥 Xem 12+ Sản phẩm Đấu giá
+            </a>
           </div>
 
           <!-- Hộp Xem nhanh Demo 3 Phân quyền: Khách hàng - Nhân viên - Admin -->
@@ -1005,7 +1505,6 @@
             </g>
 
             <ellipse cx="220" cy="308" rx="175" ry="32" fill="url(#floorGlow)" />
-
             <ellipse cx="210" cy="298" rx="120" ry="20" fill="#09132c" stroke="url(#neonEdge)" stroke-width="3" />
             <ellipse cx="210" cy="280" rx="100" ry="16" fill="#111c3d" stroke="#00f2fe" stroke-width="2.5" />
             <ellipse cx="210" cy="264" rx="78" ry="13" fill="url(#darkMetal)" stroke="#c084fc" stroke-width="2" />
@@ -1092,7 +1591,7 @@
           <!-- TAB ĐĂNG KÝ (LIÊN KẾT VỚI ĐĂNG NHẬP) -->
           <div id="registerTabContent" class="auth-body" style="display:none;">
             <div class="auth-title">Đăng ký tài khoản mới</div>
-            <div class="auth-subtitle">Đăng ký xong sẽ chuyển sang Đăng nhập!</div>
+            <div class="auth-subtitle">Đăng ký xong tự động chuyển sang Đăng nhập!</div>
 
             <div id="registerNotice" class="auth-notice"></div>
 
@@ -1176,10 +1675,653 @@
         </div>
       </div>
     </div>
+
+    <!-- ======================== KHU VỰC 1: DANH MỤC TÀI SẢN ĐẤU GIÁ ======================== -->
+    <section id="categories-section" class="section-block">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">💎 Danh Mục Tài Sản Đấu Giá Cao Cấp</h2>
+          <p class="section-sub">Tất cả sản phẩm đều được thẩm định nguồn gốc, niêm phong bảo hiểm và cập nhật giá theo thời gian thực.</p>
+        </div>
+      </div>
+
+      <div class="category-grid">
+        <div class="cat-card active" onclick="filterCategory('all', this)">
+          <div class="cat-icon">🌟</div>
+          <div class="cat-name">Tất cả sản phẩm</div>
+          <div class="cat-count">12 phiên đang mở</div>
+        </div>
+        <div class="cat-card" onclick="filterCategory('Đồng hồ xa xỉ', this)">
+          <div class="cat-icon">⌚</div>
+          <div class="cat-name">Đồng hồ Xa xỉ</div>
+          <div class="cat-count">Rolex, Omega, Patek</div>
+        </div>
+        <div class="cat-card" onclick="filterCategory('Công nghệ', this)">
+          <div class="cat-icon">💻</div>
+          <div class="cat-name">Công nghệ &amp; Hi-Tech</div>
+          <div class="cat-count">Apple, Leica, ROG</div>
+        </div>
+        <div class="cat-card" onclick="filterCategory('Siêu xe', this)">
+          <div class="cat-icon">🏎️</div>
+          <div class="cat-name">Siêu xe &amp; Mô tô</div>
+          <div class="cat-count">Porsche, Ducati</div>
+        </div>
+        <div class="cat-card" onclick="filterCategory('Trang sức', this)">
+          <div class="cat-icon">💎</div>
+          <div class="cat-name">Trang sức &amp; Đá quý</div>
+          <div class="cat-count">Kim cương GIA, Ngọc</div>
+        </div>
+        <div class="cat-card" onclick="filterCategory('Nghệ thuật', this)">
+          <div class="cat-icon">🎨</div>
+          <div class="cat-name">Nghệ thuật &amp; Sưu tầm</div>
+          <div class="cat-count">Tranh độc bản, Cổ vật</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== KHU VỰC 2: SHOWCASE NHIỀU SẢN PHẨM CÓ HÌNH ẢNH ======================== -->
+    <section id="featured-products" class="section-block">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">🔥 Sản Phẩm Đang Đấu Giá Sôi Động</h2>
+          <p class="section-sub">Chọn sản phẩm bất kỳ để xem thông số thẩm định chi tiết hoặc bấm tham gia trả giá trực tiếp.</p>
+        </div>
+        <a href="auction.html" class="btn-register-nav" style="text-decoration:none;">
+          🔨 Vào Phòng Đấu Giá Trực Tiếp ➔
+        </a>
+      </div>
+
+      <!-- Thanh tìm kiếm & sắp xếp -->
+      <div class="filter-toolbar">
+        <div class="search-box">
+          <span>🔍</span>
+          <input id="productSearchInput" type="text" placeholder="Tìm kiếm sản phẩm (VD: Rolex, MacBook, Porsche, Kim cương, Leica...)" oninput="renderProductsGrid()" />
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <select id="sortSelect" class="toolbar-select" onchange="renderProductsGrid()">
+            <option value="featured">✨ Sắp xếp: Nổi bật nhất</option>
+            <option value="price-asc">💰 Giá hiện tại: Thấp ➔ Cao</option>
+            <option value="price-desc">💎 Giá hiện tại: Cao ➔ Thấp</option>
+            <option value="bids-desc">🔥 Sôi động nhất (Nhiều lượt đặt)</option>
+            <option value="ending-soon">⏳ Sắp kết thúc trước</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="productGridContainer" class="product-grid"></div>
+    </section>
+
+    <!-- ======================== KHU VỰC 3: BẢNG XẾP HẠNG & QUY TRÌNH ĐẤU GIÁ ======================== -->
+    <section id="guide-section" class="section-block">
+      <div class="dual-feature-grid">
+        <!-- Bảng xếp hạng Top Nhà Đấu Giá -->
+        <div class="feature-panel">
+          <h3 style="font-size:1.2rem;color:#00e5ff;margin-bottom:6px;">🏆 Bảng Vinh Danh Nhà Sưu Tầm Dẫn Đầu</h3>
+          <p style="font-size:0.84rem;color:#94a3b8;margin-bottom:16px;">Top thành viên VIP có tổng giá trị đặt giá thành công cao nhất tuần này.</p>
+
+          <div class="leader-item">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:1.4rem;">🥇</span>
+              <div>
+                <div style="font-weight:800;color:#fff;">Đỗ Hải Đăng (VIP Diamond)</div>
+                <div style="font-size:0.76rem;color:#94a3b8;">Đang dẫn đầu: Porsche 911 GT3 RS &amp; Patek Philippe</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:900;color:#00e5ff;">15.330.000.000 ₫</div>
+              <div style="font-size:0.73rem;color:#34d399;">14 lượt thắng</div>
+            </div>
+          </div>
+
+          <div class="leader-item">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:1.4rem;">🥈</span>
+              <div>
+                <div style="font-weight:800;color:#fff;">Vũ Quốc Khánh (VIP Gold)</div>
+                <div style="font-size:0.76rem;color:#94a3b8;">Đang dẫn đầu: Rolex Cosmograph Daytona 18K</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:900;color:#c084fc;">1.495.000.000 ₫</div>
+              <div style="font-size:0.73rem;color:#34d399;">9 lượt thắng</div>
+            </div>
+          </div>
+
+          <div class="leader-item">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:1.4rem;">🥉</span>
+              <div>
+                <div style="font-weight:800;color:#fff;">Trần Đức Nhân (Verified Bidder)</div>
+                <div style="font-size:0.76rem;color:#94a3b8;">Đang dẫn đầu: MacBook Pro M4 Max &amp; RTX 5090</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:900;color:#38bdf8;">438.500.000 ₫</div>
+              <div style="font-size:0.73rem;color:#34d399;">7 lượt thắng</div>
+            </div>
+          </div>
+
+          <div class="leader-item" style="margin-bottom:0;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:1.2rem;padding:0 4px;">🎖️</span>
+              <div>
+                <div style="font-weight:800;color:#fff;">Nguyễn Thảo Vy (Collector)</div>
+                <div style="font-size:0.76rem;color:#94a3b8;">Đang dẫn đầu: Máy ảnh Leica M11 Monochrom</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:900;color:#f8fafc;">317.000.000 ₫</div>
+              <div style="font-size:0.73rem;color:#34d399;">5 lượt thắng</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quy trình 4 bước đấu giá -->
+        <div class="feature-panel">
+          <h3 style="font-size:1.2rem;color:#e879f9;margin-bottom:6px;">📖 Quy Trình 4 Bước Đấu Giá Chuẩn Quốc Tế</h3>
+          <p style="font-size:0.84rem;color:#94a3b8;margin-bottom:16px;">Mọi giao dịch đều được bảo vệ hai chiều giữa người mua và nhà tổ chức đấu giá.</p>
+
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div>
+              <div style="font-weight:800;color:#fff;">Đăng ký &amp; Kích hoạt Ví Đấu Giá</div>
+              <div style="font-size:0.81rem;color:#94a3b8;">Tạo tài khoản nhanh trong 10 giây, nhận hạn mức bảo lãnh đấu giá trực tuyến.</div>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div>
+              <div style="font-weight:800;color:#fff;">Chọn Sản phẩm &amp; Xem Hồ sơ Kiểm định</div>
+              <div style="font-size:0.81rem;color:#94a3b8;">Mỗi sản phẩm đều có mã chứng thư thẩm định (GIA, Chrono24, Apple, Porsche).</div>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div>
+              <div style="font-weight:800;color:#fff;">Đặt giá Trực tiếp, Auto-Bid hoặc Mua Ngay</div>
+              <div style="font-size:0.81rem;color:#94a3b8;">Trả từng bước giá realtime hoặc cài đặt Giá trần Tự động (Auto-Bid) để hệ thống đấu giá thay bạn.</div>
+            </div>
+          </div>
+
+          <div class="step-item" style="margin-bottom:0;">
+            <div class="step-num">4</div>
+            <div>
+              <div style="font-weight:800;color:#fff;">Chốt Phiên &amp; Bàn Giao Tài Sản Có Bảo Hiểm</div>
+              <div style="font-size:0.81rem;color:#94a3b8;">Người thắng nhận bàn giao tận nơi; các thành viên khác được hoàn cọc tự động 100%.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== KHU VỰC 4: HỖ TRỢ KHÁCH HÀNG VIP ======================== -->
+    <section id="support-section" class="section-block" style="margin-bottom:10px;">
+      <div class="feature-panel" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;">
+        <div>
+          <h3 style="font-size:1.2rem;color:#ffffff;">🎧 Trung Tâm Hỗ Trợ &amp; Thẩm Định Tài Sản 24/7</h3>
+          <p style="font-size:0.86rem;color:#94a3b8;margin-top:4px;">
+            Hotline VIP: <strong style="color:#00e5ff;">1900 888 999</strong> &bull; Email: <strong style="color:#c084fc;">vip-support@liveauction.vn</strong> &bull; Trụ sở thẩm định: Quận 1, TP.HCM &amp; Hoàn Kiếm, Hà Nội
+          </p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn-login-nav" onclick="alert('Chuyên viên tư vấn VIP sẽ liên hệ hỗ trợ bạn trong ít phút!')">💬 Chat với Chuyên viên Thẩm định</button>
+          <button class="btn-register-nav" onclick="directDemoLogin('staff')">➕ Đăng ký Ký gửi Tài sản Đấu giá</button>
+        </div>
+      </div>
+    </section>
   </main>
 
+  <!-- ======================== MODAL XEM CHI TIẾT SẢN PHẨM & THÔNG SỐ ======================== -->
+  <div id="productDetailModal" class="modal-backdrop" onclick="if(event.target.id==='productDetailModal') closeProductModal()">
+    <div class="product-modal">
+      <div id="productModalContent"></div>
+    </div>
+  </div>
+
   <script>
-    // Danh sách 3 tài khoản Demo mặc định (Khách hàng, Nhân viên, Admin)
+    // Danh sách 12 Sản phẩm Đấu giá Cao cấp có Hình ảnh & Thông số chi tiết
+    const catalogProducts = [
+      {
+        id: "22222222-2222-2222-2222-222222222222",
+        name: "Đồng hồ cơ Omega Speedmaster Moonwatch Professional",
+        category: "Đồng hồ xa xỉ",
+        image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 120000000,
+        currentPrice: 125000000,
+        minIncrement: 1000000,
+        buyNowPrice: 165000000,
+        winner: "Nguyễn Minh Quân",
+        totalBids: 8,
+        remainingSeconds: 7200,
+        origin: "Thụy Sĩ (Geneva)",
+        condition: "Mới 100% Fullbox & Thẻ Quốc tế",
+        certCode: "OMEGA-3861-APOLLO",
+        description: "Phiên bản kỷ niệm Apollo 11 huyền thoại, bộ máy Co-Axial Master Chronometer Calibre 3861, mặt kính Sapphire nguyên khối trước sau."
+      },
+      {
+        id: "44444444-4444-4444-4444-444444444444",
+        name: "Rolex Cosmograph Daytona 18K Everose Gold",
+        category: "Đồng hồ xa xỉ",
+        image: "https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 680000000,
+        currentPrice: 715000000,
+        minIncrement: 5000000,
+        buyNowPrice: 890000000,
+        winner: "Vũ Quốc Khánh",
+        totalBids: 14,
+        remainingSeconds: 14400,
+        origin: "Thụy Sĩ (Rolex SA)",
+        condition: "Unworn 99.9% - Bảo hành tới 2030",
+        certCode: "ROLEX-126505-COSC",
+        description: "Tuyệt tác đồng hồ bấm giờ thể thao chế tác từ vàng hồng 18K Everose độc quyền của Rolex, mặt số Sundust đính cọc kim cương."
+      },
+      {
+        id: "11111111-1111-1111-1111-111111111111",
+        name: "MacBook Pro 16-inch M4 Max (64GB RAM, 2TB SSD)",
+        category: "Công nghệ",
+        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 45000000,
+        currentPrice: 48500000,
+        minIncrement: 500000,
+        buyNowPrice: 62000000,
+        winner: "Trần Đức Nhân",
+        totalBids: 11,
+        remainingSeconds: 10800,
+        origin: "Apple Chính hãng VN/A",
+        condition: "Nguyên Seal 100% + AppleCare+ 3 năm",
+        certCode: "APPLE-M4MAX-VNA",
+        description: "Máy trạm di động mạnh nhất của Apple với chip M4 Max 16 nhân CPU, 40 nhân GPU, màn hình Liquid Retina XDR ProMotion 120Hz."
+      },
+      {
+        id: "55555555-5555-5555-5555-555555555555",
+        name: "Siêu xe Porsche 911 GT3 RS (992) Weissach Package",
+        category: "Siêu xe",
+        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 12500000000,
+        currentPrice: 12850000000,
+        minIncrement: 50000000,
+        buyNowPrice: 14500000000,
+        winner: "Đỗ Hải Đăng",
+        totalBids: 9,
+        remainingSeconds: 21600,
+        origin: "Đức (Stuttgart)",
+        condition: "ODO 1.200 km - Kiểm định Porsche VN",
+        certCode: "PORSCHE-992-GT3RS",
+        description: "Động cơ 4.0L hút khí tự nhiên vòng tua 9.000 vòng/phút, cánh gió DRS chủ động, gói Weissach full sợi Carbon siêu nhẹ."
+      },
+      {
+        id: "77777777-7777-7777-7777-777777777777",
+        name: "Dây chuyền Kim cương Tự nhiên GIA 5.2 Carat VVS1 Platinum",
+        category: "Trang sức",
+        image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 320000000,
+        currentPrice: 335000000,
+        minIncrement: 5000000,
+        buyNowPrice: 420000000,
+        winner: "Lê Minh Châu",
+        totalBids: 6,
+        remainingSeconds: 18000,
+        origin: "Bỉ (Antwerp) - Kiểm định GIA",
+        condition: "Mới 100% - Khắc laser mã GIA trên cạnh",
+        certCode: "GIA-2245981029",
+        description: "Viên chủ Kim cương tự nhiên nước D trong suốt tuyệt đối, giác cắt 3 Excellent, đính trên dây chuyền Bạch kim PT950 thủ công."
+      },
+      {
+        id: "88888888-8888-8888-8888-888888888888",
+        name: "Card đồ họa ASUS ROG Astral RTX 5090 32GB GDDR7 OC",
+        category: "Công nghệ",
+        image: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 62000000,
+        currentPrice: 65000000,
+        minIncrement: 1000000,
+        buyNowPrice: 79000000,
+        winner: "Trần Đức Nhân",
+        totalBids: 15,
+        remainingSeconds: 9400,
+        origin: "Đài Loan - Phân phối chính hãng",
+        condition: "Nguyên Seal hộp - Bảo hành 36 tháng",
+        certCode: "ROG-RTX5090-O32G",
+        description: "Card đồ họa đầu bảng kiến trúc Blackwell mới nhất, bộ nhớ 32GB GDDR7 siêu tốc, thiết kế 4 quạt tản nhiệt buồng hơi kim loại."
+      },
+      {
+        id: "66666666-6666-6666-6666-666666666666",
+        name: "Máy ảnh Leica M11 Monochrom + Lens Summilux-M 50mm f/1.4",
+        category: "Công nghệ",
+        image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 185000000,
+        currentPrice: 192000000,
+        minIncrement: 1000000,
+        buyNowPrice: 245000000,
+        winner: "Nguyễn Thảo Vy",
+        totalBids: 7,
+        remainingSeconds: 12600,
+        origin: "Đức (Wetzlar)",
+        condition: "Fullbox 99.8% - Đầy đủ giấy tờ Leica Boutique",
+        certCode: "LEICA-M11M-GERMANY",
+        description: "Chiếc máy ảnh Rangefinder cảm biến 60MP chuyên chụp đen trắng đỉnh cao kèm ống kính huyền thoại Summilux-M 50mm f/1.4 ASPH."
+      },
+      {
+        id: "33333333-3333-3333-3333-333333333333",
+        name: "Bàn phím cơ Custom Keycult No.2 Rev.1 Brass Edition",
+        category: "Công nghệ",
+        image: "https://images.unsplash.com/photo-1595225476474-87563907a212?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 25000000,
+        currentPrice: 26200000,
+        minIncrement: 200000,
+        buyNowPrice: 35000000,
+        winner: "Phạm Minh Tuấn",
+        totalBids: 10,
+        remainingSeconds: 5400,
+        origin: "Mỹ (USA Limited Raffle)",
+        condition: "Sưu tầm - Đi kèm thẻ chứng nhận kim loại",
+        certCode: "KEYCULT-NO2-019/050",
+        description: "Bàn phím cơ giới hạn 50 chiếc toàn cầu, đế đồng nguyên khối đánh bóng gương, lắp sẵn switch Cherry MX Black Vintage đã tinh chỉnh."
+      },
+      {
+        id: "99999999-9999-9999-9999-999999999991",
+        name: "Đồng hồ Patek Philippe Nautilus 5711/1A Blue Dial",
+        category: "Đồng hồ xa xỉ",
+        image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 2400000000,
+        currentPrice: 2480000000,
+        minIncrement: 20000000,
+        buyNowPrice: 2950000000,
+        winner: "Đỗ Hải Đăng",
+        totalBids: 12,
+        remainingSeconds: 25200,
+        origin: "Thụy Sĩ (Patek Philippe Seal)",
+        condition: "Tuyệt đẹp 99% - Full Hộp Gỗ & Giấy Khai Sinh",
+        certCode: "PATEK-5711-1A-010",
+        description: "Biểu tượng tối thượng của dòng đồng hồ thể thao xa xỉ đã ngưng sản xuất, mặt số xanh Olive-Blue chuyển sắc cực hiếm."
+      },
+      {
+        id: "99999999-9999-9999-9999-999999999992",
+        name: "Mô tô Ducati Panigale V4 SP2 Limited Numbered Edition",
+        category: "Siêu xe",
+        image: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 1350000000,
+        currentPrice: 1410000000,
+        minIncrement: 10000000,
+        buyNowPrice: 1680000000,
+        winner: "Vũ Quốc Khánh",
+        totalBids: 6,
+        remainingSeconds: 16200,
+        origin: "Ý (Bologna - Ducati Corse)",
+        condition: "Mới 100% - Đánh số thứ tự trên chảng ba",
+        certCode: "DUCATI-V4SP2-412",
+        description: "Siêu mô tô đường đua phiên bản đánh số giới hạn, mâm sợi Carbon 5 chấu kép, ly hợp khô STM-EVO SBK và ống xả Akrapovic Titanium."
+      },
+      {
+        id: "99999999-9999-9999-9999-999999999993",
+        name: "Nhẫn Ngọc Lục Bảo Colombia 8.5ct Đính Kim Cương Baguette",
+        category: "Trang sức",
+        image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 210000000,
+        currentPrice: 225000000,
+        minIncrement: 3000000,
+        buyNowPrice: 280000000,
+        winner: "Lê Minh Châu",
+        totalBids: 5,
+        remainingSeconds: 11200,
+        origin: "Colombia (Muzo Mine) - Chứng thư GRS",
+        condition: "Mới 100% - Chế tác độc bản",
+        certCode: "GRS-2025-EMERALD",
+        description: "Ngọc lục bảo Muzo Colombia màu xanh Vivid Green tự nhiên hiếm quý, bao quanh bởi 24 viên kim cương Baguette nước E-F."
+      },
+      {
+        id: "99999999-9999-9999-9999-999999999994",
+        name: "Tranh Sơn Dầu Cổ Điển 'Hoàng Hôn Phố Thị' (Bản Độc Bản)",
+        category: "Nghệ thuật",
+        image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 75000000,
+        currentPrice: 82000000,
+        minIncrement: 1000000,
+        buyNowPrice: 115000000,
+        winner: "Nguyễn Thảo Vy",
+        totalBids: 9,
+        remainingSeconds: 8900,
+        origin: "Phòng tranh Đông Dương - Chứng nhận Bản quyền",
+        condition: "Nguyên bản 100% - Khung gỗ sồi mạ vàng",
+        certCode: "ART-UNIQUE-2026",
+        description: "Tác phẩm sơn dầu trên toan lanh Bỉ kích thước 120x180cm, kỹ thuật đắp nổi impasto tinh xảo kèm giấy chứng nhận độc bản của họa sĩ."
+      }
+    ];
+
+    let activeCategory = "all";
+    let onlyWatchlist = false;
+
+    function getWatchlist() {
+      try {
+        return JSON.parse(localStorage.getItem("live_auction_watchlist") || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function toggleWatchlist(id, event) {
+      if (event) event.stopPropagation();
+      let list = getWatchlist();
+      if (list.includes(id)) {
+        list = list.filter(x => x !== id);
+      } else {
+        list.push(id);
+      }
+      localStorage.setItem("live_auction_watchlist", JSON.stringify(list));
+      document.getElementById("favCountNav").textContent = list.length;
+      renderProductsGrid();
+    }
+
+    function filterByWatchlist() {
+      onlyWatchlist = !onlyWatchlist;
+      document.getElementById("featured-products").scrollIntoView({ behavior: "smooth" });
+      renderProductsGrid();
+    }
+
+    function filterCategory(cat, el) {
+      activeCategory = cat;
+      onlyWatchlist = false;
+      document.querySelectorAll(".cat-card").forEach(c => c.classList.remove("active"));
+      if (el) el.classList.add("active");
+      document.getElementById("featured-products").scrollIntoView({ behavior: "smooth" });
+      renderProductsGrid();
+    }
+
+    function formatVND(val) {
+      return Number(val || 0).toLocaleString("vi-VN") + " ₫";
+    }
+
+    function formatClock(sec) {
+      sec = Math.max(0, Math.floor(sec));
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    // Tạo ảnh SVG dự phòng cực đẹp nếu máy không có kết nối Internet
+    function makeFallbackImage(title, category) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+        <defs>
+          <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0b1938"/>
+            <stop offset="50%" stop-color="#1e1b4b"/>
+            <stop offset="100%" stop-color="#3b0764"/>
+          </linearGradient>
+        </defs>
+        <rect width="600" height="400" fill="url(#g)"/>
+        <circle cx="300" cy="180" r="95" fill="rgba(0,229,255,0.12)" stroke="#00e5ff" stroke-width="2"/>
+        <text x="300" y="190" text-anchor="middle" fill="#00e5ff" font-family="Segoe UI, sans-serif" font-size="24" font-weight="bold">${category}</text>
+        <text x="300" y="325" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="18" font-weight="bold">${title.substring(0, 38)}</text>
+      </svg>`;
+      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    function renderProductsGrid() {
+      const container = document.getElementById("productGridContainer");
+      const keyword = (document.getElementById("productSearchInput")?.value || "").trim().toLowerCase();
+      const sortBy = document.getElementById("sortSelect")?.value || "featured";
+      const favs = getWatchlist();
+      document.getElementById("favCountNav").textContent = favs.length;
+
+      let list = catalogProducts.filter(p => {
+        if (onlyWatchlist && !favs.includes(p.id)) return false;
+        if (activeCategory !== "all" && p.category !== activeCategory) return false;
+        if (keyword && !p.name.toLowerCase().includes(keyword) && !p.category.toLowerCase().includes(keyword) && !p.description.toLowerCase().includes(keyword)) {
+          return false;
+        }
+        return true;
+      });
+
+      if (sortBy === "price-asc") list.sort((a, b) => a.currentPrice - b.currentPrice);
+      else if (sortBy === "price-desc") list.sort((a, b) => b.currentPrice - a.currentPrice);
+      else if (sortBy === "bids-desc") list.sort((a, b) => b.totalBids - a.totalBids);
+      else if (sortBy === "ending-soon") list.sort((a, b) => a.remainingSeconds - b.remainingSeconds);
+
+      if (!list.length) {
+        container.innerHTML = `
+          <div style="grid-column:1/-1;text-align:center;padding:36px;background:rgba(10,18,40,0.8);border-radius:16px;border:1px solid rgba(0,229,255,0.25);">
+            <p style="font-size:1.05rem;color:#cbd5e1;margin-bottom:10px;">Không tìm thấy sản phẩm phù hợp với bộ lọc hiện tại.</p>
+            <button class="btn-login-nav" onclick="filterCategory('all', document.querySelector('.cat-card'))">🔄 Hiển thị tất cả 12 sản phẩm</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(p => {
+        const isFav = favs.includes(p.id);
+        const fallbackSrc = makeFallbackImage(p.name, p.category);
+        return `
+          <div class="product-card">
+            <div class="product-img-wrap">
+              <img src="${p.image}" alt="${p.name}" onerror="this.onerror=null;this.src='${fallbackSrc}';" />
+              <div class="img-badge-top">
+                <span class="cat-pill">${p.category}</span>
+                <button class="fav-btn ${isFav ? 'liked' : ''}" onclick="toggleWatchlist('${p.id}', event)" title="Lưu vào danh sách Yêu thích">
+                  ${isFav ? '❤️' : '🤍'}
+                </button>
+              </div>
+              <div class="timer-pill-bottom">
+                <span>🟢 Đang đấu giá</span>
+                <span>⏳ ${formatClock(p.remainingSeconds)}</span>
+              </div>
+            </div>
+
+            <div class="product-body">
+              <div class="verified-line">✔ Thẩm định: ${p.certCode}</div>
+              <div class="product-title" title="${p.name}">${p.name}</div>
+              <div class="product-desc">${p.description}</div>
+
+              <div class="price-box">
+                <div class="price-row-top">
+                  <span>GIÁ HIỆN TẠI</span>
+                  <span>MUA NGAY</span>
+                </div>
+                <div class="price-row-val">
+                  <span class="current-price">${formatVND(p.currentPrice)}</span>
+                  <span class="buynow-price">${formatVND(p.buyNowPrice)}</span>
+                </div>
+              </div>
+
+              <div class="card-meta-row">
+                <span>👑 <strong>${p.winner}</strong></span>
+                <span>🔨 <strong>${p.totalBids}</strong> lượt đặt</span>
+              </div>
+
+              <div class="card-actions">
+                <button class="btn-card-detail" onclick="openProductModal('${p.id}')">🔍 Chi tiết</button>
+                <button class="btn-card-bid" onclick="goToProductAuction('${p.id}')">🔨 Đấu giá ngay</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function openProductModal(id) {
+      const p = catalogProducts.find(x => x.id === id);
+      if (!p) return;
+      const fallbackSrc = makeFallbackImage(p.name, p.category);
+      const modal = document.getElementById("productDetailModal");
+      const content = document.getElementById("productModalContent");
+
+      content.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid rgba(0,229,255,0.25);background:rgba(5,10,24,0.95);">
+          <div style="font-weight:800;color:#00e5ff;">💎 HỒ SƠ THẨM ĐỊNH &amp; CHI TIẾT SẢN PHẨM ĐẤU GIÁ</div>
+          <button class="btn-card-detail" onclick="closeProductModal()">✕ Đóng</button>
+        </div>
+        <div class="modal-grid">
+          <div>
+            <img src="${p.image}" alt="${p.name}" onerror="this.onerror=null;this.src='${fallbackSrc}';" style="width:100%;height:280px;object-fit:cover;border-radius:14px;border:1px solid rgba(0,229,255,0.35);" />
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;font-size:0.8rem;">
+              <div style="background:rgba(5,10,24,0.9);padding:9px;border-radius:9px;border:1px solid rgba(148,163,184,0.2);">
+                <div style="color:#94a3b8;font-size:0.72rem;">MÃ CHỨNG THƯ</div>
+                <div style="color:#6ee7b7;font-weight:800;">${p.certCode}</div>
+              </div>
+              <div style="background:rgba(5,10,24,0.9);padding:9px;border-radius:9px;border:1px solid rgba(148,163,184,0.2);">
+                <div style="color:#94a3b8;font-size:0.72rem;">XUẤT XỨ</div>
+                <div style="color:#fff;font-weight:700;">${p.origin}</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+              <span class="cat-pill">${p.category}</span>
+              <h3 style="font-size:1.3rem;color:#fff;margin:8px 0;">${p.name}</h3>
+              <p style="font-size:0.88rem;color:#cbd5e1;margin-bottom:14px;">${p.description}</p>
+
+              <div style="background:rgba(5,10,24,0.92);border:1px solid rgba(0,229,255,0.3);border-radius:12px;padding:12px;margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.84rem;">
+                  <span style="color:#94a3b8;">Giá khởi điểm:</span>
+                  <strong>${formatVND(p.startingPrice)}</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.95rem;">
+                  <span style="color:#94a3b8;">Giá dẫn đầu hiện tại:</span>
+                  <strong style="color:#00e5ff;font-size:1.15rem;">${formatVND(p.currentPrice)}</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.84rem;">
+                  <span style="color:#94a3b8;">Bước giá tối thiểu:</span>
+                  <strong style="color:#34d399;">+${formatVND(p.minIncrement)}</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:0.84rem;">
+                  <span style="color:#94a3b8;">Giá Mua Ngay (Chốt phiên):</span>
+                  <strong style="color:#f0abfc;">${formatVND(p.buyNowPrice)}</strong>
+                </div>
+              </div>
+
+              <div style="font-size:0.82rem;color:#94a3b8;margin-bottom:14px;">
+                🛡️ <strong>Tình trạng thẩm định:</strong> ${p.condition}<br/>
+                👑 <strong>Người đang dẫn đầu:</strong> <span style="color:#fff;">${p.winner}</span> (${p.totalBids} lượt trả giá)
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;">
+              <button class="btn-card-bid" style="flex:1;padding:12px;font-size:0.92rem;" onclick="goToProductAuction('${p.id}')">
+                🔨 Tham gia Đấu giá Sản phẩm này ➔
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      modal.classList.add("open");
+    }
+
+    function closeProductModal() {
+      document.getElementById("productDetailModal").classList.remove("open");
+    }
+
+    function goToProductAuction(productId) {
+      localStorage.setItem("live_auction_selected_id", productId);
+      if (!localStorage.getItem("live_auction_user")) {
+        localStorage.setItem("live_auction_user", "Trần Đức Nhân (Khách hàng)");
+        localStorage.setItem("live_auction_role", "customer");
+      }
+      window.location.href = "auction.html";
+    }
+
+    // ======================== HỆ THỐNG ĐĂNG KÝ LIÊN KẾT ĐĂNG NHẬP ========================
     const defaultAccounts = [
       {
         account: "khachhang@auction.vn",
@@ -1217,14 +2359,13 @@
       localStorage.setItem("live_auction_accounts", JSON.stringify(list));
     }
 
-    // Hiện khung Đăng nhập / Đăng ký khi bấm nút
     function openAuthCard(tab = 'login') {
       document.getElementById("cyberAuthCard").classList.add("show");
       document.getElementById("stageGrid").classList.add("with-auth");
       switchAuthTab(tab);
+      document.getElementById("top").scrollIntoView({ behavior: "smooth" });
     }
 
-    // Ẩn khung Đăng nhập / Đăng ký
     function closeAuthCard() {
       document.getElementById("cyberAuthCard").classList.remove("show");
       document.getElementById("stageGrid").classList.remove("with-auth");
@@ -1244,7 +2385,6 @@
       if (el) el.type = el.type === "password" ? "text" : "password";
     }
 
-    // Điền nhanh tài khoản Demo vào form Đăng nhập
     function fillDemoAccount(role) {
       const accounts = getStoredAccounts();
       const found = accounts.find(a => a.role === role) || defaultAccounts[0];
@@ -1256,7 +2396,6 @@
       notice.textContent = `Đã chọn tài khoản Demo ${roleLabel}: ${found.fullName}. Bấm "Đăng nhập" để vào hệ thống!`;
     }
 
-    // Vào thẳng Demo 1-Click từ ngoài Hero
     function directDemoLogin(role) {
       const accounts = getStoredAccounts();
       const found = accounts.find(a => a.role === role) || defaultAccounts[0];
@@ -1266,7 +2405,6 @@
       window.location.href = "auction.html";
     }
 
-    // Xử lý ĐĂNG KÝ -> Lưu vào localStorage -> Chuyển sang ĐĂNG NHẬP & điền sẵn thông tin
     function handleRegister(e) {
       e.preventDefault();
       const fullName = document.getElementById("regFullName").value.trim();
@@ -1287,7 +2425,6 @@
       }
       saveStoredAccounts(accounts);
 
-      // Chuyển sang tab Đăng nhập và tự động điền tài khoản vừa đăng ký
       switchAuthTab('login');
       document.getElementById("loginIdentity").value = account;
       document.getElementById("loginPassword").value = password;
@@ -1297,7 +2434,6 @@
       notice.textContent = `✅ Đăng ký thành công tài khoản "${fullName}"! Đã tự động điền thông tin, hãy bấm Đăng nhập.`;
     }
 
-    // Xử lý ĐĂNG NHẬP -> Kiểm tra tài khoản đã đăng ký -> Vào trang trong (auction.html)
     function handleLogin(e) {
       e.preventDefault();
       const identity = document.getElementById("loginIdentity").value.trim();
@@ -1324,8 +2460,15 @@
       window.location.href = "auction.html";
     }
 
-    // Khởi tạo danh sách tài khoản mặc định
+    // Khởi tạo trang
     getStoredAccounts();
+    renderProductsGrid();
+    setInterval(() => {
+      catalogProducts.forEach(p => {
+        if (p.remainingSeconds > 0) p.remainingSeconds--;
+      });
+      renderProductsGrid();
+    }, 1000);
   </script>
 </body>
 </html>

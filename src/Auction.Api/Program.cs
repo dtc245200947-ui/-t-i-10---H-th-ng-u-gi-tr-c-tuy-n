@@ -478,6 +478,74 @@ app.MapGet("/audit-logs", async (Guid? auctionId, AuctionDbContext db) =>
     return Results.Ok(logs);
 });
 
+// ============================================================================
+// 9. POST /auctions/{id}/extend - Nhân viên / Admin gia hạn hoặc mở lại phiên
+// ============================================================================
+app.MapPost("/auctions/{id:guid}/extend", async (Guid id, ExtendAuctionRequest request, AuctionDbContext db) =>
+{
+    var auction = await db.Auctions.FirstOrDefaultAsync(a => a.Id == id);
+    if (auction is null)
+    {
+        return Results.NotFound(new { message = $"Không tìm thấy phiên đấu giá '{id}'." });
+    }
+
+    var now = DateTime.UtcNow;
+    var addMinutes = request.AdditionalMinutes > 0 ? request.AdditionalMinutes : 15;
+    var baseTime = (auction.Status == "Open" && auction.EndTimeUtc > now) ? auction.EndTimeUtc : now;
+
+    auction.EndTimeUtc = baseTime.AddMinutes(addMinutes);
+    auction.Status = "Open";
+    auction.ClosedAtUtc = null;
+
+    await db.SaveChangesAsync();
+    return Results.Ok(ToAuctionDto(auction, now));
+});
+
+// ============================================================================
+// 10. PUT /auctions/{id} - Nhân viên / Admin chỉnh sửa thông tin phiên đấu giá
+// ============================================================================
+app.MapPut("/auctions/{id:guid}", async (Guid id, UpdateAuctionRequest request, AuctionDbContext db) =>
+{
+    var auction = await db.Auctions.FirstOrDefaultAsync(a => a.Id == id);
+    if (auction is null)
+    {
+        return Results.NotFound(new { message = $"Không tìm thấy phiên đấu giá '{id}'." });
+    }
+
+    if (!string.IsNullOrWhiteSpace(request.ProductName))
+        auction.ProductName = request.ProductName.Trim();
+
+    if (!string.IsNullOrWhiteSpace(request.ProductDescription))
+        auction.ProductDescription = request.ProductDescription.Trim();
+
+    if (!string.IsNullOrWhiteSpace(request.ImageUrl))
+        auction.ImageUrl = request.ImageUrl.Trim();
+
+    if (request.MinIncrement is > 0)
+        auction.MinIncrement = request.MinIncrement.Value;
+
+    await db.SaveChangesAsync();
+    return Results.Ok(ToAuctionDto(auction, DateTime.UtcNow));
+});
+
+// ============================================================================
+// 11. DELETE /auctions/{id} - Admin xóa phiên đấu giá khỏi sàn
+// ============================================================================
+app.MapDelete("/auctions/{id:guid}", async (Guid id, AuctionDbContext db) =>
+{
+    var auction = await db.Auctions.Include(a => a.Bids).FirstOrDefaultAsync(a => a.Id == id);
+    if (auction is null)
+    {
+        return Results.NotFound(new { message = $"Không tìm thấy phiên đấu giá '{id}'." });
+    }
+
+    db.Bids.RemoveRange(auction.Bids);
+    db.Auctions.Remove(auction);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { message = $"Đã xóa phiên đấu giá '{auction.ProductName}' thành công." });
+});
+
 app.Run();
 
 static AuctionDto ToAuctionDto(AuctionItem auction, DateTime nowUtc)
@@ -558,3 +626,6 @@ static ValidateBidResponse PerformFallbackValidation(
         CorrelationId = correlationId
     };
 }
+
+public record ExtendAuctionRequest(int AdditionalMinutes = 15);
+public record UpdateAuctionRequest(string? ProductName, string? ProductDescription, string? ImageUrl, decimal? MinIncrement);
