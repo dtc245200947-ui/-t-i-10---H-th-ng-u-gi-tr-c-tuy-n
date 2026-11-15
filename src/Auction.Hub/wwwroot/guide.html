@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tài liệu Giải thích Chi tiết Mã nguồn - Đề tài 10: Hệ thống Đấu giá Trực tuyến</title>
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --accent: #1d4ed8;
+      --accent-soft: #eff6ff;
+      --border: #cbd5e1;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --code-bg: #0f172a;
+      --code-fg: #e2e8f0;
+      --success: #047857;
+      --warn: #b45309;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.65;
+      padding: 28px 16px 60px;
+    }
+    .page {
+      max-width: 1020px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 40px 44px;
+      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--ink);
+      margin-bottom: 24px;
+    }
+    .kicker {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.25;
+      margin-top: 4px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      background: var(--accent);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+    .btn.secondary {
+      background: #e2e8f0;
+      color: var(--ink);
+    }
+    .section {
+      margin-top: 34px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .section-num {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 2px 9px;
+      border-radius: 6px;
+      margin-right: 8px;
+    }
+    h2 {
+      font-size: 1.32rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+    }
+    h3 {
+      font-size: 1.05rem;
+      margin: 16px 0 8px;
+      color: #1e293b;
+    }
+    p, li {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+    ul { padding-left: 22px; }
+    .callout {
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin: 14px 0;
+      font-size: 0.92rem;
+    }
+    .callout.warn {
+      background: #fffbeb;
+      border-left-color: var(--warn);
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      padding: 16px 18px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      margin: 12px 0;
+    }
+    code {
+      font-family: Consolas, 'Courier New', monospace;
+      background: #e2e8f0;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.88em;
+    }
+    pre code {
+      background: transparent;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 0.9rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f1f5f9;
+      font-weight: 700;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+    .flow-diagram {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      background: #f8fafc;
+      border: 1px dashed var(--border);
+      padding: 14px;
+      border-radius: 10px;
+      margin: 14px 0;
+      font-size: 0.88rem;
+    }
+    .flow-step {
+      background: #fff;
+      border: 1px solid #94a3b8;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .page { box-shadow: none; border: none; padding: 10px; }
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="top-bar">
+      <div>
+        <div class="kicker">TÀI LIỆU HỌC TẬP &amp; ÔN THI VẤN ĐÁP / C# - .NET 10 DISTRIBUTED SYSTEM</div>
+        <h1>GIẢI THÍCH CHI TIẾT MÃ NGUỒN ĐỀ TÀI 10: HỆ THỐNG ĐẤU GIÁ TRỰC TUYẾN</h1>
+      </div>
+      <div class="no-print" style="display:flex;gap:8px;">
+        <a class="btn secondary" href="/">⬅ Quay lại Giao diện Đấu giá</a>
+        <a class="btn" href="javascript:window.print()">🖨️ In / Xuất PDF</a>
+      </div>
+    </div>
+
+    <p class="subtitle">
+      Hướng dẫn đọc từng lệnh của <strong>Auction.Api (ASP.NET Core Minimal API)</strong>, <strong>BidValidation.Grpc (gRPC Service)</strong>,
+      <strong>RabbitMQ Event Bus</strong>, <strong>Auction.Hub (SignalR)</strong> và <strong>Audit.Worker</strong> — biên soạn theo đúng chuẩn tài liệu giảng dạy mẫu.
+    </p>
+
+    <div class="flow-diagram">
+      <span class="flow-step">1. Bidder Client (Web / Postman)</span> ➔
+      <span class="flow-step">2. Auction.Api (MapGet / MapPost :5050)</span> ➔
+      <span class="flow-step">3. BidValidation.Grpc (ValidateBid :5051)</span> ➔
+      <span class="flow-step">4. Database (EF Core)</span> ➔
+      <span class="flow-step">5. RabbitMQ (auction.events)</span> ➔
+      <span class="flow-step">6. Auction.Hub (SignalR :5052) &amp; Audit.Worker</span>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Phương thức</th>
+          <th>Đường dẫn (Route)</th>
+          <th>Chức năng chính</th>
+          <th>HTTP Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>GET</code></td>
+          <td><code>/health</code></td>
+          <td>Kiểm tra trạng thái hoạt động của dịch vụ.</td>
+          <td><code>200 OK</code></td>
+        </tr>
+        <tr>
+          <td><code>GET</code></td>
+          <td><code>/auctions</code></td>
+          <td>Lấy toàn bộ danh sách phiên đấu giá (lọc <code>?status=Open|Closed</code>).</td>
+          <td><code>200 OK</code></td>
+        </tr>
+        <tr>
+          <td><code>GET</code></td>
+          <td><code>/auctions/{id:guid}</code></td>
+          <td>Lấy chi tiết phiên đấu giá theo mã <code>Guid</code>.</td>
+          <td><code>200</code> / <code>404</code></td>
+        </tr>
+        <tr>
+          <td><code>POST</code></td>
+          <td><code>/auctions</code></td>
+          <td>Tạo phiên đấu giá mới từ JSON body.</td>
+          <td><code>201</code> / <code>400</code></td>
+        </tr>
+        <tr>
+          <td><code>POST</code></td>
+          <td><code>/auctions/{id:guid}/bids</code></td>
+          <td>Gửi mức giá mới ➔ Gọi gRPC kiểm tra ➔ Lưu DB ➔ Phát sự kiện RabbitMQ.</td>
+          <td><code>200</code> / <code>400</code> / <code>404</code></td>
+        </tr>
+        <tr>
+          <td><code>GET</code></td>
+          <td><code>/auctions/{id:guid}/bids</code></td>
+          <td>Tra cứu lịch sử các lượt trả giá của phiên.</td>
+          <td><code>200</code> / <code>404</code></td>
+        </tr>
+        <tr>
+          <td><code>POST</code></td>
+          <td><code>/auctions/{id:guid}/end</code></td>
+          <td>Kết thúc phiên đấu giá, xác định người thắng và phát sự kiện <code>AuctionEnded</code>.</td>
+          <td><code>200</code> / <code>404</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- MỤC 01 -->
+    <div class="section">
+      <h2><span class="section-num">01</span> So sánh từ bài mẫu Catalog.Api lên Đề tài 10 (Hệ thống Đấu giá)</h2>
+      <p>
+        Trong tài liệu mẫu <code>Catalog.Api</code>, dữ liệu chỉ được lưu tạm trong một biến <code>List&lt;ProductDto&gt;</code> trên RAM và sinh mã bằng <code>products.Max(p =&gt; p.Id) + 1</code>.
+        Ở <strong>Đề tài 10</strong>, chúng ta nâng cấp toàn bộ các điểm hạn chế đó để đạt chuẩn <strong>Hệ thống Phân tán thực tế</strong>:
+      </p>
+      <ul>
+        <li><strong>Lưu trữ bền vững bằng Database (Entity Framework Core)</strong>: Thay <code>List&lt;ProductDto&gt;</code> bằng <code>AuctionDbContext</code> (hỗ trợ PostgreSQL trên Docker và SQLite WAL trên máy cá nhân). Tắt máy bật lại dữ liệu vẫn còn nguyên.</li>
+        <li><strong>Định danh toàn cục bằng <code>Guid</code></strong>: Thay <code>int Id (Max + 1)</code> bằng <code>Guid.NewGuid()</code> và route constraint <code>{id:guid}</code>, triệt tiêu hoàn toàn lỗi trùng ID khi nhiều người gửi <code>POST</code> cùng thời điểm.</li>
+        <li><strong>Tách dịch vụ kiểm tra giá qua gRPC</strong>: Thay vì chỉ viết một câu lệnh <code>if</code> đơn giản trong API, <code>Auction.Api</code> gọi sang dịch vụ độc lập <code>BidValidation.Grpc</code> qua HTTP/2.</li>
+        <li><strong>Đồng bộ sự kiện bất đồng bộ qua RabbitMQ &amp; SignalR</strong>: Khi có giá mới hợp lệ, sự kiện <code>BidAccepted</code> được phát qua RabbitMQ tới <code>Auction.Hub</code> (đẩy realtime xuống trình duyệt) và <code>Audit.Worker</code> (ghi lịch sử chống trùng lặp).</li>
+      </ul>
+    </div>
+
+    <!-- MỤC 02 -->
+    <div class="section">
+      <h2><span class="section-num">02</span> Mã nguồn cốt lõi của Auction.Api được đánh số theo từng nhóm</h2>
+      <p>Dưới đây là cấu trúc rút gọn có đánh số dòng của <code>src/Auction.Api/Program.cs</code> để bạn dễ dàng đối chiếu khi đọc giải thích bên dưới:</p>
+
+      <h3>Nhóm A. Khởi tạo, đăng ký DI (Database, RabbitMQ, gRPC) và Middleware</h3>
+      <pre><code>01  var builder = WebApplication.CreateBuilder(args);
+02  var httpPort = builder.Configuration.GetValue&lt;int&gt;("Server:Port", 5050);
+03  builder.WebHost.UseUrls($"http://0.0.0.0:{httpPort}");
+04
+05  builder.Services.AddAuctionDatabase(builder.Configuration);
+06  builder.Services.Configure&lt;RabbitMqSettings&gt;(builder.Configuration.GetSection("RabbitMQ"));
+07  builder.Services.AddSingleton&lt;RabbitMqEventPublisher&gt;();
+08  builder.Services.AddHostedService&lt;AuctionExpirationService&gt;();
+09
+10  var grpcAddress = builder.Configuration["GrpcServices:BidValidationUrl"] ?? "http://localhost:5051";
+11  builder.Services.AddGrpcClient&lt;BidValidator.BidValidatorClient&gt;(o =&gt; o.Address = new Uri(grpcAddress));
+12
+13  var app = builder.Build();
+14  await app.Services.EnsureAuctionDatabaseSeededAsync();</code></pre>
+
+      <h3>Nhóm B. Các API GET tra cứu phiên đấu giá</h3>
+      <pre><code>15  app.MapGet("/auctions", async (string? status, AuctionDbContext db) =&gt; {
+16      var query = db.Auctions.AsNoTracking().AsQueryable();
+17      if (!string.IsNullOrWhiteSpace(status))
+18          query = query.Where(a =&gt; a.Status.ToLower() == status.ToLower());
+19      var items = await query.OrderByDescending(a =&gt; a.Status == "Open").ThenBy(a =&gt; a.EndTimeUtc).ToListAsync();
+20      return Results.Ok(items.Select(a =&gt; ToAuctionDto(a, DateTime.UtcNow)));
+21  });
+22
+23  app.MapGet("/auctions/{id:guid}", async (Guid id, AuctionDbContext db) =&gt; {
+24      var auction = await db.Auctions.AsNoTracking().FirstOrDefaultAsync(a =&gt; a.Id == id);
+25      return auction is null
+26          ? Results.NotFound(new { message = $"Không tìm thấy phiên đấu giá với ID '{id}'." })
+27          : Results.Ok(ToAuctionDto(auction, DateTime.UtcNow));
+28  });</code></pre>
+
+      <h3>Nhóm C. API POST tạo phiên đấu giá mới</h3>
+      <pre><code>29  app.MapPost("/auctions", async (CreateAuctionRequest request, AuctionDbContext db) =&gt; {
+30      if (string.IsNullOrWhiteSpace(request.ProductName) || request.StartingPrice &lt;= 0)
+31          return Results.BadRequest(new { message = "Tên sản phẩm không được trống và giá khởi điểm &gt; 0." });
+32
+33      var auction = new AuctionItem {
+34          Id = Guid.NewGuid(),
+35          ProductName = request.ProductName.Trim(),
+36          StartingPrice = request.StartingPrice,
+37          CurrentPrice = request.StartingPrice,
+38          Status = "Open"
+39      };
+40      db.Auctions.Add(auction);
+41      await db.SaveChangesAsync();
+42      return Results.Created($"/auctions/{auction.Id}", ToAuctionDto(auction, DateTime.UtcNow));
+43  });</code></pre>
+
+      <h3>Nhóm D. API POST gửi mức giá mới (Kết nối gRPC + RabbitMQ)</h3>
+      <pre><code>44  app.MapPost("/auctions/{id:guid}/bids", async (
+45      Guid id, PlaceBidRequest request, AuctionDbContext db,
+46      BidValidator.BidValidatorClient grpcValidator, RabbitMqEventPublisher eventPublisher) =&gt;
+47  {
+48      var auction = await db.Auctions.FirstOrDefaultAsync(a =&gt; a.Id == id);
+49      if (auction is null) return Results.NotFound(new { message = "Không tìm thấy phiên đấu giá." });
+50
+51      var validationResult = await grpcValidator.ValidateBidAsync(new ValidateBidRequest {
+52          AuctionId = auction.Id.ToString(),
+53          AuctionStatus = auction.Status,
+54          CurrentPrice = (double)auction.CurrentPrice,
+55          MinIncrement = (double)auction.MinIncrement,
+56          BidderName = request.BidderName ?? "",
+57          BidAmount = (double)request.Amount
+58      });
+59
+60      if (!validationResult.IsValid)
+61          return Results.BadRequest(new PlaceBidResponseDto(false, validationResult.Message, ...));
+62
+63      auction.CurrentPrice = request.Amount;
+64      auction.CurrentWinner = request.BidderName.Trim();
+65      auction.TotalBids += 1;
+66      db.Bids.Add(new BidRecord { AuctionId = auction.Id, BidderName = auction.CurrentWinner, Amount = request.Amount });
+67      await db.SaveChangesAsync();
+68
+69      await eventPublisher.PublishEventAsync(envelope, "auction.bid.accepted");
+70      return Results.Ok(new PlaceBidResponseDto(true, "Đặt giá thành công!", ...));
+71  });</code></pre>
+    </div>
+
+    <!-- MỤC 03 -->
+    <div class="section">
+      <h2><span class="section-num">03</span> Giải thích từng lệnh: Khởi tạo, DI và Middleware (Dòng 01–14)</h2>
+      <ul>
+        <li><strong>Dòng 01–03 (Khởi tạo và tách cấu hình Port)</strong>: <code>builder.Configuration.GetValue&lt;int&gt;("Server:Port", 5050)</code> đọc cổng từ file <code>appsettings.json</code> hoặc biến môi trường <code>Server__Port</code> trong Docker Compose. Nếu không có mới lấy mặc định <code>5050</code>.</li>
+        <li><strong>Dòng 05 (Đăng ký Database)</strong>: <code>AddAuctionDatabase</code> tự động kiểm tra biến cấu hình <code>Database:Provider</code>. Khi chạy trong Docker Compose sẽ kết nối tới container <code>postgres</code>; khi chạy trực tiếp trên máy tính sẽ dùng file SQLite dùng chung tại <code>data/auction_system.db</code>.</li>
+        <li><strong>Dòng 07–08 (RabbitMQ &amp; Background Worker)</strong>:
+          <ul>
+            <li><code>AddSingleton&lt;RabbitMqEventPublisher&gt;()</code>: Duy trì kết nối tới RabbitMQ Exchange <code>auction.events</code> để phát sự kiện.</li>
+            <li><code>AddHostedService&lt;AuctionExpirationService&gt;()</code>: Dịch vụ chạy ngầm định kỳ kiểm tra các phiên đấu giá có <code>EndTimeUtc &lt;= DateTime.UtcNow</code> để tự động chuyển trạng thái sang <code>Closed</code> và phát sự kiện <code>AuctionEnded</code>.</li>
+          </ul>
+        </li>
+        <li><strong>Dòng 10–11 (Đăng ký gRPC Client)</strong>: <code>AddGrpcClient&lt;BidValidator.BidValidatorClient&gt;</code> tạo client gRPC kết nối tới <code>BidValidation.Grpc</code> ở cổng <code>5051</code>. Lớp <code>BidValidatorClient</code> được trình biên dịch tự động sinh ra từ tệp <code>Protos/bid_validation.proto</code>.</li>
+      </ul>
+    </div>
+
+    <!-- MỤC 04 -->
+    <div class="section">
+      <h2><span class="section-num">04</span> Giải thích các API GET và Route Constraint {id:guid} (Dòng 15–28)</h2>
+      <ul>
+        <li><strong>Tham số DI trong Lambda</strong>: Trong <code>async (Guid id, AuctionDbContext db) =&gt;</code>, ASP.NET Core Minimal API tự động phân biệt: <code>id</code> lấy từ đường dẫn URL <code>{id:guid}</code>, còn <code>db</code> được tiêm (inject) từ Dependency Injection container.</li>
+        <li><strong>Từ khóa <code>async / await</code> và <code>FirstOrDefaultAsync</code></strong>: Khác với <code>products.FirstOrDefault(...)</code> chạy đồng bộ trên RAM trong bài mẫu, truy vấn cơ sở dữ liệu qua mạng/ổ cứng cần dùng bất đồng bộ <code>await db.Auctions.FirstOrDefaultAsync(a =&gt; a.Id == id)</code> để không làm nghẽn luồng (thread) của web server.</li>
+        <li><strong>Toán tử điều kiện 3 ngôi (Ternary <code>? :</code>)</strong>:
+          <pre><code>return auction is null
+    ? Results.NotFound(new { message = $"Không tìm thấy phiên đấu giá với ID '{id}'." })
+    : Results.Ok(ToAuctionDto(auction, DateTime.UtcNow));</code></pre>
+          Nếu không tìm thấy bản ghi trong bảng <code>Auctions</code>, trả về HTTP <code>404 Not Found</code>; ngược lại chuyển đổi sang <code>AuctionDto</code> và trả về HTTP <code>200 OK</code>.
+        </li>
+      </ul>
+    </div>
+
+    <!-- MỤC 05 -->
+    <div class="section">
+      <h2><span class="section-num">05</span> Giải thích chi tiết Luồng Đặt Giá Phân Tán (Dòng 44–71)</h2>
+      <div class="callout">
+        <strong>Câu hỏi cốt lõi khi bảo vệ:</strong> "Khi người dùng bấm nút Đặt giá trên trình duyệt, những gì diễn ra ở phía sau?" — Bạn chỉ cần đọc đúng 4 bước từ Dòng 48 đến Dòng 70 dưới đây!
+      </div>
+      <ol style="padding-left:22px;">
+        <li>
+          <strong>Bước 1 — Tra cứu phiên đấu giá từ Database (Dòng 48–49)</strong>:
+          Gọi <code>db.Auctions.FirstOrDefaultAsync(a =&gt; a.Id == id)</code>. Nếu không tồn tại thì trả về <code>404 Not Found</code>.
+        </li>
+        <li>
+          <strong>Bước 2 — Gọi dịch vụ kiểm tra giá độc lập qua gRPC (Dòng 51–58)</strong>:
+          <code>Auction.Api</code> đóng gói thông tin phiên (trạng thái, thời gian đóng/mở, giá hiện tại, bước giá tối thiểu) cùng mức giá người dùng gửi vào đối tượng <code>ValidateBidRequest</code> và gọi <code>await grpcValidator.ValidateBidAsync(...)</code> sang dịch vụ <code>BidValidation.Grpc</code> (cổng <code>5051</code>).
+          <ul>
+            <li>Tại <code>BidValidation.Grpc</code>: Nếu phiên đã đóng (<code>AUCTION_CLOSED</code>), hết giờ (<code>AUCTION_EXPIRED</code>) hoặc mức giá đặt nhỏ hơn <code>CurrentPrice + MinIncrement</code> (<code>BID_TOO_LOW</code>), gRPC trả về <code>IsValid = false</code>.</li>
+            <li>Tại Dòng 60–61: Nếu <code>!validationResult.IsValid</code>, <code>Auction.Api</code> lập tức trả về <code>400 Bad Request</code> kèm mã lỗi cho Client.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Bước 3 — Cập nhật Database (Dòng 63–67)</strong>:
+          Khi gRPC xác nhận hợp lệ (<code>IsValid == true</code>), <code>Auction.Api</code> cập nhật <code>auction.CurrentPrice = request.Amount</code>, <code>auction.CurrentWinner = request.BidderName.Trim()</code>, tăng <code>TotalBids += 1</code>, thêm bản ghi mới vào <code>db.Bids</code> và gọi <code>await db.SaveChangesAsync()</code>.
+        </li>
+        <li>
+          <strong>Bước 4 — Phát sự kiện <code>BidAccepted</code> lên RabbitMQ (Dòng 69)</strong>:
+          Lệnh <code>await eventPublisher.PublishEventAsync(envelope, "auction.bid.accepted")</code> đẩy sự kiện lên Fanout Exchange <code>auction.events</code>.
+          <ul>
+            <li><strong>Nhánh 1 (Realtime)</strong>: <code>Auction.Hub</code> nhận sự kiện từ hàng đợi <code>auction.hub.queue</code> và phát qua SignalR (<code>Clients.All.SendAsync("BidAccepted", ...)</code>) giúp mọi màn hình nhảy giá mới ngay lập tức.</li>
+            <li><strong>Nhánh 2 (Lịch sử &amp; Kiểm toán)</strong>: <code>Audit.Worker</code> nhận sự kiện từ hàng đợi <code>auction.audit.queue</code>, kiểm tra chống trùng lặp theo <code>EventId</code> (Idempotent) và lưu vào bảng <code>AuditLogs</code>.</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+
+    <!-- MỤC 06 -->
+    <div class="section">
+      <h2><span class="section-num">06</span> Bảng tổng hợp cú pháp C# &amp; Kiến trúc Phân tán cần thuộc khi thi</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Cú pháp / Thành phần</th>
+            <th>Ý nghĩa ngắn gọn để trả lời giảng viên</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>async / await</code></td>
+            <td>Lập trình bất đồng bộ, giúp luồng xử lý không bị khóa cứng khi chờ Database, gRPC hoặc RabbitMQ.</td>
+          </tr>
+          <tr>
+            <td><code>?.</code> và <code>??</code></td>
+            <td><code>?.</code> truy cập an toàn khi khác <code>null</code>; <code>??</code> lấy giá trị mặc định bên phải nếu vế trái là <code>null</code>.</td>
+          </tr>
+          <tr>
+            <td><code>{id:guid}</code></td>
+            <td>Route constraint bắt buộc tham số trên URL phải có định dạng UUID/GUID hợp lệ.</td>
+          </tr>
+          <tr>
+            <td><code>AsNoTracking()</code></td>
+            <td>Tăng tốc truy vấn đọc (GET) trong Entity Framework Core vì không cần theo dõi thay đổi đối tượng.</td>
+          </tr>
+          <tr>
+            <td><code>Fanout Exchange</code></td>
+            <td>Loại Exchange trong RabbitMQ nhân bản sự kiện tới tất cả các Queue đang gắn (bind) vào nó (gồm Hub Queue và Audit Queue).</td>
+          </tr>
+          <tr>
+            <td><code>Idempotent Consumer</code></td>
+            <td>Đảm bảo dù RabbitMQ có gửi lặp lại cùng 1 bản tin nhiều lần thì <code>Audit.Worker</code> chỉ ghi vào Database đúng 1 lần duy nhất dựa vào <code>EventId</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Dead-Letter Queue (DLQ)</code></td>
+            <td>Hàng đợi chứa các bản tin bị lỗi sau khi <code>Audit.Worker</code> đã thử lại (Retry) đủ 3 lần mà vẫn thất bại, giúp không làm kẹt hàng đợi chính.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

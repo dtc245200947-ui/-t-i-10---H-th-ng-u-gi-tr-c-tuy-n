@@ -3,197 +3,976 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Đề tài 10 - Hệ thống Đấu giá Trực tuyến (.NET 10 Distributed System)</title>
+  <title>LIVE AUCTION - Hệ thống Đấu giá Trực tuyến (.NET 10 Distributed System)</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --card-hover: #263449;
-      --border: #334155;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
+      --bg-deep: #050914;
+      --bg-main: #080e20;
+      --bg-card: rgba(12, 20, 44, 0.88);
+      --bg-card-solid: #0d1630;
+      --bg-input: rgba(9, 15, 34, 0.95);
+      --border-dim: rgba(56, 189, 248, 0.22);
+      --border-Mid: rgba(139, 92, 246, 0.35);
+      --cyan: #00e5ff;
+      --cyan-soft: #38bdf8;
+      --purple: #b537f2;
+      --purple-soft: #a855f7;
+      --text-main: #f8fafc;
+      --text-sub: #cbd5e1;
+      --text-muted: #7dd3fc;
+      --text-gray: #94a3b8;
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
-      --accent: #8b5cf6;
+      --grad-primary: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 45%, #b537f2 100%);
+      --grad-btn: linear-gradient(90deg, #00e5ff 0%, #7c3aed 55%, #c026d3 100%);
+      --shadow-cyan: 0 0 22px rgba(0, 229, 255, 0.35);
+      --shadow-purple: 0 0 25px rgba(181, 55, 242, 0.35);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-deep);
+      background-image:
+        radial-gradient(circle at 18% 22%, rgba(0, 229, 255, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 82% 28%, rgba(181, 55, 242, 0.14) 0%, transparent 45%),
+        radial-gradient(circle at 50% 80%, rgba(37, 99, 235, 0.1) 0%, transparent 50%),
+        linear-gradient(180deg, #050914 0%, #091128 50%, #050914 100%);
+      color: var(--text-main);
       line-height: 1.5;
-      padding-bottom: 40px;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    header {
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      border-bottom: 1px solid var(--border);
-      padding: 18px 28px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
+
+    /* ======================== TOP NAVBAR ======================== */
+    .cyber-header {
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 60;
+      background: rgba(6, 11, 25, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(0, 229, 255, 0.28);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.65), 0 1px 0 rgba(181, 55, 242, 0.25);
     }
-    .brand h1 {
-      font-size: 1.3rem;
+
+    .cyber-header::after {
+      content: "";
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan) 0%, transparent 25%, transparent 75%, var(--purple) 100%);
+      pointer-events: none;
+    }
+
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* Brand Logo */
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .brand-icon-wrap {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.7));
+    }
+
+    .brand-text-title {
+      font-size: 1.45rem;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, #00f2fe 0%, #60a5fa 45%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 18px rgba(0, 229, 255, 0.35);
+      line-height: 1.1;
+    }
+
+    .brand-text-sub {
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      letter-spacing: 0.3px;
+      margin-top: 2px;
+    }
+
+    /* Center Menu */
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 18px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 10px;
+      position: relative;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-link svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--cyan);
+      background: rgba(0, 229, 255, 0.06);
+    }
+
+    .nav-link.active svg,
+    .nav-link:hover svg {
+      filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.8));
+    }
+
+    .nav-link.active::after {
+      content: "";
+      position: absolute;
+      bottom: -12px;
+      left: 14%;
+      right: 14%;
+      height: 3px;
+      background: var(--cyan);
+      border-radius: 99px;
+      box-shadow: 0 0 12px var(--cyan), 0 0 20px var(--cyan);
+    }
+
+    /* Right Auth & Actions */
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-login-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 20px;
+      border-radius: 9px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      color: #f8fafc;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-login-nav:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+    }
+
+    .btn-register-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 22px;
+      border-radius: 9px;
+      background: var(--grad-btn);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      box-shadow: 0 0 18px rgba(181, 55, 242, 0.45);
+      transition: all 0.2s ease;
+    }
+
+    .btn-register-nav:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.6), 0 0 25px rgba(181, 55, 242, 0.6);
+    }
+
+    .user-logged-pill {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      color: #e2e8f0;
+    }
+
+    .user-logged-pill.show {
+      display: inline-flex;
+    }
+
+    /* ======================== HERO SECTION ======================== */
+    .hero-wrapper {
+      max-width: 1400px;
+      margin: 22px auto 0;
+      padding: 0 24px;
+    }
+
+    .hero-frame {
+      position: relative;
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 68% 46%, rgba(0, 229, 255, 0.22) 0%, rgba(59, 130, 246, 0.12) 28%, transparent 60%),
+        radial-gradient(circle at 80% 60%, rgba(181, 55, 242, 0.2) 0%, transparent 50%),
+        linear-gradient(135deg, rgba(8, 15, 36, 0.96) 0%, rgba(11, 22, 52, 0.92) 55%, rgba(16, 14, 44, 0.96) 100%);
+      border: 1px solid rgba(0, 229, 255, 0.32);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), inset 0 0 40px rgba(0, 229, 255, 0.06);
+      overflow: hidden;
+    }
+
+    /* Cyber HUD Lines */
+    .hero-frame::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 5%;
+      right: 5%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent);
+      box-shadow: 0 0 15px var(--cyan);
+    }
+
+    .hero-content {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      align-items: center;
+      gap: 32px;
+      padding: 48px 52px 38px;
+      position: relative;
+      z-index: 2;
+    }
+
+    @media (max-width: 980px) {
+      .hero-content {
+        grid-template-columns: 1fr;
+        padding: 32px 24px;
+      }
+      .nav-menu {
+        display: none;
+      }
+    }
+
+    .hero-subtitle-top {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #ffffff;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-title-main {
+      font-size: clamp(2.2rem, 3.7vw, 3.35rem);
+      font-weight: 900;
+      font-style: italic;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      line-height: 1.12;
+      background: linear-gradient(90deg, #00f2fe 0%, #7dd3fc 35%, #c084fc 75%, #e879f9 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 22px rgba(0, 229, 255, 0.35));
+      margin-bottom: 12px;
+    }
+
+    .hero-slogan {
+      font-size: 1.22rem;
+      color: #cbd5e1;
+      font-weight: 500;
+      letter-spacing: 0.6px;
+      margin-bottom: 28px;
+    }
+
+    .hero-features {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+
+    .hero-feature-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hex-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      background: radial-gradient(circle, rgba(0, 229, 255, 0.22) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 1.5px solid var(--cyan);
+      box-shadow: 0 0 16px rgba(0, 229, 255, 0.4), inset 0 0 10px rgba(0, 229, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+      flex-shrink: 0;
+    }
+
+    .hex-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--cyan);
+      filter: drop-shadow(0 0 6px var(--cyan));
+    }
+
+    .feature-text h4 {
+      font-size: 1.04rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .feature-text p {
+      font-size: 0.88rem;
+      color: #94a3b8;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-explore {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 26px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(0, 229, 255, 0.18) 0%, rgba(181, 55, 242, 0.28) 100%);
+      border: 1.5px solid var(--cyan);
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 0 22px rgba(0, 229, 255, 0.35), inset 0 0 12px rgba(181, 55, 242, 0.3);
+      transition: all 0.25s ease;
+      text-decoration: none;
+    }
+
+    .btn-explore:hover {
+      transform: translateY(-2px) scale(1.02);
+      background: var(--grad-btn);
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.65), 0 0 35px rgba(181, 55, 242, 0.55);
+    }
+
+    .btn-explore .play-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--cyan);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--cyan);
+      background: rgba(0, 229, 255, 0.15);
+    }
+
+    .btn-create-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(192, 132, 252, 0.5);
+      color: #e9d5ff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-create-hero:hover {
+      border-color: var(--purple);
+      box-shadow: 0 0 20px rgba(181, 55, 242, 0.45);
+      color: #ffffff;
+    }
+
+    /* Center/Right Artwork: 3D Cyber Neon Gavel Showcase */
+    .hero-visual {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 360px;
+    }
+
+    .hud-circle {
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(0, 229, 255, 0.35);
+      box-shadow: 0 0 50px rgba(0, 229, 255, 0.18), inset 0 0 40px rgba(0, 229, 255, 0.12);
+      animation: spinSlow 28s linear infinite;
+      pointer-events: none;
+    }
+
+    .hud-circle-inner {
+      position: absolute;
+      width: 265px;
+      height: 265px;
+      border-radius: 50%;
+      border: 1px solid rgba(181, 55, 242, 0.4);
+      box-shadow: 0 0 30px rgba(181, 55, 242, 0.25);
+      pointer-events: none;
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .gavel-svg-stage {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      max-width: 430px;
+      filter: drop-shadow(0 15px 35px rgba(0, 229, 255, 0.45));
+    }
+
+    .floating-live-tag {
+      position: absolute;
+      top: 12px;
+      right: 10px;
+      z-index: 4;
+      background: rgba(8, 15, 35, 0.9);
+      border: 1px solid rgba(0, 229, 255, 0.55);
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .floating-live-tag .pulse-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      margin-right: 6px;
+    }
+
+    /* Bottom Stats Bar inside Hero */
+    .hero-stats-bar {
+      position: relative;
+      z-index: 3;
+      background: rgba(5, 10, 24, 0.92);
+      border-top: 1px solid rgba(0, 229, 255, 0.35);
+      padding: 16px 32px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      gap: 16px;
+    }
+
+    @media (max-width: 960px) {
+      .hero-stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stat-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border-right: 1px solid rgba(148, 163, 184, 0.16);
+      padding-right: 12px;
+    }
+
+    .stat-cell:last-child {
+      border-right: none;
+    }
+
+    .stat-cell-center {
+      flex-direction: column;
+      text-align: center;
+      gap: 2px;
+    }
+
+    .stat-cell-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(0, 229, 255, 0.12);
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+      flex-shrink: 0;
+    }
+
+    .stat-cell h5 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+
+    .stat-cell p {
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+
+    /* ======================== MODAL ĐĂNG NHẬP / ĐĂNG KÝ (ẨN BÊN NGOÀI, BẬT KHI CLICK) ======================== */
+    .auth-modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(3, 7, 18, 0.78);
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .auth-modal-backdrop.open {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .cyber-auth-box {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      background: linear-gradient(180deg, rgba(13, 22, 48, 0.98) 0%, rgba(9, 15, 35, 0.99) 100%);
+      border-radius: 16px;
+      border: 1.5px solid rgba(0, 229, 255, 0.55);
+      box-shadow:
+        0 0 35px rgba(0, 229, 255, 0.3),
+        0 0 45px rgba(181, 55, 242, 0.25),
+        inset 0 0 25px rgba(0, 229, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .cyber-auth-close {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      z-index: 10;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #cbd5e1;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .cyber-auth-close:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* Auth Top Tabs */
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: rgba(6, 11, 26, 0.95);
+      border-bottom: 1px solid rgba(0, 229, 255, 0.3);
+    }
+
+    .auth-tab-btn {
+      padding: 15px 16px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.96rem;
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
     }
-    .brand p {
-      font-size: 0.84rem;
-      color: var(--muted);
+
+    .auth-tab-btn.active {
+      color: #ffffff;
+      background: linear-gradient(180deg, rgba(0, 229, 255, 0.2) 0%, rgba(0, 229, 255, 0.04) 100%);
+      box-shadow: inset 0 2px 0 var(--cyan), 0 0 18px rgba(0, 229, 255, 0.25);
     }
-    .badge {
-      display: inline-flex;
+
+    .auth-body {
+      padding: 26px 28px 24px;
+    }
+
+    .auth-title {
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .auth-subtitle {
+      text-align: center;
+      font-size: 0.86rem;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+
+    .input-icon-group {
+      position: relative;
+      margin-bottom: 14px;
+      display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.76rem;
+      background: rgba(7, 12, 28, 0.95);
+      border: 1px solid rgba(71, 85, 105, 0.65);
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .input-icon-group:focus-within {
+      border-color: var(--cyan);
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.3);
+    }
+
+    .input-icon-left {
+      width: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      border-right: 1px solid rgba(71, 85, 105, 0.4);
+      padding: 10px 0;
+    }
+
+    .input-icon-group input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #f8fafc;
+      padding: 12px 14px;
+      font-size: 0.92rem;
+      outline: none;
+    }
+
+    .input-icon-right {
+      padding: 0 12px;
+      color: #94a3b8;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .auth-options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.83rem;
+      color: #cbd5e1;
+      margin: 6px 0 18px;
+    }
+
+    .auth-options-row label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      color: #c084fc;
+      text-decoration: none;
       font-weight: 600;
-      background: rgba(59, 130, 246, 0.15);
-      color: #60a5fa;
-      border: 1px solid rgba(59, 130, 246, 0.3);
     }
-    .badge.ok {
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      border-color: rgba(16, 185, 129, 0.35);
+
+    .forgot-link:hover {
+      text-decoration: underline;
     }
-    .badge.closed {
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border-color: rgba(239, 68, 68, 0.35);
+
+    .btn-auth-submit {
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(90deg, #00e5ff 0%, #6366f1 50%, #c026d3 100%);
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 0 22px rgba(0, 229, 255, 0.4), 0 0 22px rgba(192, 38, 211, 0.35);
+      transition: all 0.2s ease;
     }
-    .user-bar {
+
+    .btn-auth-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.65), 0 0 30px rgba(192, 38, 211, 0.55);
+    }
+
+    .social-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0 14px;
+      color: #94a3b8;
+      font-size: 0.8rem;
+    }
+
+    .social-divider::before,
+    .social-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(148, 163, 184, 0.22);
+    }
+
+    .social-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .social-btn {
+      width: 44px;
+      height: 40px;
+      border-radius: 9px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: #f8fafc;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .social-btn:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .auth-switch-footer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+
+    .auth-switch-footer a {
+      color: #d946ef;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .auth-switch-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ======================== LIVE AUCTION FLOOR (SÀN ĐẤU GIÁ) ======================== */
+    .main-container {
+      max-width: 1400px;
+      margin: 34px auto 60px;
+      padding: 0 24px;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .section-heading h2 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #00f2fe, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       display: flex;
       align-items: center;
       gap: 10px;
-      flex-wrap: wrap;
     }
-    input, textarea, select {
-      background: #0f172a;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      outline: none;
-    }
-    input:focus, textarea:focus {
-      border-color: var(--primary);
-    }
-    button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.86rem;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    button:hover { background: var(--primary-hover); }
-    button.secondary {
-      background: #334155;
-      color: #e2e8f0;
-    }
-    button.secondary:hover { background: #475569; }
-    button.success { background: var(--success); }
-    button.success:hover { background: #059669; }
-    button.warning { background: var(--warning); color: #0f172a; }
-    button.danger { background: var(--danger); }
-    button.danger:hover { background: #dc2626; }
 
-    .container {
-      max-width: 1420px;
-      margin: 22px auto;
-      padding: 0 24px;
-    }
     .arch-banner {
-      background: rgba(30, 41, 59, 0.85);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 18px;
-      margin-bottom: 20px;
+      background: rgba(11, 19, 43, 0.9);
+      border: 1px solid rgba(0, 229, 255, 0.28);
+      border-radius: 14px;
+      padding: 13px 20px;
+      margin-bottom: 24px;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      font-size: 0.83rem;
+      font-size: 0.84rem;
     }
+
     .arch-flow {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       gap: 8px;
     }
+
     .arch-node {
-      background: #0f172a;
-      border: 1px solid #475569;
+      background: rgba(5, 10, 25, 0.95);
+      border: 1px solid rgba(0, 229, 255, 0.4);
       padding: 4px 10px;
-      border-radius: 6px;
+      border-radius: 7px;
       font-family: Consolas, monospace;
-      color: #93c5fd;
+      color: #67e8f9;
+      font-size: 0.8rem;
     }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      background: rgba(0, 229, 255, 0.14);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+    }
+
+    .badge.ok {
+      background: rgba(16, 185, 129, 0.16);
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+
+    .badge.closed {
+      background: rgba(239, 68, 68, 0.16);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
     .grid-main {
       display: grid;
-      grid-template-columns: 1.15fr 1.45fr;
-      gap: 22px;
+      grid-template-columns: 1.12fr 1.48fr;
+      gap: 24px;
     }
+
     @media (max-width: 1024px) {
-      .grid-main { grid-template-columns: 1fr; }
+      .grid-main {
+        grid-template-columns: 1fr;
+      }
     }
+
     .panel {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
+      background: var(--bg-card);
+      border: 1px solid rgba(0, 229, 255, 0.24);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+      border-radius: 16px;
+      padding: 22px;
+      backdrop-filter: blur(10px);
     }
+
     .panel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
     }
-    .panel-header h2 {
+
+    .panel-header h3 {
       font-size: 1.08rem;
       font-weight: 700;
+      color: #f8fafc;
     }
+
     .auction-list {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
+
     .auction-card {
-      background: #0f172a;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
+      background: rgba(7, 13, 30, 0.92);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 13px;
+      padding: 15px;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.2s ease;
     }
+
     .auction-card:hover {
-      border-color: var(--primary);
-      transform: translateY(-1px);
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.2);
     }
+
     .auction-card.active {
-      border: 2px solid var(--primary);
-      background: rgba(59, 130, 246, 0.08);
+      border: 1.5px solid var(--cyan);
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.12) 0%, rgba(181, 55, 242, 0.1) 100%);
+      box-shadow: 0 0 22px rgba(0, 229, 255, 0.25);
     }
+
     .auction-card-top {
       display: flex;
       justify-content: space-between;
@@ -201,111 +980,188 @@
       gap: 8px;
       margin-bottom: 8px;
     }
+
     .auction-title {
       font-weight: 700;
       font-size: 0.98rem;
       color: #f1f5f9;
     }
+
     .price-highlight {
-      font-size: 1.15rem;
+      font-size: 1.18rem;
       font-weight: 800;
-      color: #34d399;
+      color: #00e5ff;
+      text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
     }
+
     .meta-row {
       display: flex;
       justify-content: space-between;
       font-size: 0.82rem;
-      color: var(--muted);
+      color: #94a3b8;
       margin-top: 6px;
     }
+
     .detail-box {
-      background: #0f172a;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px;
+      background: rgba(6, 11, 26, 0.95);
+      border: 1px solid rgba(0, 229, 255, 0.28);
+      border-radius: 14px;
+      padding: 20px;
       margin-bottom: 18px;
     }
+
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 12px;
       margin: 16px 0;
     }
+
     .stat-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 12px;
-      border-radius: 10px;
+      background: rgba(13, 22, 48, 0.9);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      padding: 13px;
+      border-radius: 11px;
     }
+
     .stat-label {
-      font-size: 0.76rem;
-      color: var(--muted);
+      font-size: 0.75rem;
+      color: #94a3b8;
       text-transform: uppercase;
+      letter-spacing: 0.4px;
     }
+
     .stat-value {
       font-size: 1.15rem;
       font-weight: 800;
       margin-top: 4px;
     }
+
     .bid-controls {
-      background: rgba(59, 130, 246, 0.08);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.08) 0%, rgba(181, 55, 242, 0.08) 100%);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      border-radius: 13px;
       padding: 16px;
       margin-top: 14px;
     }
+
     .quick-buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 12px;
     }
+
     .bid-form-row {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
+
+    input, textarea, select {
+      background: rgba(6, 11, 25, 0.95);
+      border: 1px solid rgba(56, 189, 248, 0.32);
+      color: var(--text-main);
+      padding: 9px 13px;
+      border-radius: 9px;
+      font-size: 0.92rem;
+      outline: none;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+    }
+
     .bid-form-row input {
       flex: 1;
       min-width: 180px;
-      font-size: 1rem;
+      font-size: 1.02rem;
       font-weight: 700;
     }
+
+    button {
+      background: var(--grad-btn);
+      color: white;
+      border: none;
+      padding: 9px 15px;
+      border-radius: 9px;
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.35);
+    }
+
+    button.secondary {
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #e2e8f0;
+    }
+
+    button.secondary:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    button.success {
+      background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+    }
+
+    button.warning {
+      background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%);
+      color: #050914;
+    }
+
+    button.danger {
+      background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%);
+    }
+
     .alert-box {
       margin-top: 12px;
       padding: 10px 14px;
-      border-radius: 8px;
+      border-radius: 9px;
       font-size: 0.88rem;
       display: none;
     }
+
     .alert-box.success {
       display: block;
       background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.4);
+      border: 1px solid rgba(16, 185, 129, 0.45);
       color: #6ee7b7;
     }
+
     .alert-box.error {
       display: block;
       background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.4);
+      border: 1px solid rgba(239, 68, 68, 0.45);
       color: #fca5a5;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.85rem;
     }
+
     th, td {
       text-align: left;
       padding: 9px 10px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
     }
+
     th {
-      color: var(--muted);
-      font-weight: 600;
-      font-size: 0.78rem;
+      color: #7dd3fc;
+      font-weight: 700;
+      font-size: 0.76rem;
       text-transform: uppercase;
     }
+
     .log-stream {
       max-height: 240px;
       overflow-y: auto;
@@ -315,116 +1171,437 @@
       flex-direction: column;
       gap: 6px;
     }
+
     .log-entry {
-      background: #0f172a;
-      border-left: 3px solid var(--primary);
-      padding: 7px 10px;
-      border-radius: 4px;
+      background: rgba(5, 10, 24, 0.92);
+      border-left: 3px solid var(--cyan);
+      padding: 8px 11px;
+      border-radius: 5px;
     }
+
     .log-entry.event-bid { border-left-color: var(--success); }
     .log-entry.event-end { border-left-color: var(--warning); }
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 100;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-    }
-    .modal-backdrop.open { display: flex; }
-    .modal {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      width: 100%;
-      max-width: 520px;
-      padding: 22px;
-    }
+
     .form-group {
       margin-bottom: 12px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 5px;
     }
+
     .form-group label {
       font-size: 0.84rem;
-      color: var(--muted);
+      color: #cbd5e1;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <h1>
-        <span>🔨 Hệ thống Đấu giá Trực tuyến</span>
-        <span class="badge">Đề tài 10 - .NET 10</span>
-      </h1>
-      <p>REST Minimal API • gRPC Bid Validation • RabbitMQ Event Bus • SignalR Realtime • Audit Worker</p>
-    </div>
 
-    <div class="user-bar">
-      <span id="signalrStatus" class="badge">SignalR: Đang kết nối...</span>
-      <label for="bidderNameInput" style="font-size:0.85rem;color:var(--muted);">Người đấu giá:</label>
-      <input id="bidderNameInput" type="text" value="" placeholder="Nhập tên của bạn..." style="width:175px;" />
-      <button class="secondary" onclick="randomizeBidder()">🎲 Đổi tên</button>
-      <button class="success" onclick="openCreateModal()">+ Tạo phiên đấu giá</button>
+  <!-- ======================== TOP CYBER NAVBAR ======================== -->
+  <header class="cyber-header">
+    <div class="nav-inner">
+      <!-- Brand Logo -->
+      <a class="brand-logo" href="#top">
+        <div class="brand-icon-wrap">
+          <svg viewBox="0 0 64 64" width="46" height="46" fill="none">
+            <defs>
+              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f2fe" />
+                <stop offset="100%" stop-color="#b537f2" />
+              </linearGradient>
+            </defs>
+            <!-- Gavel Head -->
+            <rect x="22" y="10" width="24" height="12" rx="3" transform="rotate(-35 22 10)" stroke="url(#logoGrad)" stroke-width="3.5" fill="rgba(0,229,255,0.18)" />
+            <!-- Handle -->
+            <line x1="29" y1="22" x2="52" y2="45" stroke="url(#logoGrad)" stroke-width="4" stroke-linecap="round" />
+            <!-- Base Pedestal -->
+            <path d="M10 50 H38 M6 55 H42" stroke="#00f2fe" stroke-width="3.5" stroke-linecap="round" />
+          </svg>
+        </div>
+        <div>
+          <div class="brand-text-title">LIVE AUCTION</div>
+          <div class="brand-text-sub">Đấu Giá Trực Tuyến</div>
+        </div>
+      </a>
+
+      <!-- Center Menu -->
+      <nav class="nav-menu">
+        <a class="nav-link active" href="#top" onclick="setActiveNav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 10.5L12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-10.5z"/></svg>
+          <span>Trang chủ</span>
+        </a>
+        <a class="nav-link" href="#auction-floor" onclick="setActiveNav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 4l6 6-4 4-6-6 4-4zM4 20l7-7M2 22h10"/></svg>
+          <span>Đấu giá</span>
+        </a>
+        <a class="nav-link" href="#auction-floor" onclick="setActiveNav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM4 6h3v3a3 3 0 0 1-3-3zM20 6h-3v3a3 3 0 0 0 3-3z"/></svg>
+          <span>Danh mục</span>
+        </a>
+        <a class="nav-link" href="#arch-section" onclick="setActiveNav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>Hướng dẫn</span>
+        </a>
+        <a class="nav-link" href="#audit-section" onclick="setActiveNav(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M21 14a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2v2zM3 14a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2v2z"/></svg>
+          <span>Hỗ trợ</span>
+        </a>
+      </nav>
+
+      <!-- Right Auth Buttons (Đăng nhập / Đăng ký ẩn bên ngoài, bấm mới mở Modal) -->
+      <div class="nav-actions">
+        <span id="signalrStatus" class="badge">SignalR: Đang kết nối...</span>
+
+        <!-- Trạng thái hiển thị nút Mở form Đăng nhập / Đăng ký -->
+        <div id="guestAuthButtons" style="display:flex;gap:10px;">
+          <button class="btn-login-nav" onclick="openAuthModal('login')">
+            <span>➔</span>
+            <span>Đăng nhập</span>
+          </button>
+          <button class="btn-register-nav" onclick="openAuthModal('register')">
+            <span>👤+</span>
+            <span>Đăng ký</span>
+          </button>
+        </div>
+
+        <!-- Trạng thái khi đã đăng nhập -->
+        <div id="loggedUserBar" class="user-logged-pill">
+          <span>👤 <strong id="currentBidderLabel">Nguyễn Văn An</strong></span>
+          <button class="secondary" style="padding:4px 10px;font-size:0.78rem;" onclick="openAuthModal('login')">Đổi TK</button>
+        </div>
+
+        <!-- Input ẩn giữ tên người đấu giá để tương thích toàn bộ hàm đặt giá -->
+        <input id="bidderNameInput" type="hidden" value="Trần Đức Nhân" />
+      </div>
     </div>
   </header>
 
-  <div class="container">
-    <div class="arch-banner">
-      <div class="arch-flow">
-        <strong>Luồng xử lý phân tán:</strong>
-        <span class="arch-node">Bidder Client</span> ➔
-        <span class="arch-node">Auction API (REST)</span> ➔
-        <span class="arch-node">BidValidation (gRPC)</span> ➔
-        <span class="arch-node">RabbitMQ (BidAccepted)</span> ➔
-        <span class="arch-node">Auction Hub (SignalR) &amp; Audit Worker</span>
+  <!-- ======================== HERO BANNER (ĐÃ ẨN FORM ĐK/ĐN BÊN NGOÀI CHO ĐẸP) ======================== -->
+  <section id="top" class="hero-wrapper">
+    <div class="hero-frame">
+      <div class="hero-content">
+        <!-- Cột Trái: Thông điệp & Tính năng nổi bật -->
+        <div>
+          <div class="hero-subtitle-top">HỆ THỐNG</div>
+          <h1 class="hero-title-main">ĐẤU GIÁ TRỰC TUYẾN</h1>
+          <div class="hero-slogan">Minh bạch &ndash; Công bằng &ndash; An toàn</div>
+
+          <div class="hero-features">
+            <div class="hero-feature-item">
+              <div class="hex-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <path d="M9 12l2 2 4-4"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h4>Đấu giá minh bạch</h4>
+                <p>Bảo mật tuyệt đối &bull; Kiểm tra bước giá qua gRPC</p>
+              </div>
+            </div>
+
+            <div class="hero-feature-item">
+              <div class="hex-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h4>Tham gia dễ dàng</h4>
+                <p>Mọi lúc, mọi nơi &bull; Cập nhật giá tức thì qua SignalR</p>
+              </div>
+            </div>
+
+            <div class="hero-feature-item">
+              <div class="hex-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                  <path d="M18 20V10M12 20V4M6 20v-6"/>
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h4>Trải nghiệm hiện đại</h4>
+                <p>Công nghệ tiên tiến &bull; RabbitMQ Event Bus &amp; Audit DLQ</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-cta-group">
+            <a href="#auction-floor" class="btn-explore">
+              <span class="play-circle">▶</span>
+              <span>Khám phá ngay</span>
+              <span>➔</span>
+            </a>
+            <button class="btn-create-hero" onclick="openCreateModal()">
+              + Tạo phiên đấu giá mới
+            </button>
+          </div>
+        </div>
+
+        <!-- Cột Phải: Biểu tượng Búa Đấu Giá 3D Cyber Neon (Hiển thị trọn vẹn vì đã ẩn form ĐK/ĐN bên ngoài) -->
+        <div class="hero-visual">
+          <div class="hud-circle"></div>
+          <div class="hud-circle-inner"></div>
+
+          <div class="floating-live-tag">
+            <span class="pulse-dot"></span>
+            <span style="color:#e2e8f0;font-weight:600;">Sàn đang mở:</span>
+            <strong id="heroLiveCount" style="color:var(--cyan);margin-left:4px;">3 phiên trực tiếp</strong>
+          </div>
+
+          <!-- 3D Neon Gavel & Futuristic Skyline SVG Artwork -->
+          <svg class="gavel-svg-stage" viewBox="0 0 500 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="neonCyanPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f2fe" />
+                <stop offset="50%" stop-color="#3b82f6" />
+                <stop offset="100%" stop-color="#c026d3" />
+              </linearGradient>
+              <linearGradient id="metalBody" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1e3a8a" />
+                <stop offset="45%" stop-color="#0f172a" />
+                <stop offset="100%" stop-color="#311042" />
+              </linearGradient>
+              <radialGradient id="pedestalGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="rgba(0, 242, 254, 0.55)" />
+                <stop offset="60%" stop-color="rgba(181, 55, 242, 0.2)" />
+                <stop offset="100%" stop-color="transparent" />
+              </radialGradient>
+            </defs>
+
+            <!-- City Skyline Silhouette Background -->
+            <g opacity="0.32" fill="#1e293b" stroke="#00e5ff" stroke-width="0.6">
+              <rect x="40" y="210" width="26" height="90" />
+              <rect x="72" y="180" width="32" height="120" />
+              <rect x="110" y="225" width="22" height="75" />
+              <rect x="355" y="190" width="30" height="110" />
+              <rect x="392" y="215" width="28" height="85" />
+              <rect x="425" y="235" width="22" height="65" />
+            </g>
+
+            <!-- Glowing Floor Reflection -->
+            <ellipse cx="235" cy="318" rx="185" ry="34" fill="url(#pedestalGlow)" />
+
+            <!-- Soundblock / Pedestal Base -->
+            <ellipse cx="220" cy="310" rx="125" ry="22" fill="#09132c" stroke="url(#neonCyanPurple)" stroke-width="3" />
+            <ellipse cx="220" cy="292" rx="105" ry="18" fill="#111c3d" stroke="#00f2fe" stroke-width="2.5" />
+            <ellipse cx="220" cy="276" rx="82" ry="14" fill="url(#metalBody)" stroke="#c084fc" stroke-width="2" />
+
+            <!-- Gavel Handle -->
+            <g transform="rotate(-26 245 170)">
+              <rect x="225" y="155" width="185" height="22" rx="11" fill="url(#metalBody)" stroke="url(#neonCyanPurple)" stroke-width="3" />
+              <rect x="385" y="152" width="26" height="28" rx="6" fill="#00f2fe" opacity="0.85" />
+              <!-- Gavel Head -->
+              <rect x="175" y="96" width="76" height="140" rx="16" fill="url(#metalBody)" stroke="url(#neonCyanPurple)" stroke-width="3.5" />
+              <line x1="175" y1="125" x2="251" y2="125" stroke="#00f2fe" stroke-width="4" />
+              <line x1="175" y1="205" x2="251" y2="205" stroke="#c084fc" stroke-width="4" />
+              <ellipse cx="213" cy="96" rx="38" ry="10" fill="#0c1938" stroke="#00f2fe" stroke-width="2.5" />
+              <ellipse cx="213" cy="236" rx="38" ry="10" fill="#1e1b4b" stroke="#00f2fe" stroke-width="3" />
+            </g>
+
+            <!-- Impact Neon Sparks -->
+            <circle cx="205" cy="264" r="5" fill="#00f2fe" />
+            <circle cx="155" cy="252" r="3.5" fill="#c084fc" />
+            <circle cx="275" cy="256" r="4" fill="#00f2fe" />
+          </svg>
+        </div>
       </div>
-      <div>
+
+      <!-- Thanh 5 chỉ số cam kết phía dưới Hero (Giống hệt ảnh mẫu) -->
+      <div class="hero-stats-bar">
+        <div class="stat-cell">
+          <div class="stat-cell-icon">🛡️</div>
+          <div>
+            <h5>Bảo mật SSL</h5>
+            <p>An toàn dữ liệu</p>
+          </div>
+        </div>
+
+        <div class="stat-cell">
+          <div class="stat-cell-icon">🎧</div>
+          <div>
+            <h5>Hỗ trợ 24/7</h5>
+            <p>Luôn bên bạn</p>
+          </div>
+        </div>
+
+        <div class="stat-cell stat-cell-center">
+          <h5 style="background:linear-gradient(90deg,#00f2fe,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:italic;font-size:1.05rem;">LIVE AUCTION</h5>
+          <p>Đấu giá thông minh - Giá trị thật</p>
+        </div>
+
+        <div class="stat-cell">
+          <div class="stat-cell-icon">🔨</div>
+          <div>
+            <h5>+10.000</h5>
+            <p>Phiên đấu giá</p>
+          </div>
+        </div>
+
+        <div class="stat-cell">
+          <div class="stat-cell-icon">👥</div>
+          <div>
+            <h5>+500.000</h5>
+            <p>Người tham gia</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== MODAL ĐĂNG NHẬP & ĐĂNG KÝ (ẨN MẶC ĐỊNH, HIỆN KHI BẤM NÚT) ======================== -->
+  <div id="authModal" class="auth-modal-backdrop" onclick="handleBackdropClick(event, 'authModal')">
+    <div class="cyber-auth-box">
+      <button class="cyber-auth-close" onclick="closeAuthModal()" title="Đóng">✕</button>
+
+      <!-- 2 Tabs: Đăng nhập / Đăng ký -->
+      <div class="auth-tabs">
+        <button id="tabLoginBtn" class="auth-tab-btn active" onclick="switchAuthTab('login')">
+          <span>🔒</span>
+          <span>Đăng nhập</span>
+        </button>
+        <button id="tabRegisterBtn" class="auth-tab-btn" onclick="switchAuthTab('register')">
+          <span>👤+</span>
+          <span>Đăng ký</span>
+        </button>
+      </div>
+
+      <!-- Nội dung Tab ĐĂNG NHẬP -->
+      <div id="loginTabContent" class="auth-body">
+        <div class="auth-title">Đăng nhập vào hệ thống</div>
+        <div class="auth-subtitle">Chào mừng bạn trở lại!</div>
+
+        <div class="input-icon-group">
+          <div class="input-icon-left">✉️</div>
+          <input id="loginIdentityInput" type="text" placeholder="Email, số điện thoại hoặc Tên đấu giá" value="Trần Đức Nhân" />
+        </div>
+
+        <div class="input-icon-group">
+          <div class="input-icon-left">🔒</div>
+          <input id="loginPasswordInput" type="password" placeholder="Mật khẩu" value="12345678" />
+          <div class="input-icon-right" onclick="togglePwdVisibility('loginPasswordInput')">👁️</div>
+        </div>
+
+        <div class="auth-options-row">
+          <label>
+            <input type="checkbox" checked style="width:15px;height:15px;accent-color:#00e5ff;" />
+            <span>Ghi nhớ đăng nhập</span>
+          </label>
+          <a href="javascript:void(0)" class="forgot-link" onclick="alert('Hệ thống đã gửi liên kết đặt lại mật khẩu qua Email!')">Quên mật khẩu?</a>
+        </div>
+
+        <button class="btn-auth-submit" onclick="handleLoginSubmit()">
+          <span>➔</span>
+          <span>Đăng nhập</span>
+        </button>
+
+        <div class="social-divider">Hoặc đăng nhập bằng</div>
+
+        <div class="social-buttons">
+          <button class="social-btn" title="Google" onclick="quickSocialLogin('Google User')">
+            <span style="color:#ea4335;">G</span>
+          </button>
+          <button class="social-btn" title="Facebook" onclick="quickSocialLogin('Facebook Bidder')">
+            <span style="color:#3b82f6;">f</span>
+          </button>
+          <button class="social-btn" title="GitHub" onclick="quickSocialLogin('GitHub Developer')">
+            <span>🐙</span>
+          </button>
+        </div>
+
+        <div class="auth-switch-footer">
+          Chưa có tài khoản?
+          <a onclick="switchAuthTab('register')">Đăng ký ngay ➔</a>
+        </div>
+      </div>
+
+      <!-- Nội dung Tab ĐĂNG KÝ -->
+      <div id="registerTabContent" class="auth-body" style="display:none;">
+        <div class="auth-title">Đăng ký tài khoản mới</div>
+        <div class="auth-subtitle">Tham gia sàn đấu giá trực tuyến ngay hôm nay!</div>
+
+        <div class="input-icon-group">
+          <div class="input-icon-left">👤</div>
+          <input id="regFullNameInput" type="text" placeholder="Họ và tên hiển thị khi đấu giá (*)" />
+        </div>
+
+        <div class="input-icon-group">
+          <div class="input-icon-left">✉️</div>
+          <input id="regEmailInput" type="text" placeholder="Email hoặc số điện thoại (*)" />
+        </div>
+
+        <div class="input-icon-group">
+          <div class="input-icon-left">🔒</div>
+          <input id="regPasswordInput" type="password" placeholder="Tạo mật khẩu (*)" />
+          <div class="input-icon-right" onclick="togglePwdVisibility('regPasswordInput')">👁️</div>
+        </div>
+
+        <button class="btn-auth-submit" style="margin-top:10px;" onclick="handleRegisterSubmit()">
+          <span>👤+</span>
+          <span>Đăng ký tài khoản</span>
+        </button>
+
+        <div class="auth-switch-footer" style="margin-top:18px;">
+          Đã có tài khoản?
+          <a onclick="switchAuthTab('login')">Đăng nhập ngay ➔</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== KHU VỰC SÀN ĐẤU GIÁ TRỰC TIẾP (.NET 10 DISTRIBUTED SYSTEM) ======================== -->
+  <main id="auction-floor" class="main-container">
+    <div id="arch-section" class="arch-banner">
+      <div class="arch-flow">
+        <strong>Luồng xử lý phân tán (.NET 10):</strong>
+        <span class="arch-node">Bidder Client</span> ➔
+        <span class="arch-node">Auction API (REST :5050)</span> ➔
+        <span class="arch-node">BidValidation (gRPC :5051)</span> ➔
+        <span class="arch-node">RabbitMQ (auction.events)</span> ➔
+        <span class="arch-node">SignalR Hub (:5052) &amp; Audit Worker (DLQ)</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="secondary" onclick="randomizeBidder()">🎲 Đổi nhanh người đấu giá</button>
         <button class="secondary" onclick="refreshAll()">🔄 Làm mới dữ liệu</button>
       </div>
     </div>
 
     <div class="grid-main">
-      <!-- Cột trái: Danh sách phiên đấu giá -->
+      <!-- Cột trái: Danh sách phiên đấu giá & Luồng sự kiện SignalR -->
       <div>
         <div class="panel">
           <div class="panel-header">
-            <h2>📦 Danh sách Phiên đấu giá</h2>
+            <h3>📦 Danh sách Phiên đấu giá Trực tuyến</h3>
             <span id="auctionCountBadge" class="badge">0 phiên</span>
           </div>
           <div id="auctionList" class="auction-list">
-            <p style="color:var(--muted);">Đang tải danh sách phiên đấu giá...</p>
+            <p style="color:var(--text-gray);">Đang tải danh sách phiên đấu giá...</p>
           </div>
         </div>
 
-        <div class="panel" style="margin-top: 20px;">
+        <div class="panel" style="margin-top: 22px;">
           <div class="panel-header">
-            <h2>📡 Luồng Sự kiện Realtime (SignalR Hub)</h2>
+            <h3>📡 Luồng Sự kiện Realtime (SignalR Hub)</h3>
             <button class="secondary" style="padding:4px 10px;font-size:0.76rem;" onclick="clearRealtimeLogs()">Xóa log</button>
           </div>
           <div id="realtimeStream" class="log-stream"></div>
         </div>
       </div>
 
-      <!-- Cột phải: Phòng đấu giá đang theo dõi & Lịch sử trả giá -->
+      <!-- Cột phải: Phòng đấu giá đang theo dõi, Lịch sử trả giá & Audit Log -->
       <div>
         <div class="panel">
           <div class="panel-header">
-            <h2>🔥 Phòng Đấu giá Trực tiếp (Live Room)</h2>
+            <h3>🔥 Phòng Đấu giá Trực tiếp (Live Room)</h3>
             <span id="selectedRoomStatus" class="badge">Chưa chọn phiên</span>
           </div>
 
           <div id="selectedAuctionDetail" class="detail-box">
-            <p style="color:var(--muted);">Hãy chọn một phiên đấu giá bên trái để tham gia theo dõi và đặt giá.</p>
+            <p style="color:var(--text-gray);">Hãy chọn một phiên đấu giá bên trái để tham gia theo dõi và đặt giá.</p>
           </div>
 
           <!-- Lịch sử lượt trả giá -->
           <div class="panel-header" style="margin-top: 18px;">
-            <h2>📜 Lịch sử Lượt trả giá của Phiên (`GET /auctions/{id}/bids`)</h2>
+            <h3>📜 Lịch sử Lượt trả giá của Phiên (`GET /auctions/{id}/bids`)</h3>
             <span id="bidCountBadge" class="badge">0 lượt</span>
           </div>
           <div style="max-height: 240px; overflow-y: auto;">
@@ -438,14 +1615,14 @@
                 </tr>
               </thead>
               <tbody id="bidsTableBody">
-                <tr><td colspan="4" style="color:var(--muted);">Chưa có dữ liệu</td></tr>
+                <tr><td colspan="4" style="color:var(--text-gray);">Chưa có dữ liệu</td></tr>
               </tbody>
             </table>
           </div>
 
           <!-- Nhật ký Audit Worker -->
-          <div class="panel-header" style="margin-top: 22px;">
-            <h2>🛡️ Nhật ký Audit Worker (Idempotent RabbitMQ Consumer)</h2>
+          <div id="audit-section" class="panel-header" style="margin-top: 22px;">
+            <h3>🛡️ Nhật ký Audit Worker (Idempotent RabbitMQ Consumer)</h3>
             <button class="secondary" style="padding:4px 10px;font-size:0.76rem;" onclick="loadAuditLogs()">Tải Audit Log</button>
           </div>
           <div style="max-height: 220px; overflow-y: auto;">
@@ -459,20 +1636,20 @@
                 </tr>
               </thead>
               <tbody id="auditTableBody">
-                <tr><td colspan="4" style="color:var(--muted);">Chưa có bản ghi Audit</td></tr>
+                <tr><td colspan="4" style="color:var(--text-gray);">Chưa có bản ghi Audit</td></tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 
   <!-- Modal Tạo phiên đấu giá mới -->
-  <div id="createModal" class="modal-backdrop">
-    <div class="modal">
+  <div id="createModal" class="auth-modal-backdrop" onclick="handleBackdropClick(event, 'createModal')">
+    <div class="cyber-auth-box" style="max-width:520px;padding:22px 26px;">
       <div class="panel-header">
-        <h2>➕ Tạo Phiên Đấu Giá Mới (`POST /auctions`)</h2>
+        <h3>➕ Tạo Phiên Đấu Giá Mới (`POST /auctions`)</h3>
         <button class="secondary" onclick="closeCreateModal()">✕</button>
       </div>
       <div class="form-group">
@@ -495,9 +1672,9 @@
         <label>Thời lượng phiên đấu giá (Phút)</label>
         <input id="newDurationMinutes" type="number" value="30" min="1" />
       </div>
-      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px;">
         <button class="secondary" onclick="closeCreateModal()">Hủy</button>
-        <button class="success" onclick="submitCreateAuction()">Tạo phiên đấu giá</button>
+        <button class="btn-register-nav" onclick="submitCreateAuction()">🚀 Tạo phiên đấu giá</button>
       </div>
     </div>
   </div>
@@ -513,9 +1690,79 @@
       "Nguyễn Thảo Vy", "Vũ Quốc Khánh", "Đỗ Hải Đăng"
     ];
 
+    function setActiveNav(el) {
+      document.querySelectorAll(".nav-link").forEach(n => n.classList.remove("active"));
+      el.classList.add("active");
+    }
+
+    /* ==================== ĐIỀU KHIỂN MODAL ĐĂNG NHẬP / ĐĂNG KÝ ==================== */
+    function openAuthModal(tab = 'login') {
+      document.getElementById("authModal").classList.add("open");
+      switchAuthTab(tab);
+    }
+
+    function closeAuthModal() {
+      document.getElementById("authModal").classList.remove("open");
+    }
+
+    function handleBackdropClick(event, modalId) {
+      if (event.target.id === modalId) {
+        document.getElementById(modalId).classList.remove("open");
+      }
+    }
+
+    function switchAuthTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById("tabLoginBtn").classList.toggle("active", isLogin);
+      document.getElementById("tabRegisterBtn").classList.toggle("active", !isLogin);
+      document.getElementById("loginTabContent").style.display = isLogin ? "block" : "none";
+      document.getElementById("registerTabContent").style.display = isLogin ? "none" : "block";
+    }
+
+    function togglePwdVisibility(inputId) {
+      const inp = document.getElementById(inputId);
+      if (inp) {
+        inp.type = inp.type === "password" ? "text" : "password";
+      }
+    }
+
+    function applyLoggedInUser(displayName) {
+      const cleanName = (displayName || "Trần Đức Nhân").trim();
+      document.getElementById("bidderNameInput").value = cleanName;
+      document.getElementById("currentBidderLabel").textContent = cleanName;
+      document.getElementById("loggedUserBar").classList.add("show");
+      const inlineInput = document.getElementById("inlineBidderName");
+      if (inlineInput) inlineInput.value = cleanName;
+      closeAuthModal();
+      appendRealtimeLog(`Người dùng '${cleanName}' đã đăng nhập vào phiên giao dịch.`);
+    }
+
+    function handleLoginSubmit() {
+      const identity = document.getElementById("loginIdentityInput").value.trim();
+      if (!identity) {
+        alert("Vui lòng nhập Email, Số điện thoại hoặc Tên người đấu giá!");
+        return;
+      }
+      applyLoggedInUser(identity);
+    }
+
+    function handleRegisterSubmit() {
+      const fullName = document.getElementById("regFullNameInput").value.trim();
+      const email = document.getElementById("regEmailInput").value.trim();
+      if (!fullName && !email) {
+        alert("Vui lòng nhập Họ tên và Email/SĐT để đăng ký!");
+        return;
+      }
+      applyLoggedInUser(fullName || email);
+    }
+
+    function quickSocialLogin(providerName) {
+      applyLoggedInUser(providerName);
+    }
+
     function randomizeBidder() {
       const random = sampleNames[Math.floor(Math.random() * sampleNames.length)] + " #" + Math.floor(10 + Math.random() * 89);
-      document.getElementById("bidderNameInput").value = random;
+      applyLoggedInUser(random);
     }
 
     function formatCurrency(val) {
@@ -540,7 +1787,10 @@
     }
 
     async function initApp() {
-      randomizeBidder();
+      const initialName = sampleNames[0];
+      document.getElementById("bidderNameInput").value = initialName;
+      document.getElementById("currentBidderLabel").textContent = initialName;
+
       try {
         const cfgRes = await fetch("/client-config");
         if (cfgRes.ok) {
@@ -555,7 +1805,6 @@
       await loadAuditLogs();
       await connectSignalR();
 
-      // Bộ đếm ngược thời gian mỗi giây trên giao diện
       setInterval(() => {
         auctions.forEach(a => {
           if (a.isActive && a.remainingSeconds > 0) {
@@ -608,7 +1857,7 @@
 
       hubConnection.onreconnected(() => {
         badge.className = "badge ok";
-        badge.textContent = "SignalR: Đã kết nối Realtime";
+        badge.textContent = "🟢 SignalR Realtime";
         if (selectedAuctionId) {
           hubConnection.invoke("JoinAuction", selectedAuctionId);
         }
@@ -617,14 +1866,14 @@
       try {
         await hubConnection.start();
         badge.className = "badge ok";
-        badge.textContent = "SignalR: Đã kết nối Realtime";
+        badge.textContent = "🟢 SignalR Realtime";
         appendRealtimeLog("Đã kết nối thành công tới Auction SignalR Hub (/hubs/auction).");
         if (selectedAuctionId) {
           await hubConnection.invoke("JoinAuction", selectedAuctionId);
         }
       } catch (err) {
         badge.className = "badge closed";
-        badge.textContent = "SignalR: Mất kết nối";
+        badge.textContent = "SignalR: Offline";
         console.error(err);
       }
     }
@@ -634,6 +1883,9 @@
         const res = await fetch(`${auctionApiUrl}/auctions`);
         auctions = await res.json();
         document.getElementById("auctionCountBadge").textContent = `${auctions.length} phiên`;
+        const openCount = auctions.filter(a => a.isActive).length;
+        const heroCounter = document.getElementById("heroLiveCount");
+        if (heroCounter) heroCounter.textContent = `${openCount} phiên đang mở`;
 
         if (!selectedAuctionId && auctions.length > 0) {
           await selectAuction(auctions[0].id);
@@ -671,7 +1923,7 @@
     function renderAuctionList() {
       const container = document.getElementById("auctionList");
       if (!auctions.length) {
-        container.innerHTML = `<p style="color:var(--muted);">Chưa có phiên đấu giá nào.</p>`;
+        container.innerHTML = `<p style="color:var(--text-gray);">Chưa có phiên đấu giá nào.</p>`;
         return;
       }
 
@@ -689,7 +1941,7 @@
             </div>
             <div class="price-highlight">${formatCurrency(a.currentPrice)}</div>
             <div class="meta-row">
-              <span>👑 Dẫn đầu: <strong>${a.currentWinner || 'Chưa có'}</strong></span>
+              <span>👑 Dẫn đầu: <strong style="color:#e2e8f0;">${a.currentWinner || 'Chưa có'}</strong></span>
               <span>🔨 ${a.totalBids} lượt trả giá</span>
             </div>
           </div>
@@ -703,7 +1955,7 @@
       const auction = auctions.find(a => a.id === selectedAuctionId);
 
       if (!auction) {
-        box.innerHTML = `<p style="color:var(--muted);">Hãy chọn một phiên đấu giá bên trái.</p>`;
+        box.innerHTML = `<p style="color:var(--text-gray);">Hãy chọn một phiên đấu giá bên trái.</p>`;
         return;
       }
 
@@ -718,13 +1970,14 @@
       const currentInput = document.getElementById("bidAmountInput");
       const currentInputVal = currentInput ? Number(currentInput.value) : 0;
       const defaultBidAmount = currentInputVal >= minNextBid ? currentInputVal : minNextBid;
+      const currentBidder = document.getElementById("bidderNameInput").value || "Trần Đức Nhân";
 
       box.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
           <div>
-            <h3 style="font-size:1.22rem;margin-bottom:4px;">${auction.productName}</h3>
-            <p style="color:var(--muted);font-size:0.88rem;">${auction.productDescription}</p>
-            <p style="color:var(--muted);font-size:0.76rem;margin-top:4px;">ID phiên: <code>${auction.id}</code></p>
+            <h3 style="font-size:1.25rem;color:#fff;margin-bottom:4px;">${auction.productName}</h3>
+            <p style="color:#94a3b8;font-size:0.88rem;">${auction.productDescription}</p>
+            <p style="color:#64748b;font-size:0.76rem;margin-top:4px;">ID phiên: <code>${auction.id}</code></p>
           </div>
           <div style="display:flex;gap:8px;">
             ${auction.isActive
@@ -737,15 +1990,15 @@
         <div class="stats-grid">
           <div class="stat-item">
             <div class="stat-label">Giá hiện tại</div>
-            <div class="stat-value" style="color:#34d399;">${formatCurrency(auction.currentPrice)}</div>
+            <div class="stat-value" style="color:#00e5ff;">${formatCurrency(auction.currentPrice)}</div>
           </div>
           <div class="stat-item">
             <div class="stat-label">Người đang dẫn đầu / Thắng</div>
-            <div class="stat-value" style="color:#60a5fa;">${auction.currentWinner || "Chưa có"}</div>
+            <div class="stat-value" style="color:#c084fc;">${auction.currentWinner || "Chưa có"}</div>
           </div>
           <div class="stat-item">
             <div class="stat-label">Giá đặt tối thiểu tiếp theo</div>
-            <div class="stat-value" style="color:#fbbf24;">${formatCurrency(minNextBid)}</div>
+            <div class="stat-value" style="color:#34d399;">${formatCurrency(minNextBid)}</div>
           </div>
           <div class="stat-item">
             <div class="stat-label">Bước giá tối thiểu</div>
@@ -755,8 +2008,14 @@
 
         ${auction.isActive ? `
           <div class="bid-controls">
-            <div style="font-size:0.86rem;font-weight:600;margin-bottom:8px;">
-              ⚡ Đặt giá nhanh (Gửi REST API ➔ Kiểm tra qua gRPC BidValidation ➔ Phát RabbitMQ &amp; SignalR):
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+              <span style="font-size:0.86rem;font-weight:700;color:#e2e8f0;">
+                ⚡ Đặt giá trực tiếp (REST API ➔ gRPC BidValidation ➔ RabbitMQ &amp; SignalR):
+              </span>
+              <span style="font-size:0.8rem;color:#94a3b8;">
+                Đang đặt với tên: <strong style="color:var(--cyan);">${currentBidder}</strong>
+                (<a href="javascript:void(0)" style="color:#c084fc;" onclick="openAuthModal('login')">Đổi tài khoản</a>)
+              </span>
             </div>
             <div class="quick-buttons">
               <button class="secondary" onclick="setBidAmount(${minNextBid})">Mức tối thiểu (${formatCurrency(minNextBid)})</button>
@@ -766,7 +2025,7 @@
             </div>
             <div class="bid-form-row">
               <input id="bidAmountInput" type="number" value="${defaultBidAmount}" step="${auction.minIncrement}" />
-              <button class="success" onclick="submitBid('${auction.id}')">🔨 Gửi Mức Giá Mới (POST /bids)</button>
+              <button onclick="submitBid('${auction.id}')">🔨 Gửi Mức Giá Mới (POST /bids)</button>
             </div>
             <div id="bidFeedback" class="alert-box"></div>
           </div>
@@ -787,7 +2046,7 @@
     }
 
     async function submitBid(auctionId) {
-      const bidderName = document.getElementById("bidderNameInput").value.trim();
+      const bidderName = document.getElementById("bidderNameInput").value.trim() || "Trần Đức Nhân";
       const amount = Number(document.getElementById("bidAmountInput").value);
       const feedback = document.getElementById("bidFeedback");
 
@@ -838,7 +2097,7 @@
         const tbody = document.getElementById("bidsTableBody");
 
         if (!bids.length) {
-          tbody.innerHTML = `<tr><td colspan="4" style="color:var(--muted);">Chưa có lượt trả giá nào cho phiên này.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="4" style="color:var(--text-gray);">Chưa có lượt trả giá nào cho phiên này.</td></tr>`;
           return;
         }
 
@@ -846,7 +2105,7 @@
           <tr>
             <td>${formatTime(b.placedAtUtc)}</td>
             <td><strong>${b.bidderName}</strong> ${idx === 0 ? '<span class="badge ok">Cao nhất</span>' : ''}</td>
-            <td style="color:#34d399;font-weight:700;">${formatCurrency(b.amount)}</td>
+            <td style="color:#00e5ff;font-weight:700;">${formatCurrency(b.amount)}</td>
             <td><code>${b.correlationId}</code></td>
           </tr>
         `).join("");
@@ -866,7 +2125,7 @@
         const tbody = document.getElementById("auditTableBody");
 
         if (!logs.length) {
-          tbody.innerHTML = `<tr><td colspan="4" style="color:var(--muted);">Đang chờ Audit Worker ghi nhận sự kiện...</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="4" style="color:var(--text-gray);">Đang chờ Audit Worker ghi nhận sự kiện...</td></tr>`;
           return;
         }
 
