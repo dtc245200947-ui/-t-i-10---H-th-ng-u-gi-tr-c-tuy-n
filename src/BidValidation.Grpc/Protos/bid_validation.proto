@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+option csharp_namespace = "BidValidation.Grpc.Protos";
+
+package bidvalidation;
+
+service BidValidator {
+  // Kiểm tra tính hợp lệ của lượt trả giá trước khi chấp nhận
+  rpc ValidateBid (ValidateBidRequest) returns (ValidateBidResponse);
+
+  // Kiểm tra trạng thái sẵn sàng của dịch vụ kiểm tra giá
+  rpc CheckHealth (HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+message ValidateBidRequest {
+  string auction_id = 1;
+  string product_name = 2;
+  string auction_status = 3;
+  string start_time_utc = 4;
+  string end_time_utc = 5;
+  double starting_price = 6;
+  double current_price = 7;
+  double min_increment = 8;
+  string current_winner = 9;
+  string bidder_name = 10;
+  double bid_amount = 11;
+  string correlation_id = 12;
+}
+
+message ValidateBidResponse {
+  bool is_valid = 1;
+  string error_code = 2;
+  string message = 3;
+  double minimum_required_bid = 4;
+  string validated_at_utc = 5;
+  string correlation_id = 6;
+}
+
+message HealthCheckRequest {
+  string caller = 1;
+}
+
+message HealthCheckResponse {
+  bool healthy = 1;
+  string service_name = 2;
+  string timestamp_utc = 3;
+}
