@@ -332,13 +332,17 @@ app.MapGet("/auctions/{id:guid}/bids", async (Guid id, AuctionDbContext db) =>
         return Results.NotFound(new { message = $"Không tìm thấy phiên đấu giá '{id}'." });
     }
 
-    var bids = await db.Bids
+    var records = await db.Bids
         .AsNoTracking()
         .Where(b => b.AuctionId == id)
         .OrderByDescending(b => b.PlacedAtUtc)
+        .ToListAsync();
+
+    var bids = records
+        .OrderByDescending(b => b.PlacedAtUtc)
         .ThenByDescending(b => b.Amount)
         .Select(b => new BidDto(b.Id, b.AuctionId, b.BidderName, b.Amount, b.PlacedAtUtc, b.CorrelationId))
-        .ToListAsync();
+        .ToList();
 
     return Results.Ok(bids);
 });

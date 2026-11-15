@@ -3,7 +3,19 @@ using Auction.Hub.Services;
 using Shared.Contracts.Data;
 using Shared.Contracts.Messaging;
 
-var builder = WebApplication.CreateBuilder(args);
+var webRootCandidates = new[]
+{
+    Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
+    Path.Combine(Directory.GetCurrentDirectory(), "src", "Auction.Hub", "wwwroot"),
+    Path.Combine(AppContext.BaseDirectory, "wwwroot")
+};
+var resolvedWebRoot = webRootCandidates.FirstOrDefault(Directory.Exists);
+
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    WebRootPath = resolvedWebRoot
+});
 builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
 
 var httpPort = builder.Configuration.GetValue<int>("Server:Port", 5052);
