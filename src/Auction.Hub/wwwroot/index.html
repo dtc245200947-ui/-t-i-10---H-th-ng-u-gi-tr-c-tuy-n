@@ -1575,44 +1575,90 @@
             </div>
           </div>
 
-          <!-- TAB ĐĂNG KÝ (LIÊN KẾT VỚI ĐĂNG NHẬP) -->
+          <!-- TAB ĐĂNG KÝ (LIÊN KẾT VỚI ĐĂNG NHẬP + XÁC MINH OTP GIỐNG FACEBOOK) -->
           <div id="registerTabContent" class="auth-body" style="display:none;">
-            <div class="auth-title">Đăng ký tài khoản mới</div>
-            <div class="auth-subtitle">Đăng ký xong tự động chuyển sang Đăng nhập!</div>
+            <div id="registerFormStep">
+              <div class="auth-title">Tạo tài khoản mới</div>
+              <div class="auth-subtitle">Nhanh chóng, dễ dàng &amp; Xác minh bảo mật 2 bước</div>
 
-            <div id="registerNotice" class="auth-notice"></div>
+              <div id="registerNotice" class="auth-notice"></div>
 
-            <form onsubmit="handleRegister(event)">
-              <div class="input-icon-group">
-                <div class="input-icon-left">👤</div>
-                <input id="regFullName" type="text" placeholder="Họ và tên hiển thị (*)" required />
+              <form onsubmit="handleRegister(event)">
+                <div class="input-icon-group">
+                  <div class="input-icon-left">👤</div>
+                  <input id="regFullName" type="text" placeholder="Họ và tên đầy đủ (*)" required />
+                </div>
+
+                <div class="input-icon-group">
+                  <div class="input-icon-left">📱</div>
+                  <input id="regAccount" type="text" placeholder="Số di động hoặc Email (*)" required />
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                  <input id="regBirthday" type="date" value="2000-01-15" title="Ngày sinh" style="background:rgba(5,10,24,0.92);border:1px solid rgba(148,163,184,0.28);color:#fff;padding:9px 10px;border-radius:10px;outline:none;font-size:0.82rem;" required />
+                  <select id="regGender" title="Giới tính" style="background:rgba(5,10,24,0.92);border:1px solid rgba(148,163,184,0.28);color:#fff;padding:9px 10px;border-radius:10px;outline:none;font-size:0.82rem;">
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Tùy chỉnh</option>
+                  </select>
+                </div>
+
+                <div class="input-icon-group">
+                  <div class="input-icon-left">🔒</div>
+                  <input id="regPassword" type="password" placeholder="Mật khẩu mới (ít nhất 6 ký tự) (*)" required />
+                  <div class="input-icon-right" onclick="togglePwd('regPassword')">👁️</div>
+                </div>
+
+                <div class="input-icon-group">
+                  <div class="input-icon-left">🔐</div>
+                  <input id="regConfirmPassword" type="password" placeholder="Nhập lại mật khẩu (*)" required />
+                </div>
+
+                <input type="hidden" id="regRole" value="customer" />
+                <div style="font-size:0.74rem;color:#94a3b8;margin-bottom:10px;line-height:1.4;">
+                  Bằng cách nhấp vào Đăng ký, bạn đồng ý nhận mã xác minh (OTP) qua SĐT/Email để kích hoạt tài khoản Khách hàng.
+                </div>
+
+                <button type="submit" class="btn-auth-submit" style="margin-top:4px;">
+                  <span>👤+</span>
+                  <span>Đăng ký &amp; Xác minh thông tin</span>
+                </button>
+              </form>
+
+              <div class="auth-switch-footer" style="margin-top:12px;">
+                Bạn đã có tài khoản?
+                <a onclick="switchAuthTab('login')">Đăng nhập ngay ➔</a>
+              </div>
+            </div>
+
+            <!-- BƯỚC 2: XÁC MINH MÃ OTP 6 SỐ KIỂU FACEBOOK -->
+            <div id="otpVerifyStep" style="display:none;">
+              <div class="auth-title">Nhập mã xác nhận</div>
+              <div class="auth-subtitle" id="otpTargetDesc">Để bảo vệ tài khoản, hãy nhập mã gồm 6 chữ số đã gửi tới bạn.</div>
+
+              <div id="otpSimulatedBanner" style="background:rgba(0,229,255,0.12);border:1px solid rgba(0,229,255,0.45);border-radius:10px;padding:10px 12px;margin:10px 0;font-size:0.8rem;color:#bae6fd;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                <span>📩 Tin nhắn hệ thống: Mã xác minh của bạn là <strong id="otpDemoCodeText" style="color:#00e5ff;font-size:0.95rem;letter-spacing:2px;">000000</strong></span>
+                <button type="button" class="btn-card-detail" style="padding:3px 8px;font-size:0.72rem;white-space:nowrap;" onclick="autoFillDemoOtp()">Tự điền</button>
               </div>
 
-              <div class="input-icon-group">
-                <div class="input-icon-left">✉️</div>
-                <input id="regAccount" type="text" placeholder="Email hoặc Số điện thoại đăng nhập (*)" required />
+              <div id="otpVerifyNotice" class="auth-notice"></div>
+
+              <form onsubmit="handleVerifyOtp(event)">
+                <div class="input-icon-group">
+                  <div class="input-icon-left">🛡️</div>
+                  <input id="otpCodeInput" type="text" maxlength="6" placeholder="Nhập mã xác minh 6 chữ số (VD: 482916)" style="letter-spacing:3px;font-weight:800;text-align:center;" required />
+                </div>
+
+                <button type="submit" class="btn-auth-submit" style="margin-top:6px;">
+                  <span>✔</span>
+                  <span>Xác nhận &amp; Chuyển sang Đăng nhập</span>
+                </button>
+              </form>
+
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:0.78rem;">
+                <a href="javascript:void(0)" style="color:#00e5ff;text-decoration:none;" onclick="resendDemoOtp()">🔄 Gửi lại mã mới</a>
+                <a href="javascript:void(0)" style="color:#94a3b8;text-decoration:none;" onclick="backToRegisterForm()">← Sửa SĐT / Email</a>
               </div>
-
-              <div class="input-icon-group">
-                <div class="input-icon-left">🔒</div>
-                <input id="regPassword" type="password" placeholder="Mật khẩu (*)" required />
-                <div class="input-icon-right" onclick="togglePwd('regPassword')">👁️</div>
-              </div>
-
-              <input type="hidden" id="regRole" value="customer" />
-              <div style="font-size:0.76rem;color:#94a3b8;background:rgba(15,23,42,0.85);padding:8px 11px;border-radius:8px;border:1px solid rgba(148,163,184,0.2);margin-bottom:10px;">
-                Tài khoản đăng ký mới được cấp quyền <strong>Khách hàng (Đấu giá)</strong>. Tài khoản Nhân viên chỉ do Admin tạo trong trang Phân quyền.
-              </div>
-
-              <button type="submit" class="btn-auth-submit" style="margin-top:8px;">
-                <span>👤+</span>
-                <span>Hoàn tất Đăng ký</span>
-              </button>
-            </form>
-
-            <div class="auth-switch-footer" style="margin-top:14px;">
-              Đã có tài khoản?
-              <a onclick="switchAuthTab('login')">Đăng nhập ngay ➔</a>
             </div>
           </div>
         </div>
@@ -2983,19 +3029,84 @@
       fillDemoAccount(role);
     }
 
+    let pendingOtpAccount = null;
+    let activeDemoOtp = null;
+
+    function generateOtp6() {
+      return String(Math.floor(100000 + Math.random() * 900000));
+    }
+
+    function openOtpStepForAccount(accObj) {
+      pendingOtpAccount = accObj;
+      activeDemoOtp = generateOtp6();
+      switchAuthTab('register');
+      document.getElementById("registerFormStep").style.display = "none";
+      document.getElementById("otpVerifyStep").style.display = "block";
+      document.getElementById("otpTargetDesc").innerHTML = `Hãy nhập mã xác nhận 6 chữ số đã được gửi tới <strong style="color:#00e5ff;">${accObj.account}</strong>.`;
+      document.getElementById("otpDemoCodeText").textContent = activeDemoOtp;
+      document.getElementById("otpCodeInput").value = "";
+      document.getElementById("otpVerifyNotice").className = "auth-notice";
+    }
+
+    function backToRegisterForm() {
+      document.getElementById("registerFormStep").style.display = "block";
+      document.getElementById("otpVerifyStep").style.display = "none";
+    }
+
+    function autoFillDemoOtp() {
+      const inp = document.getElementById("otpCodeInput");
+      if (inp && activeDemoOtp) inp.value = activeDemoOtp;
+    }
+
+    function resendDemoOtp() {
+      if (!pendingOtpAccount) return;
+      activeDemoOtp = generateOtp6();
+      document.getElementById("otpDemoCodeText").textContent = activeDemoOtp;
+      const notice = document.getElementById("otpVerifyNotice");
+      notice.className = "auth-notice success";
+      notice.textContent = `Đã gửi lại mã xác minh mới tới ${pendingOtpAccount.account}!`;
+    }
+
     function handleRegister(e) {
       e.preventDefault();
       const fullName = document.getElementById("regFullName").value.trim();
       const account = document.getElementById("regAccount").value.trim();
+      const birthday = document.getElementById("regBirthday")?.value || "";
+      const gender = document.getElementById("regGender")?.value || "Nam";
       const password = document.getElementById("regPassword").value.trim();
+      const confirmPwd = document.getElementById("regConfirmPassword")?.value.trim() || password;
       const role = document.getElementById("regRole").value;
+      const notice = document.getElementById("registerNotice");
+
+      if (fullName.length < 2) {
+        notice.className = "auth-notice error";
+        notice.textContent = "❌ Vui lòng nhập đầy đủ Họ và tên hợp lệ.";
+        return;
+      }
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account);
+      const isPhone = /^0\d{8,10}$/.test(account.replace(/\s+/g, ""));
+      if (!isEmail && !isPhone) {
+        notice.className = "auth-notice error";
+        notice.textContent = "❌ Vui lòng nhập đúng định dạng Email hoặc Số điện thoại (VD: 0987654321).";
+        return;
+      }
+      if (password.length < 6) {
+        notice.className = "auth-notice error";
+        notice.textContent = "❌ Mật khẩu phải có ít nhất 6 ký tự.";
+        return;
+      }
+      if (password !== confirmPwd) {
+        notice.className = "auth-notice error";
+        notice.textContent = "❌ Mật khẩu nhập lại không khớp!";
+        return;
+      }
 
       const accounts = getStoredAccounts();
       const existingIndex = accounts.findIndex(
         a => a.account.toLowerCase() === account.toLowerCase()
       );
 
-      const newAcc = { account, password, fullName, role };
+      const newAcc = { account, password, fullName, birthday, gender, role, locked: false, verified: false };
       if (existingIndex >= 0) {
         accounts[existingIndex] = newAcc;
       } else {
@@ -3003,13 +3114,41 @@
       }
       saveStoredAccounts(accounts);
 
-      switchAuthTab('login');
-      document.getElementById("loginIdentity").value = account;
-      document.getElementById("loginPassword").value = password;
+      // Chuyển sang bước Xác minh mã OTP 6 số giống Facebook
+      openOtpStepForAccount(newAcc);
+    }
 
-      const notice = document.getElementById("loginNotice");
-      notice.className = "auth-notice success";
-      notice.textContent = `✅ Đăng ký thành công tài khoản "${fullName}"! Đã tự động điền thông tin, hãy bấm Đăng nhập.`;
+    function handleVerifyOtp(e) {
+      e.preventDefault();
+      const entered = document.getElementById("otpCodeInput").value.trim();
+      const notice = document.getElementById("otpVerifyNotice");
+
+      if (!pendingOtpAccount || entered !== activeDemoOtp) {
+        notice.className = "auth-notice error";
+        notice.textContent = "❌ Mã xác minh chưa đúng! Vui lòng kiểm tra lại mã 6 chữ số hoặc bấm 'Tự điền'.";
+        return;
+      }
+
+      const accounts = getStoredAccounts();
+      const target = accounts.find(a => a.account.toLowerCase() === pendingOtpAccount.account.toLowerCase());
+      if (target) {
+        target.verified = true;
+        saveStoredAccounts(accounts);
+      }
+
+      const verifiedAcc = pendingOtpAccount;
+      pendingOtpAccount = null;
+      activeDemoOtp = null;
+      backToRegisterForm();
+
+      // Liên kết thẳng sang tab Đăng nhập và tự động điền thông tin đã xác minh
+      switchAuthTab('login');
+      document.getElementById("loginIdentity").value = verifiedAcc.account;
+      document.getElementById("loginPassword").value = verifiedAcc.password;
+
+      const loginNotice = document.getElementById("loginNotice");
+      loginNotice.className = "auth-notice success";
+      loginNotice.textContent = `✅ Đã xác minh danh tính thành công cho "${verifiedAcc.fullName}"! Thông tin đã được liên kết sẵn — hãy bấm Đăng nhập.`;
     }
 
     function handleLogin(e) {
@@ -3029,6 +3168,14 @@
         const notice = document.getElementById("loginNotice");
         notice.className = "auth-notice error";
         notice.textContent = "❌ Sai tài khoản hoặc mật khẩu! Vui lòng đăng ký tài khoản mới hoặc chọn 1 tài khoản Demo bên dưới.";
+        return;
+      }
+
+      if (matched.verified === false) {
+        openOtpStepForAccount(matched);
+        const otpNotice = document.getElementById("otpVerifyNotice");
+        otpNotice.className = "auth-notice error";
+        otpNotice.textContent = "🔒 Tài khoản của bạn chưa xác minh mã OTP! Vui lòng nhập mã 6 số bên trên để kích hoạt.";
         return;
       }
 
