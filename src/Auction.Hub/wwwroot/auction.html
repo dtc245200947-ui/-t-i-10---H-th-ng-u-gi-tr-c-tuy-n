@@ -2299,6 +2299,10 @@
       // - Admin: + Phân quyền · Giám sát
       document.getElementById("navTabMyAccount").style.display = (role === "customer") ? "inline-flex" : "none";
       document.getElementById("headerWalletPill").style.display = (role === "customer") ? "inline-flex" : "none";
+      const floatChat = document.getElementById("floatingAuctionChatWidget");
+      const floatChatPanel = document.getElementById("floatingAuctionChatPanel");
+      if (floatChat) floatChat.style.display = (role === "customer") ? "block" : "none";
+      if (floatChatPanel && role !== "customer") floatChatPanel.style.display = "none";
       document.getElementById("navTabManage").style.display = (role === "staff" || role === "admin") ? "inline-flex" : "none";
       document.getElementById("navTabRoles").style.display = (role === "admin") ? "inline-flex" : "none";
       document.getElementById("navTabMonitor").style.display = (role === "admin") ? "inline-flex" : "none";
@@ -3514,7 +3518,10 @@
     }
 
     function generateAuctionInstantReply(question) {
-      const q = (question || "").toLowerCase();
+      const q = (question || "").trim().toLowerCase();
+      if (/^(hi|hello|hey|alo|chao|chào|xin chào|xin chao)\b/.test(q) || q.length <= 4) {
+        return "👋 Xin chào Quý khách! Tôi là Chuyên viên hỗ trợ LIVE AUCTION. Quý khách cần tư vấn về tiền cọc, cách đặt giá Auto-Bid, chứng thư sản phẩm hay ký gửi tài sản ạ?";
+      }
       if (q.includes("cọc") || q.includes("ví") || q.includes("hoàn")) {
         return "💰 Tiền cọc bảo lãnh là 10% giá khởi điểm. Nếu bạn không thắng phiên, hệ thống hoàn cọc tự động 100% về Ví ngay lập tức.";
       }
@@ -3527,17 +3534,21 @@
       if (q.includes("chứng thư") || q.includes("thật") || q.includes("kiểm định")) {
         return "🛡️ Tất cả 16 sản phẩm đều có mã chứng thư kiểm định quốc tế (GIA, COSC, Apple VN/A, Porsche...) và cho phép kiểm tra khi nhận hàng.";
       }
-      return "🎧 Nhân viên Lê Hoàng Nam đã tiếp nhận câu hỏi của bạn! Bạn có thể bấm nút câu hỏi nhanh hoặc tiếp tục đặt giá — hệ thống luôn sẵn sàng hỗ trợ 24/7.";
+      if (q.includes("giá") || q.includes("đấu giá") || q.includes("mua ngay")) {
+        return "🔨 Bạn có thể chọn mức bước giá nhanh (+1, +2, +5 bước) hoặc bấm '⚡ Mua Ngay' để chốt sở hữu sản phẩm ngay lập tức!";
+      }
+      return `🎧 Nhân viên Lê Hoàng Nam đã nhận được tin nhắn "${question}". Nếu cần hỗ trợ chuyên sâu hơn, Nhân viên sẽ phản hồi trực tiếp trong mục Hỗ trợ ngay cho bạn!`;
     }
 
     function sendSupportChatMessage(fromType, customText = null) {
-      const inputId = fromType === "staff" ? "staffSupportInput" : "customerSupportInput";
+      const effectiveFrom = (currentRole === "staff" || currentRole === "admin") ? "staff" : fromType;
+      const inputId = effectiveFrom === "staff" ? "staffSupportInput" : "customerSupportInput";
       const input = document.getElementById(inputId);
       const text = (customText !== null ? customText : (input?.value || "")).trim();
       if (!text) return;
 
-      const sender = document.getElementById("bidderNameInput").value || (fromType === "staff" ? "Lê Hoàng Nam (Nhân viên)" : "Khách hàng");
-      const role = fromType === "staff" ? currentRole : "customer";
+      const sender = document.getElementById("bidderNameInput").value || (effectiveFrom === "staff" ? "Lê Hoàng Nam (Nhân viên)" : "Khách hàng");
+      const role = effectiveFrom === "staff" ? currentRole : "customer";
       const chats = getSupportChats();
       chats.push({
         id: "msg-" + Date.now(),
@@ -3550,8 +3561,8 @@
       if (customText === null && input) input.value = "";
       renderSupportChatBoxes();
 
-      // Trả lời tự động tức thì sau 500ms để khách không phải chờ
-      if (fromType === "customer") {
+      // Chỉ tự động trả lời khi người gửi là Khách hàng (không tự trả lời khi Nhân viên/Admin đang nhắn)
+      if (effectiveFrom === "customer") {
         setTimeout(() => {
           const updated = getSupportChats();
           updated.push({
@@ -4207,8 +4218,8 @@
     window.addEventListener("DOMContentLoaded", initApp);
   </script>
 
-  <!-- ======================== BONG BÓNG CHAT HỖ TRỢ NHANH CHO KHÁCH HÀNG ======================== -->
-  <div id="floatingAuctionChatWidget" style="position:fixed;right:20px;bottom:20px;z-index:260;">
+  <!-- ======================== BONG BÓNG CHAT HỖ TRỢ NHANH (CHỈ HIỆN VỚI KHÁCH HÀNG) ======================== -->
+  <div id="floatingAuctionChatWidget" style="display:none;position:fixed;right:20px;bottom:20px;z-index:260;">
     <div id="floatingAuctionChatPanel" style="display:none;width:350px;max-width:calc(100vw - 32px);background:rgba(9,16,38,0.98);border:1.5px solid rgba(0,229,255,0.6);border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,0.78);overflow:hidden;margin-bottom:10px;">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:linear-gradient(90deg,rgba(0,229,255,0.18),rgba(181,55,242,0.22));border-bottom:1px solid rgba(0,229,255,0.25);">
         <div>

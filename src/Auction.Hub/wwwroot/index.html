@@ -2828,7 +2828,10 @@
     }
 
     function generateInstantSupportReply(question) {
-      const q = (question || "").toLowerCase();
+      const q = (question || "").trim().toLowerCase();
+      if (/^(hi|hello|hey|alo|chao|chào|xin chào|xin chao)\b/.test(q) || q.length <= 4) {
+        return "👋 Xin chào Quý khách! Tôi là Chuyên viên hỗ trợ LIVE AUCTION. Quý khách cần tư vấn về tiền cọc, cách đặt giá Auto-Bid, chứng thư sản phẩm hay ký gửi tài sản ạ?";
+      }
       if (q.includes("cọc") || q.includes("ví") || q.includes("hoàn")) {
         return "💰 Quy định đặt cọc bảo lãnh là 10% giá khởi điểm. Nếu bạn không thắng phiên, hệ thống hoàn cọc tự động 100% về Ví ngay lập tức (0đ phí).";
       }
