@@ -135,17 +135,29 @@ Hệ thống sử dụng Entity Framework Core hỗ trợ đồng thời **Postg
 ### 5.1. Kịch bản minh họa trực tiếp khi thi vấn đáp
 1. **Bước 1 - Khởi chạy hệ thống**:
    - Chạy `docker compose up --build -d` (hoặc `.\start-local.ps1` trên Windows).
-   - Mở trình duyệt tại `http://localhost:5052` (nhân đôi thành 2 cửa sổ trình duyệt cạnh nhau để đóng vai 2 người đấu giá khác nhau) và mở thêm 1 cửa sổ `Bidder.ConsoleClient`.
-2. **Bước 2 - Tạo và tra cứu phiên đấu giá**:
-   - Nhấn nút **"+ Tạo phiên đấu giá"** trên Web App (hoặc phím `5` trên Console App) -> Gọi `POST /auctions`.
-   - Danh sách phiên đấu giá cập nhật qua `GET /auctions`.
+   - Mở trình duyệt tại `http://localhost:5052` và mở thêm 1 cửa sổ `Bidder.ConsoleClient` (`dotnet run --project src/Bidder.ConsoleClient`).
+2. **Bước 2 - Đăng ký, Xác minh OTP và Phân quyền 3 vai trò**:
+   - Trên trang chủ `http://localhost:5052`, mở **Đăng ký** → nhập thông tin → xác minh **mã OTP 6 chữ số** → tự động liên kết sang **Đăng nhập** để vào Sàn Đấu Giá.
+   - Hoặc sử dụng 3 tài khoản Demo (`Khách hàng`, `Nhân viên`, `Admin`) để kiểm chứng phân quyền: chỉ **Khách hàng** được đặt giá/Auto-Bid/Mua Ngay; **Nhân viên** quản lý phiên, duyệt ký gửi, hủy giá bất thường và chốt người thắng; **Admin** quản lý tài khoản, DLQ và giám sát toàn bộ dịch vụ.
 3. **Bước 3 - Kiểm tra gRPC từ chối mức giá không hợp lệ**:
-   - Nhấn nút **"🧪 Thử giá thấp (Test gRPC từ chối)"** và bấm **Gửi Mức Giá Mới**.
-   - Quan sát thông báo lỗi trả về từ `BidValidation.Grpc` (`BID_TOO_LOW`) kèm `CorrelationId` trên giao diện và trên cửa sổ log của `BidValidation.Grpc`.
+   - Trong phòng đấu giá, nhập mức giá thấp hơn `Giá đặt tối thiểu tiếp theo` và bấm **Đặt giá ngay** (hoặc gửi qua `Bidder.ConsoleClient`).
+   - Quan sát thông báo lỗi từ `BidValidation.Grpc` (`BID_TOO_LOW`) kèm `CorrelationId` trên giao diện và log của `BidValidation.Grpc`.
 4. **Bước 4 - Đặt giá hợp lệ và cập nhật Realtime qua RabbitMQ + SignalR**:
-   - Chọn mức giá hợp lệ (`+1 Bước giá`) và nhấn **Gửi Mức Giá Mới**.
-   - Cả 2 cửa sổ trình duyệt Web và cửa sổ Console App đều nhận thông báo `BidAccepted` tức thì qua SignalR!
-   - Bảng **Nhật ký Audit Worker** phía dưới tự động hiển thị bản ghi lịch sử do `Audit.Worker` lưu lại.
+   - Chọn mức giá hợp lệ (`+1 Bước`, `+2 Bước` hoặc cài đặt `Auto-Bid`) và bấm **Đặt giá ngay**.
+   - Các cửa sổ Web App và Console App cùng nhận sự kiện `BidAccepted` tức thì qua SignalR; đồng hồ tự động gia hạn thêm 30 giây nếu đặt giá trong 60 giây cuối (Anti-sniping); `Audit.Worker` ghi nhận lịch sử Idempotent vào bảng `AuditLogs`.
 5. **Bước 5 - Kết thúc phiên đấu giá và xác định người thắng**:
-   - Nhấn nút **"⏹ Kết thúc phiên & Chốt người thắng"** (`POST /auctions/{id}/end`).
-   - Sự kiện `AuctionEnded` được phát qua RabbitMQ -> SignalR hiển thị thông báo người chiến thắng chung cuộc trên mọi Client và `Audit.Worker` ghi nhận sự kiện kết thúc phiên.
+   - Tài khoản **Nhân viên / Admin** vào tab **Quản lý phiên** → bấm **Chốt người thắng** (`POST /auctions/{id}/end`) và nhập lý do ghi vào Audit Log (hoặc Khách hàng bấm **Mua Ngay**).
+   - Sự kiện `AuctionEnded` được phát qua RabbitMQ → SignalR cập nhật kết quả thắng cuộc và cho phép tra cứu qua `GET /auctions/{id}/result`.
+
+---
+
+## CHƯƠNG 6. ĐÁNH GIÁ HỆ THỐNG VÀ HƯỚNG PHÁT TRIỂN
+
+### 6.1. Kết quả đạt được
+- **Đáp ứng đầy đủ kiến trúc phân tán .NET 10**: Các dịch vụ `Auction.Api`, `BidValidation.Grpc`, `Auction.Hub`, `Audit.Worker` tách biệt độc lập, có `Dockerfile` riêng và giao tiếp qua mạng nội bộ Docker (`auction-net`).
+- **Kết hợp đồng bộ và bất đồng bộ hiệu quả**: REST Minimal API + gRPC (HTTP/2) xử lý xác thực giá tức thì, trong khi RabbitMQ + SignalR đảm bảo cập nhật realtime cho nhiều người dùng mà không làm nghẽn luồng đặt giá.
+- **Độ tin cậy và khả năng chịu lỗi cao**: Đã hoàn thiện đầy đủ các yêu cầu mở rộng gồm Retry + Dead-Letter Queue (`auction.audit.dlq`), Idempotent Consumer, Correlation ID xuyên suốt, Health Check (`/health`), Outbox Pattern và Fallback Validation.
+
+### 6.2. Hạn chế và hướng phát triển
+- **Hạn chế**: Một số dữ liệu mở rộng trên giao diện Web (như ví cọc mô phỏng, đánh giá sản phẩm, chat hỗ trợ nhanh) hiện lưu cục bộ ở trình duyệt phục vụ demo nhanh; khi triển khai thực tế cần đồng bộ toàn bộ qua API/CSDL tập trung và tích hợp cổng thanh toán thực.
+- **Hướng phát triển**: Bổ sung xác thực JWT Bearer từ `Auction.Api`, triển khai Redis Backplane cho SignalR để mở rộng ngang nhiều instance `Auction.Hub`, và tích hợp Prometheus + Grafana thu thập metrics hiệu năng theo thời gian thực.
