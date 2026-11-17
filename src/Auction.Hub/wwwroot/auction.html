@@ -940,29 +940,12 @@
           </div>
 
           <div id="roleDropdownMenu" class="role-dropdown-menu">
-            <div style="font-size:0.7rem;color:#94a3b8;text-transform:uppercase;padding:4px 8px;border-bottom:1px solid rgba(148,163,184,0.16);margin-bottom:6px;">
-              Chuyển đổi vai trò kiểm thử (Dev)
+            <div style="font-size:0.72rem;color:#94a3b8;padding:4px 8px;border-bottom:1px solid rgba(148,163,184,0.16);margin-bottom:6px;">
+              Tài khoản đang đăng nhập
             </div>
-            <button id="menuRoleCustomer" class="dropdown-item-btn active" onclick="switchRole('customer')">
-              <span>Khách hàng (Đấu giá)</span>
-              <span class="role-tag customer">Customer</span>
+            <button class="dropdown-item-btn" style="color:#fca5a5;" onclick="logoutAndExit()">
+              <span>Đăng xuất về Trang chủ</span>
             </button>
-            <button id="menuRoleStaff" class="dropdown-item-btn" onclick="switchRole('staff')">
-              <span>Nhân viên (Điều hành)</span>
-              <span class="role-tag staff">Staff</span>
-            </button>
-            <button id="menuRoleAdmin" class="dropdown-item-btn" onclick="switchRole('admin')">
-              <span>Quản trị viên (Hệ thống)</span>
-              <span class="role-tag admin">Admin</span>
-            </button>
-            <div style="border-top:1px solid rgba(148,163,184,0.16);margin-top:6px;padding-top:6px;">
-              <button class="dropdown-item-btn" onclick="randomizeCustomerPersona()">
-                <span>Đổi khách hàng đặt giá khác</span>
-              </button>
-              <button class="dropdown-item-btn" style="color:#fca5a5;" onclick="logoutAndExit()">
-                <span>Đăng xuất về Trang chủ</span>
-              </button>
-            </div>
           </div>
         </div>
 
@@ -1305,102 +1288,60 @@
     <!-- TAB 5: PHÂN QUYỀN & QUẢN LÝ NGƯỜI DÙNG (CHỈ ADMIN THẤY)                   -->
     <!-- ========================================================================= -->
     <section id="view-rbac-users" class="tab-view">
-      <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:20px;">
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              <span>Danh sách Tài khoản &amp; Cấp quyền</span>
-            </div>
-            <button onclick="openCreateStaffModal()">+ Tạo tài khoản Nhân viên</button>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Quản lý Tài khoản &amp; Phân quyền Hệ thống</span>
           </div>
-          <div style="overflow-x:auto;">
-            <table>
-              <thead>
-                <tr>
-                  <th>Họ và tên</th>
-                  <th>Tài khoản</th>
-                  <th>Vai trò</th>
-                  <th>Trạng thái</th>
-                  <th>Thao tác (Ghi Audit Log)</th>
-                </tr>
-              </thead>
-              <tbody id="rbacUsersTableBody"></tbody>
-            </table>
-          </div>
+          <button onclick="openCreateStaffModal()">+ Tạo tài khoản Nhân viên</button>
         </div>
-
-        <!-- Bảng ma trận phân quyền chuẩn -->
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <span>Ma trận Phân quyền Hệ thống</span>
-            </div>
-          </div>
+        <div style="overflow-x:auto;">
           <table>
             <thead>
               <tr>
-                <th>Chức năng</th>
-                <th>Khách</th>
-                <th>Nhân viên</th>
-                <th>Admin</th>
+                <th>Họ và tên</th>
+                <th>Tài khoản</th>
+                <th>Vai trò</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
               </tr>
             </thead>
-            <tbody>
-              <tr><td>Xem danh sách phiên, lịch sử giá (ẩn tên)</td><td>✓</td><td>✓</td><td>✓</td></tr>
-              <tr><td>Xem tên đầy đủ người đặt giá</td><td>✗</td><td>✓</td><td>✓</td></tr>
-              <tr><td><strong>Đặt giá, Auto-Bid, Thanh toán lô thắng</strong></td><td><strong style="color:#34d399;">✓</strong></td><td><strong style="color:#f87171;">✗ (Chặn)</strong></td><td><strong style="color:#f87171;">✗ (Chặn)</strong></td></tr>
-              <tr><td>Tạo/sửa phiên, Mở/Tạm dừng, Chốt thắng</td><td>✗</td><td>✓</td><td>✓</td></tr>
-              <tr><td>Hủy giá đặt bất thường (Có nhập lý do)</td><td>✗</td><td>✓</td><td>✓</td></tr>
-              <tr><td>Hủy cả phiên đấu giá</td><td>✗</td><td>✗</td><td>✓</td></tr>
-              <tr><td>Khóa / Mở khóa tài khoản khách</td><td>✗</td><td>✓</td><td>✓</td></tr>
-              <tr><td>Tạo tài khoản nhân viên, Đổi vai trò</td><td>✗</td><td>✗</td><td>✓</td></tr>
-              <tr><td>Xem Audit Log</td><td>✗</td><td>Phiên mình quản lý</td><td>Toàn bộ</td></tr>
-              <tr><td>Giám sát hạ tầng, Xử lý DLQ, Cấu hình</td><td>✗</td><td>✗</td><td>✓</td></tr>
-            </tbody>
+            <tbody id="rbacUsersTableBody"></tbody>
           </table>
         </div>
       </div>
     </section>
 
     <!-- ========================================================================= -->
-    <!-- TAB 6: GIÁM SÁT HỆ THỐNG, DLQ, CẤU HÌNH & AUTO-DEMO (CHỈ ADMIN THẤY)       -->
+    <!-- TAB 6: GIÁM SÁT HỆ THỐNG, DLQ & CẤU HÌNH (CHỈ ADMIN THẤY)                -->
     <!-- ========================================================================= -->
     <section id="view-system-monitor" class="tab-view">
-      <!-- Banner hạ tầng chuyển vào đây theo đúng yêu cầu -->
       <div class="panel" style="margin-bottom:20px;">
         <div class="panel-header">
           <div class="panel-title">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            <span>Giám sát Dịch vụ Phân tán (Chỉ Admin)</span>
+            <span>Trạng thái Dịch vụ Hệ thống</span>
           </div>
-          <div style="display:flex;gap:8px;">
-            <button class="warning" onclick="runWebAutoDemo()">Chạy kịch bản Auto-Demo (Môi trường Dev)</button>
-            <button class="secondary" onclick="refreshAll()">Làm mới trạng thái</button>
-          </div>
-        </div>
-
-        <div style="padding:12px 16px;background:rgba(5,10,24,0.92);border-radius:11px;border:1px solid rgba(0,229,255,0.28);margin-bottom:16px;font-family:Consolas,monospace;font-size:0.84rem;color:#7dd3fc;">
-          Luồng kiến trúc: REST API (:5050) → gRPC BidValidation (:5051) → RabbitMQ (auction.events) → SignalR (:5052) &amp; Audit Worker (Idempotent / DLQ)
+          <button class="secondary" onclick="refreshAll()">Làm mới</button>
         </div>
 
         <div class="stats-grid">
           <div class="stat-item">
             <div class="stat-label">Auction REST API (:5050)</div>
-            <div class="stat-value" style="color:#34d399;">Hoạt động (Healthy)</div>
+            <div class="stat-value" style="color:#34d399;">Hoạt động</div>
           </div>
           <div class="stat-item">
             <div class="stat-label">BidValidation gRPC (:5051)</div>
-            <div class="stat-value" style="color:#34d399;">Phản hồi &lt; 5ms</div>
+            <div class="stat-value" style="color:#34d399;">Sẵn sàng</div>
           </div>
           <div class="stat-item">
             <div class="stat-label">RabbitMQ Broker (:5672)</div>
-            <div class="stat-value" style="color:#00e5ff;">Exchange: auction.events</div>
+            <div class="stat-value" style="color:#00e5ff;">Kết nối ổn định</div>
           </div>
           <div class="stat-item">
             <div class="stat-label">Realtime Hub (:5052)</div>
-            <div class="stat-value" style="color:#34d399;">WebSockets Connected</div>
+            <div class="stat-value" style="color:#34d399;">Đang phát sóng</div>
           </div>
         </div>
       </div>
@@ -1411,9 +1352,8 @@
           <div class="panel-header">
             <div class="panel-title">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <span>Quản lý Hàng đợi lỗi (DLQ - auction.audit.dlq)</span>
+              <span>Hàng đợi lỗi (DLQ)</span>
             </div>
-            <button class="secondary" onclick="simulateDlqEvent()">+ Giả lập sự kiện lỗi vào DLQ</button>
           </div>
           <table>
             <thead>
@@ -2241,9 +2181,9 @@
       badge.className = `role-tag ${role}`;
       badge.textContent = profile.badgeText;
 
-      document.getElementById("menuRoleCustomer").classList.toggle("active", role === "customer");
-      document.getElementById("menuRoleStaff").classList.toggle("active", role === "staff");
-      document.getElementById("menuRoleAdmin").classList.toggle("active", role === "admin");
+      document.getElementById("menuRoleCustomer")?.classList.toggle("active", role === "customer");
+      document.getElementById("menuRoleStaff")?.classList.toggle("active", role === "staff");
+      document.getElementById("menuRoleAdmin")?.classList.toggle("active", role === "admin");
 
       // Ẩn/hiện Menu theo đúng vai trò:
       // - Khách hàng: Trang chủ · Đấu giá · Danh mục · Của tôi
@@ -2439,11 +2379,6 @@
             <span class="status-pill running" style="cursor:pointer;" onclick="document.getElementById('productReviewSection')?.scrollIntoView({behavior:'smooth'})">
               ★ ${reviewStats.avg} (${reviewStats.count} đánh giá)
             </span>
-            ${auction.isActive ? `
-              <button class="secondary" style="padding:5px 10px;font-size:0.74rem;" onclick="triggerLastMinuteTest('${auction.id}')" title="Chuyển đồng hồ về 45 giây cuối để kiểm tra đổi màu & tự động gia hạn">
-                Thử mốc &lt; 1 phút
-              </button>
-            ` : ''}
           </div>
         </div>
 
@@ -2533,10 +2468,9 @@
               <!-- Các nút cộng nhanh: +1 bước giá, +2 bước giá, +5 bước giá -->
               <div class="quick-inc-row">
                 <button type="button" class="secondary" onclick="setBidAmount(${minNextBid})">Mức tối thiểu (${formatCurrency(minNextBid)})</button>
-                <button type="button" class="secondary" onclick="setBidAmount(${minNextBid + auction.minIncrement})">+1 Bước giá (${formatCurrency(minNextBid + auction.minIncrement)})</button>
-                <button type="button" class="secondary" onclick="setBidAmount(${minNextBid + auction.minIncrement * 2})">+2 Bước giá (${formatCurrency(minNextBid + auction.minIncrement * 2)})</button>
-                <button type="button" class="secondary" onclick="setBidAmount(${minNextBid + auction.minIncrement * 5})">+5 Bước giá (${formatCurrency(minNextBid + auction.minIncrement * 5)})</button>
-                <button type="button" class="warning" onclick="setBidAmount(${Math.max(1000, auction.currentPrice - 10000)})">Thử đặt thấp hơn tối thiểu</button>
+                <button type="button" class="secondary" onclick="setBidAmount(${minNextBid + auction.minIncrement})">+1 Bước (${formatCurrency(minNextBid + auction.minIncrement)})</button>
+                <button type="button" class="secondary" onclick="setBidAmount(${minNextBid + auction.minIncrement * 2})">+2 Bước (${formatCurrency(minNextBid + auction.minIncrement * 2)})</button>
+                <button type="button" class="secondary" onclick="setBidAmount(${minNextBid + auction.minIncrement * 5})">+5 Bước (${formatCurrency(minNextBid + auction.minIncrement * 5)})</button>
               </div>
 
               <div class="bid-input-row" style="grid-template-columns: 1fr auto auto;">
@@ -2569,17 +2503,14 @@
             <!-- Thông báo chặn Nhân viên & Admin đặt giá (Nguyên tắc phân tách lợi ích) -->
             <div class="staff-restriction-box">
               <div>
-                <div style="font-weight:800;color:#fbbf24;font-size:0.9rem;">
-                  Chế độ Điều hành &amp; Quản trị (Không được phép đặt giá)
+                <div style="font-weight:800;color:#fbbf24;font-size:0.88rem;">
+                  Chế độ ${currentRole === 'admin' ? 'Quản trị viên (Admin)' : 'Nhân viên điều hành'}
                 </div>
-                <div style="font-size:0.8rem;color:#cbd5e1;margin-top:2px;">
-                  Theo quy định minh bạch, tài khoản <strong>${currentRole === 'admin' ? 'Admin' : 'Nhân viên'}</strong> không được tham gia đặt giá để tránh xung đột lợi ích.
+                <div style="font-size:0.79rem;color:#cbd5e1;margin-top:2px;">
+                  Tài khoản quản trị/điều hành không tham gia đặt giá để đảm bảo tính minh bạch.
                 </div>
               </div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <button class="secondary" onclick="switchMainTab('manage-sessions')">Mở Khu vực Quản lý &amp; Chốt phiên</button>
-                <button onclick="switchRole('customer')">Chuyển sang TK Khách để đặt giá</button>
-              </div>
+              <button class="secondary" onclick="switchMainTab('manage-sessions')">Mở Quản lý phiên</button>
             </div>
           `
         ) : `
@@ -2596,8 +2527,9 @@
               <div style="display:flex;gap:8px;">
                 ${currentRole === "customer" ? `
                   <button class="success-btn" style="padding:6px 12px;font-size:0.78rem;" onclick="switchMainTab('my-account')">Thanh toán &amp; Nhận hàng</button>
-                ` : ''}
-                <button class="secondary" style="padding:6px 12px;font-size:0.78rem;" onclick="reopenClosedLot('${auction.id}')">🔄 Mở lại phiên đấu giá này</button>
+                ` : `
+                  <button class="secondary" style="padding:6px 12px;font-size:0.78rem;" onclick="reopenClosedLot('${auction.id}')">Mở lại phiên này</button>
+                `}
               </div>
             </div>
           </div>
@@ -3029,30 +2961,13 @@
       const canModerate = (currentRole === "staff" || currentRole === "admin");
 
       box.innerHTML = `
-        <!-- Bảng chỉ số thẩm định chất lượng sản phẩm -->
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
-          <div style="background:rgba(5,10,24,0.88);border:1px solid rgba(16,185,129,0.32);border-radius:10px;padding:10px 12px;">
-            <div style="font-size:0.72rem;color:#94a3b8;text-transform:uppercase;">Độ nguyên bản &amp; Tình trạng</div>
-            <div style="font-size:0.95rem;font-weight:900;color:#34d399;margin-top:2px;">✓ Đạt 100% Chuẩn Hãng</div>
-          </div>
-          <div style="background:rgba(5,10,24,0.88);border:1px solid rgba(0,229,255,0.32);border-radius:10px;padding:10px 12px;">
-            <div style="font-size:0.72rem;color:#94a3b8;text-transform:uppercase;">Chứng thư Kiểm định</div>
-            <div style="font-size:0.95rem;font-weight:900;color:#00e5ff;margin-top:2px;">${auction.certCode || 'VERIFIED-100'}</div>
-          </div>
-          <div style="background:rgba(5,10,24,0.88);border:1px solid rgba(245,158,11,0.35);border-radius:10px;padding:10px 12px;">
-            <div style="font-size:0.72rem;color:#94a3b8;text-transform:uppercase;">Điểm Đánh giá Cộng đồng</div>
-            <div style="font-size:0.95rem;font-weight:900;color:#fbbf24;margin-top:2px;">★ ${summary.avg} / 5.0 (${summary.count} lượt)</div>
-          </div>
-        </div>
-
-        <!-- Form gửi đánh giá & nhận xét sản phẩm (Dành cho cả Khách hàng, Nhân viên Thẩm định & Admin) -->
-        <div style="background:rgba(8,15,35,0.94);border:1px solid rgba(0,229,255,0.3);border-radius:12px;padding:14px;margin-bottom:14px;">
+        <!-- Form gửi đánh giá & nhận xét sản phẩm (Gọn gàng) -->
+        <div style="background:rgba(8,15,35,0.94);border:1px solid rgba(0,229,255,0.28);border-radius:12px;padding:12px 14px;margin-bottom:12px;">
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
-            <span style="font-size:0.85rem;font-weight:800;color:#fff;">
-              ✍️ Gửi Đánh giá &amp; Nhận xét về "${auction.productName}" (Tài khoản: <span style="color:#00e5ff;">${currentUserName}</span>)
+            <span style="font-size:0.84rem;font-weight:800;color:#fff;">
+              Đánh giá sản phẩm (${currentUserName})
             </span>
             <div style="display:flex;gap:5px;align-items:center;">
-              <span style="font-size:0.76rem;color:#94a3b8;margin-right:4px;">Chọn số sao:</span>
               ${[1, 2, 3, 4, 5].map(star => `
                 <button type="button" class="secondary star-pick-btn" style="padding:4px 9px;font-size:0.78rem;background:${star <= selectedStarRating ? 'rgba(245,158,11,0.22)' : 'rgba(15,23,42,0.9)'};border-color:${star <= selectedStarRating ? '#f59e0b' : 'rgba(148,163,184,0.3)'};color:${star <= selectedStarRating ? '#fbbf24' : '#94a3b8'};" onclick="selectReviewStar(${star})">
                   ${star} ★
@@ -3061,15 +2976,8 @@
             </div>
           </div>
 
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-            <button type="button" class="secondary" style="padding:4px 9px;font-size:0.73rem;" onclick="fillQuickReviewTag('Sản phẩm đúng chuẩn mô tả thẩm định 100%')">+ Đúng chuẩn thẩm định</button>
-            <button type="button" class="secondary" style="padding:4px 9px;font-size:0.73rem;" onclick="fillQuickReviewTag('Chứng thư nguồn gốc rõ ràng, rất đáng sưu tầm')">+ Chứng thư rõ ràng</button>
-            <button type="button" class="secondary" style="padding:4px 9px;font-size:0.73rem;" onclick="fillQuickReviewTag('Giá khởi điểm và bước giá hợp lý')">+ Giá khởi điểm hợp lý</button>
-            <button type="button" class="secondary" style="padding:4px 9px;font-size:0.73rem;" onclick="fillQuickReviewTag('Hình ảnh thực tế sắc nét, uy tín')">+ Hình ảnh sắc nét</button>
-          </div>
-
           <div style="display:flex;gap:10px;">
-            <input id="newReviewCommentInput" type="text" placeholder="Nhập đánh giá của bạn về tình trạng, giá trị sưu tầm hoặc hồ sơ kiểm định của sản phẩm này..." style="flex:1;" onkeydown="if(event.key==='Enter') submitProductReview('${auction.id}')" />
+            <input id="newReviewCommentInput" type="text" placeholder="Nhập nhận xét của bạn về sản phẩm này..." style="flex:1;" onkeydown="if(event.key==='Enter') submitProductReview('${auction.id}')" />
             <button type="button" onclick="submitProductReview('${auction.id}')">Gửi đánh giá ★</button>
           </div>
         </div>
