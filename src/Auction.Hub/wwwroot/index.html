@@ -1672,7 +1672,7 @@
         <div class="cat-card active" onclick="filterCategory('all', this)">
           <div class="cat-icon">🌟</div>
           <div class="cat-name">Tất cả sản phẩm</div>
-          <div class="cat-count">12 phiên đang mở</div>
+          <div class="cat-count">16 phiên đang mở</div>
         </div>
         <div class="cat-card" onclick="filterCategory('Đồng hồ xa xỉ', this)">
           <div class="cat-icon">⌚</div>
@@ -2126,6 +2126,74 @@
         condition: "Nguyên bản 100% - Khung gỗ sồi mạ vàng",
         certCode: "ART-UNIQUE-2026",
         description: "Tác phẩm sơn dầu trên toan lanh Bỉ kích thước 120x180cm, kỹ thuật đắp nổi impasto tinh xảo kèm giấy chứng nhận độc bản của họa sĩ."
+      },
+      {
+        id: "99999999-9999-9999-9999-999999999995",
+        name: "iPhone 17 Pro Max 1TB Desert Titanium Chính Hãng VN/A",
+        category: "Công nghệ",
+        image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 35000000,
+        currentPrice: 37500000,
+        minIncrement: 500000,
+        buyNowPrice: 46000000,
+        winner: "Phạm Minh Tuấn",
+        totalBids: 6,
+        remainingSeconds: 6100,
+        origin: "Apple Chính hãng VN/A",
+        condition: "Nguyên Seal 100% - Hóa đơn VAT đầy đủ",
+        certCode: "APPLE-17PM-1TB-VNA",
+        description: "Phiên bản dung lượng 1TB màu Desert Titanium khung viền Titan cấp hàng không, bảo hành chính hãng 24 tháng."
+      },
+      {
+        id: "99999999-9999-9999-9999-999999999996",
+        name: "Đồng hồ Audemars Piguet Royal Oak Selfwinding 41mm Blue",
+        category: "Đồng hồ xa xỉ",
+        image: "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 950000000,
+        currentPrice: 980000000,
+        minIncrement: 10000000,
+        buyNowPrice: 1180000000,
+        winner: "Hoàng Anh Tuấn",
+        totalBids: 8,
+        remainingSeconds: 15800,
+        origin: "Thụy Sĩ (Le Brassus)",
+        condition: "Fullbox 99.5% - Thẻ bảo hành quốc tế AP",
+        certCode: "AP-15500ST-BLUE",
+        description: "Mặt số Grande Tapisserie xanh lam kinh điển, bộ máy Calibre 4302 dự trữ năng lượng 70 giờ, vỏ thép hoàn thiện thủ công."
+      },
+      {
+        id: "99999999-9999-9999-9999-999999999997",
+        name: "Siêu xe Lamborghini Revuelto V12 Hybrid HPEV 1.001 Mã Lực",
+        category: "Siêu xe",
+        image: "https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 18500000000,
+        currentPrice: 18900000000,
+        minIncrement: 100000000,
+        buyNowPrice: 21500000000,
+        winner: "Đỗ Hải Đăng",
+        totalBids: 5,
+        remainingSeconds: 24500,
+        origin: "Ý (Sant'Agata Bolognese)",
+        condition: "Xe mới 100% - Hải quan chính ngạch",
+        certCode: "LAMBO-REV-V12-08",
+        description: "Siêu xe flagship động cơ V12 hút khí tự nhiên kết hợp 3 mô-tơ điện 1.001 mã lực, thân vỏ Monofuselage full sợi Carbon."
+      },
+      {
+        id: "99999999-9999-9999-9999-999999999998",
+        name: "Bình Gốm Chu Đậu Vẽ Vàng 24K 'Thuận Buồm Xuôi Gió' Độc Bản",
+        category: "Nghệ thuật",
+        image: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=900&auto=format&fit=crop&q=80",
+        startingPrice: 38000000,
+        currentPrice: 42000000,
+        minIncrement: 1000000,
+        buyNowPrice: 60000000,
+        winner: "Nguyễn Khánh Linh",
+        totalBids: 7,
+        remainingSeconds: 7800,
+        origin: "Làng gốm Chu Đậu - Nghệ nhân Quốc gia",
+        condition: "Độc bản có chữ ký nghệ nhân & hộp lụa",
+        certCode: "CHUDAU-GOLD24K-01",
+        description: "Chế tác thủ công men tro trấu cổ truyền kết hợp vẽ vàng ròng 24K nung 3 lần, chiều cao 55cm kèm chứng thư tác phẩm."
       }
     ];
 
@@ -2199,6 +2267,7 @@
     }
 
     let landingModalStar = 5;
+    let landingReviewFilter = "all";
 
     function syncCatalogStateFromStorage() {
       try {
@@ -2217,49 +2286,89 @@
     }
 
     function getLandingReviewsMap() {
+      const negativeFeedbackPool = [
+        { rating: 1, reviewer: "Phạm Minh Tuấn", comment: "Chê thật tệ! Giá khởi điểm đặt quá cao so với mặt bằng thị trường, bước giá lại gắt nên rất khó theo." },
+        { rating: 2, reviewer: "Hoàng Anh Tuấn", comment: "Hộp ngoài hơi trầy nhẹ ở góc dù mô tả ghi mới 99%, phản hồi kiểm định ban đầu hơi chậm, chỉ cho 2 sao." },
+        { rating: 1, reviewer: "Nguyễn Khánh Linh", comment: "Phí sàn 2.5% cộng thêm tiền cọc 10% giữ hơi lâu nếu thua phiên. Trải nghiệm chưa thực sự ưng ý!" },
+        { rating: 3, reviewer: "Vũ Quốc Khánh", comment: "Sản phẩm ổn nhưng ảnh chụp thiếu góc cận cảnh số seri, phải nhắn hỏi thêm chuyên viên mới thấy." },
+        { rating: 2, reviewer: "Lê Minh Châu", comment: "Không có nhiều tùy chọn giao nhận hỏa tốc trong ngày ở tỉnh xa, chờ giao hàng mất tới 3 ngày." }
+      ];
+
+      let map = {};
       try {
         const raw = localStorage.getItem("live_auction_product_reviews");
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (parsed && typeof parsed === "object") return parsed;
+          if (parsed && typeof parsed === "object") map = parsed;
         }
       } catch {}
-      const map = {};
+
+      let updated = false;
       catalogProducts.forEach((p, idx) => {
-        map[String(p.id).toLowerCase()] = [
-          {
-            id: "rev-seed-1-" + idx,
-            reviewer: "Chuyên viên Thẩm định: Lê Hoàng Nam",
-            role: "staff",
-            rating: 5,
-            verifiedTag: "Chứng thư Thẩm định Chính hãng",
-            comment: `Đã kiểm tra trực tiếp hồ sơ pháp lý, mã chứng thư ${p.certCode} và tình trạng thực tế của "${p.name}". Đạt chuẩn 100% nguyên bản, bảo hiểm vận chuyển toàn phần.`,
-            expertReply: null,
-            time: "Hôm nay, 08:30"
-          },
-          {
-            id: "rev-seed-2-" + idx,
-            reviewer: p.winner || "Đỗ Hải Đăng",
+        const key = String(p.id).toLowerCase();
+        const neg = negativeFeedbackPool[idx % negativeFeedbackPool.length];
+        if (!Array.isArray(map[key]) || map[key].length === 0) {
+          map[key] = [
+            {
+              id: "rev-seed-1-" + idx,
+              reviewer: "Chuyên viên Thẩm định: Lê Hoàng Nam",
+              role: "staff",
+              rating: 5,
+              verifiedTag: "Chứng thư Thẩm định Chính hãng",
+              comment: `Đã kiểm tra trực tiếp hồ sơ pháp lý, mã chứng thư ${p.certCode} và tình trạng thực tế của "${p.name}". Đạt chuẩn nguyên bản, bảo hiểm vận chuyển toàn phần.`,
+              expertReply: null,
+              time: "Hôm nay, 08:30"
+            },
+            {
+              id: "rev-seed-neg-" + idx,
+              reviewer: neg.reviewer,
+              role: "customer",
+              rating: neg.rating,
+              verifiedTag: "Khách hàng Đã tham gia phiên",
+              comment: neg.comment,
+              expertReply: "Cảm ơn góp ý thẳng thắn của Quý khách! Ban Thẩm định đã bổ sung ảnh cận cảnh và tối ưu quy trình hoàn cọc tức thì.",
+              time: "Hôm nay, 09:05"
+            },
+            {
+              id: "rev-seed-2-" + idx,
+              reviewer: p.winner || "Đỗ Hải Đăng",
+              role: "customer",
+              rating: 5,
+              verifiedTag: "Nhà sưu tầm đã xác thực cọc",
+              comment: `Sản phẩm ${p.name} bên ngoài sắc nét, giấy tờ kiểm định xuất xứ (${p.origin}) minh bạch. Đặt giá realtime rất mượt!`,
+              expertReply: null,
+              time: "Hôm nay, 09:30"
+            },
+            {
+              id: "rev-seed-3-" + idx,
+              reviewer: idx % 2 === 0 ? "Nguyễn Thảo Vy" : "Trần Đức Nhân",
+              role: "customer",
+              rating: 4,
+              verifiedTag: "Thành viên Đấu giá VIP",
+              comment: `Đã đối chiếu mã chứng thư ${p.certCode}. Hàng chuẩn nhưng mong sàn giảm nhẹ bước giá ở những phút cuối.`,
+              expertReply: null,
+              time: "Hôm nay, 10:10"
+            }
+          ];
+          updated = true;
+        } else if (!map[key].some(r => Number(r.rating) <= 3)) {
+          map[key].splice(1, 0, {
+            id: "rev-seed-neg-" + idx,
+            reviewer: neg.reviewer,
             role: "customer",
-            rating: 5,
-            verifiedTag: "Nhà sưu tầm đã xác thực cọc",
-            comment: `Sản phẩm ${p.name} bên ngoài cực kỳ sắc nét, giấy tờ kiểm định xuất xứ (${p.origin}) minh bạch. Bước giá hợp lý, đặt giá mượt!`,
-            expertReply: "Cảm ơn Quý khách đã tham gia thẩm định và trả giá trên sàn LIVE AUCTION!",
-            time: "Hôm nay, 09:15"
-          },
-          {
-            id: "rev-seed-3-" + idx,
-            reviewer: idx % 2 === 0 ? "Nguyễn Thảo Vy" : "Vũ Quốc Khánh",
-            role: "customer",
-            rating: idx % 3 === 0 ? 5 : 4,
-            verifiedTag: "Thành viên Đấu giá VIP",
-            comment: `Đã đối chiếu mã chứng thư ${p.certCode}. Rất yên tâm về cơ chế hoàn cọc tự động 100% của sàn.`,
-            expertReply: null,
-            time: "Hôm nay, 09:45"
-          }
-        ];
+            rating: neg.rating,
+            verifiedTag: "Khách hàng Đã tham gia phiên",
+            comment: neg.comment,
+            expertReply: "Cảm ơn góp ý thẳng thắn của Quý khách! Sàn đã ghi nhận để cải thiện chất lượng phục vụ.",
+            time: "Hôm nay, 09:05"
+          });
+          updated = true;
+        }
       });
-      localStorage.setItem("live_auction_product_reviews", JSON.stringify(map));
+
+      if (updated) {
+        localStorage.setItem("live_auction_product_reviews", JSON.stringify(map));
+      }
       return map;
     }
 
@@ -2395,6 +2504,11 @@
       renderProductsGrid();
     }
 
+    function setLandingReviewFilter(id, filterVal) {
+      landingReviewFilter = filterVal;
+      openProductModal(id);
+    }
+
     function openProductModal(id) {
       syncCatalogStateFromStorage();
       const p = catalogProducts.find(x => x.id === id);
@@ -2403,6 +2517,11 @@
       const modal = document.getElementById("productDetailModal");
       const content = document.getElementById("productModalContent");
       const revStats = getLandingProductReviewStats(p.id);
+      const filteredReviews = revStats.list.filter(r => {
+        if (landingReviewFilter === "good") return Number(r.rating) >= 4;
+        if (landingReviewFilter === "bad") return Number(r.rating) <= 3;
+        return true;
+      });
 
       content.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid rgba(0,229,255,0.25);background:rgba(5,10,24,0.95);">
@@ -2485,13 +2604,19 @@
                 <button type="button" class="btn-card-bid" style="padding:9px 16px;" onclick="submitLandingProductReview('${p.id}')">Gửi đánh giá ★</button>
               </div>
 
-              <div style="display:flex;flex-direction:column;gap:8px;max-height:210px;overflow-y:auto;">
-                ${revStats.list.map(r => `
-                  <div style="background:rgba(5,10,24,0.9);border:1px solid rgba(148,163,184,0.22);border-radius:10px;padding:10px 13px;">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+                <button type="button" class="btn-card-detail" style="padding:4px 10px;font-size:0.74rem;border-color:${landingReviewFilter === 'all' ? '#00e5ff' : 'rgba(148,163,184,0.3)'};color:${landingReviewFilter === 'all' ? '#00e5ff' : '#cbd5e1'};" onclick="setLandingReviewFilter('${p.id}', 'all')">Tất cả (${revStats.list.length})</button>
+                <button type="button" class="btn-card-detail" style="padding:4px 10px;font-size:0.74rem;border-color:${landingReviewFilter === 'good' ? '#34d399' : 'rgba(148,163,184,0.3)'};color:${landingReviewFilter === 'good' ? '#34d399' : '#cbd5e1'};" onclick="setLandingReviewFilter('${p.id}', 'good')">Khen (4–5 ★)</button>
+                <button type="button" class="btn-card-detail" style="padding:4px 10px;font-size:0.74rem;border-color:${landingReviewFilter === 'bad' ? '#f87171' : 'rgba(148,163,184,0.3)'};color:${landingReviewFilter === 'bad' ? '#f87171' : '#cbd5e1'};" onclick="setLandingReviewFilter('${p.id}', 'bad')">Chê / Góp ý (1–3 ★)</button>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto;">
+                ${filteredReviews.map(r => `
+                  <div style="background:rgba(5,10,24,0.9);border:1px solid ${Number(r.rating) <= 3 ? 'rgba(239,68,68,0.4)' : 'rgba(148,163,184,0.22)'};border-radius:10px;padding:10px 13px;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
                       <div>
                         <strong style="color:#fff;font-size:0.83rem;">${r.reviewer}</strong>
-                        <span style="color:#fbbf24;font-weight:800;margin-left:8px;">${"★".repeat(Number(r.rating || 5))}</span>
+                        <span style="color:${Number(r.rating) <= 3 ? '#f87171' : '#fbbf24'};font-weight:800;margin-left:8px;">${"★".repeat(Number(r.rating || 5))}${"☆".repeat(Math.max(0, 5 - Number(r.rating || 5)))}</span>
                       </div>
                       <span style="font-size:0.72rem;color:#94a3b8;">${r.time}</span>
                     </div>
@@ -2651,9 +2776,32 @@
       box.scrollTop = box.scrollHeight;
     }
 
-    function sendLandingSupportMessage() {
+    function generateInstantSupportReply(question) {
+      const q = (question || "").toLowerCase();
+      if (q.includes("cọc") || q.includes("ví") || q.includes("hoàn")) {
+        return "💰 Quy định đặt cọc bảo lãnh là 10% giá khởi điểm. Nếu bạn không thắng phiên, hệ thống hoàn cọc tự động 100% về Ví ngay lập tức (0đ phí).";
+      }
+      if (q.includes("phí") || q.includes("thuế")) {
+        return "📋 Phí dịch vụ sàn đấu giá hiện tại là 2.5% giá chốt phiên, chỉ áp dụng khi bạn đấu giá thắng thành công.";
+      }
+      if (q.includes("auto") || q.includes("tự động") || q.includes("đặt giá")) {
+        return "⚡ Để bật Auto-Bid, bạn vào Phòng Đấu Giá -> nhập mức giá trần tối đa muốn theo -> bấm 'Cài đặt Auto-Bid'. Hệ thống sẽ tự động nâng đúng 1 bước giá khi có người trả cao hơn.";
+      }
+      if (q.includes("giao") || q.includes("ship") || q.includes("nhận hàng") || q.includes("bảo hiểm")) {
+        return "🚚 Sản phẩm thắng phiên được niêm phong & giao tận nơi có bảo hiểm 100% giá trị trong 24–48h tại Hà Nội / TP.HCM (2–3 ngày với các tỉnh thành khác).";
+      }
+      if (q.includes("ký gửi") || q.includes("bán")) {
+        return "📦 Bạn có thể bấm tab 'Gửi Hồ sơ Ký gửi Tài sản' ngay tại đây để nhập thông tin. Chuyên viên Lê Hoàng Nam sẽ thẩm định và mở phiên trong 15 phút!";
+      }
+      if (q.includes("chứng thư") || q.includes("thật") || q.includes("giả") || q.includes("kiểm định")) {
+        return "🛡️ Mọi sản phẩm trên LIVE AUCTION đều có mã chứng thư kiểm định quốc tế (GIA, COSC, Apple VN/A, Porsche...) và cho phép kiểm tra trực tiếp trước khi nhận hàng.";
+      }
+      return "🎧 Chuyên viên Lê Hoàng Nam đã tiếp nhận câu hỏi của bạn! Hệ thống hỗ trợ trực tuyến 24/7 — bạn có thể chọn nhanh chủ đề (Tiền cọc, Auto-Bid, Giao nhận, Ký gửi) hoặc vào Phòng Đấu Giá để trải nghiệm ngay.";
+    }
+
+    function sendLandingSupportMessage(customText = null) {
       const input = document.getElementById("landingChatInput");
-      const text = (input?.value || "").trim();
+      const text = (customText !== null ? customText : (input?.value || "")).trim();
       if (!text) return;
       const sender = localStorage.getItem("live_auction_user") || "Khách hàng";
       const role = localStorage.getItem("live_auction_role") || "customer";
@@ -2666,8 +2814,26 @@
         time: new Date().toLocaleTimeString("vi-VN")
       });
       localStorage.setItem("live_auction_support_chats", JSON.stringify(chats));
-      input.value = "";
+      if (customText === null && input) input.value = "";
       renderLandingSupportChat();
+      renderFloatingChatMessages();
+
+      // Tự động phản hồi ngay sau 500ms để khách không phải chờ
+      if (role === "customer") {
+        setTimeout(() => {
+          const updated = getSupportChats();
+          updated.push({
+            id: "msg-bot-" + Date.now(),
+            sender: "Trợ lý CSKH & Lê Hoàng Nam (Nhân viên)",
+            role: "staff",
+            text: generateInstantSupportReply(text),
+            time: new Date().toLocaleTimeString("vi-VN")
+          });
+          localStorage.setItem("live_auction_support_chats", JSON.stringify(updated));
+          renderLandingSupportChat();
+          renderFloatingChatMessages();
+        }, 500);
+      }
     }
 
     function submitLandingConsignment() {
@@ -2735,36 +2901,40 @@
 
     // ======================== HỆ THỐNG ĐĂNG KÝ LIÊN KẾT ĐĂNG NHẬP ========================
     const defaultAccounts = [
-      {
-        account: "khachhang@auction.vn",
-        password: "123456",
-        fullName: "Trần Đức Nhân",
-        role: "customer"
-      },
-      {
-        account: "nhanvien@auction.vn",
-        password: "123456",
-        fullName: "Lê Hoàng Nam (Nhân viên)",
-        role: "staff"
-      },
-      {
-        account: "admin@auction.vn",
-        password: "123456",
-        fullName: "Nguyễn Quản Trị (Admin)",
-        role: "admin"
-      }
+      { account: "khachhang@auction.vn", password: "123456", fullName: "Trần Đức Nhân", role: "customer", locked: false },
+      { account: "thaovy@auction.vn", password: "123456", fullName: "Nguyễn Thảo Vy", role: "customer", locked: false },
+      { account: "minhtuan@auction.vn", password: "123456", fullName: "Phạm Minh Tuấn", role: "customer", locked: false },
+      { account: "quockhanh@auction.vn", password: "123456", fullName: "Vũ Quốc Khánh", role: "customer", locked: false },
+      { account: "haidang@auction.vn", password: "123456", fullName: "Đỗ Hải Đăng", role: "customer", locked: false },
+      { account: "minhchau@auction.vn", password: "123456", fullName: "Lê Minh Châu", role: "customer", locked: false },
+      { account: "hoanganh@auction.vn", password: "123456", fullName: "Hoàng Anh Tuấn", role: "customer", locked: false },
+      { account: "khanhlinh@auction.vn", password: "123456", fullName: "Nguyễn Khánh Linh", role: "customer", locked: false },
+      { account: "nhanvien@auction.vn", password: "123456", fullName: "Lê Hoàng Nam (Nhân viên)", role: "staff", locked: false },
+      { account: "admin@auction.vn", password: "123456", fullName: "Nguyễn Quản Trị (Admin)", role: "admin", locked: false }
     ];
 
     function getStoredAccounts() {
+      let list = [];
       try {
         const raw = localStorage.getItem("live_auction_accounts");
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) list = parsed;
         }
       } catch {}
-      localStorage.setItem("live_auction_accounts", JSON.stringify(defaultAccounts));
-      return [...defaultAccounts];
+      if (list.length === 0) {
+        localStorage.setItem("live_auction_accounts", JSON.stringify(defaultAccounts));
+        return [...defaultAccounts];
+      }
+      let changed = false;
+      defaultAccounts.forEach(def => {
+        if (!list.some(u => u.account.toLowerCase() === def.account.toLowerCase())) {
+          list.push(def);
+          changed = true;
+        }
+      });
+      if (changed) localStorage.setItem("live_auction_accounts", JSON.stringify(list));
+      return list;
     }
 
     function saveStoredAccounts(list) {
@@ -2917,6 +3087,69 @@
         if (prod) el.textContent = "⏳ " + formatClock(prod.remainingSeconds);
       });
     }, 1000);
+  </script>
+  <!-- ======================== BONG BÓNG CHAT HỖ TRỢ TRỰC TUYẾN 24/7 (TRẢ LỜI TỨC THÌ) ======================== -->
+  <div id="floatingChatWidget" style="position:fixed;right:22px;bottom:22px;z-index:260;">
+    <div id="floatingChatPanel" style="display:none;width:360px;max-width:calc(100vw - 32px);background:rgba(9,16,38,0.98);border:1.5px solid rgba(0,229,255,0.65);border-radius:16px;box-shadow:0 16px 42px rgba(0,0,0,0.75);overflow:hidden;margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;background:linear-gradient(90deg,rgba(0,229,255,0.18),rgba(181,55,242,0.22));border-bottom:1px solid rgba(0,229,255,0.28);">
+        <div>
+          <div style="font-weight:800;color:#fff;font-size:0.88rem;">💬 Hỗ trợ Trực tuyến 24/7</div>
+          <div style="font-size:0.72rem;color:#34d399;">● Trả lời tức thì &amp; Đồng bộ Nhân viên</div>
+        </div>
+        <button type="button" class="btn-card-detail" style="padding:4px 9px;" onclick="toggleFloatingChat(false)">✕</button>
+      </div>
+      <div style="padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid rgba(148,163,184,0.15);background:rgba(5,10,24,0.75);">
+        <button type="button" class="btn-card-detail" style="padding:3px 8px;font-size:0.71rem;" onclick="sendFloatingQuickAsk('Tiền cọc và hoàn cọc thế nào?')">Tiền cọc 10%?</button>
+        <button type="button" class="btn-card-detail" style="padding:3px 8px;font-size:0.71rem;" onclick="sendFloatingQuickAsk('Cách dùng Auto-Bid?')">Cách dùng Auto-Bid?</button>
+        <button type="button" class="btn-card-detail" style="padding:3px 8px;font-size:0.71rem;" onclick="sendFloatingQuickAsk('Bao lâu nhận được hàng?')">Giao nhận?</button>
+      </div>
+      <div id="floatingChatBody" style="height:240px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:rgba(4,8,20,0.92);"></div>
+      <div style="display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(0,229,255,0.2);background:rgba(7,13,30,0.98);">
+        <input id="floatingChatInput" type="text" placeholder="Hỏi nhanh (trả lời ngay lập tức)..." style="flex:1;background:rgba(5,10,24,0.96);border:1px solid rgba(0,229,255,0.38);color:#fff;padding:8px 11px;border-radius:9px;outline:none;font-size:0.82rem;" onkeydown="if(event.key==='Enter') sendFloatingChatMessage()" />
+        <button type="button" class="btn-card-bid" style="padding:8px 13px;" onclick="sendFloatingChatMessage()">Gửi</button>
+      </div>
+    </div>
+    <button type="button" onclick="toggleFloatingChat()" style="float:right;padding:12px 18px;border-radius:999px;background:linear-gradient(90deg,#00e5ff,#a855f7);border:none;color:#fff;font-weight:800;font-size:0.86rem;cursor:pointer;box-shadow:0 0 24px rgba(0,229,255,0.5);">
+      💬 Chat Hỗ trợ Ngay
+    </button>
+  </div>
+
+  <script>
+    function toggleFloatingChat(forceState = null) {
+      const panel = document.getElementById("floatingChatPanel");
+      if (!panel) return;
+      const show = forceState !== null ? forceState : (panel.style.display === "none");
+      panel.style.display = show ? "block" : "none";
+      if (show) renderFloatingChatMessages();
+    }
+
+    function renderFloatingChatMessages() {
+      const box = document.getElementById("floatingChatBody");
+      if (!box) return;
+      const chats = getSupportChats();
+      box.innerHTML = chats.map(c => {
+        const isStaff = c.role === "staff" || c.role === "admin";
+        return `
+          <div style="align-self:${isStaff ? 'flex-start' : 'flex-end'};max-width:86%;padding:8px 11px;border-radius:10px;background:${isStaff ? 'rgba(15,23,42,0.95)' : 'linear-gradient(90deg, rgba(0,229,255,0.22), rgba(181,55,242,0.25))'};border:1px solid ${isStaff ? 'rgba(245,158,11,0.45)' : 'rgba(0,229,255,0.45)'};">
+            <div style="font-size:0.68rem;font-weight:800;color:${isStaff ? '#fbbf24' : '#00e5ff'};margin-bottom:2px;">${c.sender}</div>
+            <div style="font-size:0.8rem;color:#f8fafc;">${c.text}</div>
+          </div>
+        `;
+      }).join("");
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function sendFloatingQuickAsk(text) {
+      sendLandingSupportMessage(text);
+    }
+
+    function sendFloatingChatMessage() {
+      const input = document.getElementById("floatingChatInput");
+      const text = (input?.value || "").trim();
+      if (!text) return;
+      input.value = "";
+      sendLandingSupportMessage(text);
+    }
   </script>
 </body>
 </html>
