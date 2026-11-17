@@ -74,6 +74,25 @@ app.MapGet("/", () => Results.Ok(new
 // ============================================================================
 app.MapGet("/auctions", async (string? status, AuctionDbContext db) =>
 {
+    var now = DateTime.UtcNow;
+
+    // Tự động gia hạn lại các phiên mẫu nếu DB cũ đã hết hạn toàn bộ để luôn có phiên mở cho khách đặt giá
+    var openCount = await db.Auctions.CountAsync(a => a.Status == "Open" && a.EndTimeUtc > now);
+    if (openCount == 0)
+    {
+        var allAuctions = await db.Auctions.ToListAsync();
+        foreach (var item in allAuctions)
+        {
+            item.Status = "Open";
+            item.ClosedAtUtc = null;
+            item.EndTimeUtc = now.AddMinutes(90);
+        }
+        if (allAuctions.Count > 0)
+        {
+            await db.SaveChangesAsync();
+        }
+    }
+
     var query = db.Auctions.AsNoTracking().AsQueryable();
 
     if (!string.IsNullOrWhiteSpace(status))
@@ -86,7 +105,6 @@ app.MapGet("/auctions", async (string? status, AuctionDbContext db) =>
         .ThenBy(a => a.EndTimeUtc)
         .ToListAsync();
 
-    var now = DateTime.UtcNow;
     var dtos = items.Select(a => ToAuctionDto(a, now)).ToList();
     return Results.Ok(dtos);
 });
@@ -186,6 +204,21 @@ app.MapPost("/auctions/{id:guid}/bids", async (
     ILogger<Program> logger) =>
 {
     var correlationId = httpContext.Request.Headers[CorrelationConstants.HeaderName].ToString();
+    var userRole = httpContext.Request.Headers["X-User-Role"].ToString().ToLowerInvariant();
+
+    // Kiểm tra phân quyền phía Server: Nhân viên và Admin không được phép đặt giá để tránh xung đột lợi ích
+    if (userRole is "staff" or "admin")
+    {
+        return Results.BadRequest(new PlaceBidResponseDto(
+            Success: false,
+            Message: "Xung đột lợi ích: Tài khoản Nhân viên điều hành và Quản trị viên không được phép tham gia đặt giá.",
+            ErrorCode: "ROLE_CONFLICT_OF_INTEREST",
+            CurrentPrice: 0,
+            MinimumNextBid: 0,
+            CurrentWinner: null,
+            CorrelationId: correlationId,
+            Bid: null));
+    }
 
     var auction = await db.Auctions.FirstOrDefaultAsync(a => a.Id == id);
     if (auction is null)
@@ -284,6 +317,12 @@ app.MapPost("/auctions/{id:guid}/bids", async (
     auction.CurrentPrice = request.Amount;
     auction.CurrentWinner = bidRecord.BidderName;
     auction.TotalBids += 1;
+
+    // Cơ chế chống đặt giá sát giờ (Anti-sniping): Tự động gia hạn thêm 30 giây nếu còn dưới 60 giây
+    if ((auction.EndTimeUtc - now).TotalSeconds <= 60)
+    {
+        auction.EndTimeUtc = auction.EndTimeUtc.AddSeconds(30);
+    }
 
     db.Bids.Add(bidRecord);
     await db.SaveChangesAsync();

@@ -1349,13 +1349,9 @@
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 10.5L12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-10.5z"/></svg>
           <span>Trang chủ</span>
         </a>
-        <a class="nav-link" href="auction.html">
+        <a class="nav-link" href="javascript:void(0)" onclick="enterAuctionHall()">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 4l6 6-4 4-6-6 4-4zM4 20l7-7M2 22h10"/></svg>
           <span>Sàn Đấu Giá</span>
-        </a>
-        <a class="nav-link" href="#featured-products">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-          <span>Sản phẩm</span>
         </a>
         <a class="nav-link" href="#categories-section">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM4 6h3v3a3 3 0 0 1-3-3zM20 6h-3v3a3 3 0 0 0 3-3z"/></svg>
@@ -1365,25 +1361,38 @@
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
           <span>Hướng dẫn</span>
         </a>
-        <a class="nav-link" href="#support-section">
+        <a class="nav-link" href="javascript:void(0)" onclick="openSupportCenter('chat')">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M21 14a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2v2zM3 14a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2v2z"/></svg>
           <span>Hỗ trợ</span>
         </a>
       </nav>
 
       <div class="nav-actions">
-        <button class="btn-watchlist-nav" onclick="filterByWatchlist()" title="Xem sản phẩm đã thả tim yêu thích">
-          <span>❤️</span>
+        <button class="btn-watchlist-nav" onclick="filterByWatchlist()" title="Xem sản phẩm đã lưu yêu thích">
           <span>Yêu thích (<span id="favCountNav">0</span>)</span>
         </button>
-        <button class="btn-login-nav" onclick="openAuthCard('login')">
-          <span>➔</span>
-          <span>Đăng nhập</span>
-        </button>
-        <button class="btn-register-nav" onclick="openAuthCard('register')">
-          <span>👤+</span>
-          <span>Đăng ký</span>
-        </button>
+
+        <!-- Trạng thái CHƯA đăng nhập: Hiện rõ 2 nút Đăng nhập & Đăng ký -->
+        <div id="guestNavButtons" style="display:flex;align-items:center;gap:10px;">
+          <button class="btn-login-nav" onclick="openAuthCard('login')">
+            <span>➔</span>
+            <span>Đăng nhập</span>
+          </button>
+          <button class="btn-register-nav" onclick="openAuthCard('register')">
+            <span>👤+</span>
+            <span>Đăng ký</span>
+          </button>
+        </div>
+
+        <!-- Trạng thái ĐÃ đăng nhập: Hiện tên tài khoản, nút Vào Sàn & nút Đăng xuất -->
+        <div id="loggedInNavButtons" style="display:none;align-items:center;gap:10px;">
+          <button class="btn-register-nav" onclick="enterAuctionHall()">
+            <span>🔨 Vào Sàn (<span id="loggedUserLabel"></span>)</span>
+          </button>
+          <button class="btn-login-nav" onclick="logoutFromLanding()" title="Đăng xuất tài khoản hiện tại">
+            <span>Đăng xuất</span>
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -1444,30 +1453,8 @@
               <span>➔</span>
             </button>
             <a href="#featured-products" class="btn-login-nav" style="text-decoration:none;padding:11px 20px;border-radius:999px;">
-              🔥 Xem 12+ Sản phẩm Đấu giá
+              Xem danh sách Lô đấu giá
             </a>
-          </div>
-
-          <!-- Hộp Xem nhanh Demo 3 Phân quyền: Khách hàng - Nhân viên - Admin -->
-          <div class="demo-roles-box">
-            <div class="demo-roles-title">
-              <span>⚡</span>
-              <span>Vào nhanh Demo theo 3 phân quyền (1-Click):</span>
-            </div>
-            <div class="demo-role-btns">
-              <button class="role-chip-btn customer" onclick="directDemoLogin('customer')">
-                <span>🛍️</span>
-                <span>Demo Khách hàng</span>
-              </button>
-              <button class="role-chip-btn staff" onclick="directDemoLogin('staff')">
-                <span>💼</span>
-                <span>Demo Nhân viên</span>
-              </button>
-              <button class="role-chip-btn admin" onclick="directDemoLogin('admin')">
-                <span>👑</span>
-                <span>Demo Admin</span>
-              </button>
-            </div>
           </div>
         </div>
 
@@ -1612,13 +1599,9 @@
                 <div class="input-icon-right" onclick="togglePwd('regPassword')">👁️</div>
               </div>
 
-              <div class="input-icon-group">
-                <div class="input-icon-left">🛡️</div>
-                <select id="regRole">
-                  <option value="customer">Vai trò: 🛍️ Khách hàng (Đấu giá)</option>
-                  <option value="staff">Vai trò: 💼 Nhân viên (Tạo &amp; Chốt phiên)</option>
-                  <option value="admin">Vai trò: 👑 Quản trị viên (Admin)</option>
-                </select>
+              <input type="hidden" id="regRole" value="customer" />
+              <div style="font-size:0.76rem;color:#94a3b8;background:rgba(15,23,42,0.85);padding:8px 11px;border-radius:8px;border:1px solid rgba(148,163,184,0.2);margin-bottom:10px;">
+                Tài khoản đăng ký mới được cấp quyền <strong>Khách hàng (Đấu giá)</strong>. Tài khoản Nhân viên chỉ do Admin tạo trong trang Phân quyền.
               </div>
 
               <button type="submit" class="btn-auth-submit" style="margin-top:8px;">
@@ -1726,9 +1709,9 @@
           <h2 class="section-title">🔥 Sản Phẩm Đang Đấu Giá Sôi Động</h2>
           <p class="section-sub">Chọn sản phẩm bất kỳ để xem thông số thẩm định chi tiết hoặc bấm tham gia trả giá trực tiếp.</p>
         </div>
-        <a href="auction.html" class="btn-register-nav" style="text-decoration:none;">
+        <button class="btn-register-nav" onclick="enterAuctionHall()">
           🔨 Vào Phòng Đấu Giá Trực Tiếp ➔
-        </a>
+        </button>
       </div>
 
       <!-- Thanh tìm kiếm & sắp xếp -->
@@ -1856,22 +1839,79 @@
       </div>
     </section>
 
-    <!-- ======================== KHU VỰC 4: HỖ TRỢ KHÁCH HÀNG VIP ======================== -->
+    <!-- ======================== KHU VỰC 4: HỖ TRỢ KHÁCH HÀNG VIP (LIÊN KẾT TRỰC TIẾP VỚI NHÂN VIÊN SAU KHI ĐĂNG NHẬP) ======================== -->
     <section id="support-section" class="section-block" style="margin-bottom:10px;">
       <div class="feature-panel" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;">
         <div>
-          <h3 style="font-size:1.2rem;color:#ffffff;">🎧 Trung Tâm Hỗ Trợ &amp; Thẩm Định Tài Sản 24/7</h3>
+          <h3 style="font-size:1.2rem;color:#ffffff;">🎧 Trung Tâm Hỗ Trợ &amp; Thẩm Định Tài Sản 24/7 (Liên kết Nhân viên Điều hành)</h3>
           <p style="font-size:0.86rem;color:#94a3b8;margin-top:4px;">
-            Hotline VIP: <strong style="color:#00e5ff;">1900 888 999</strong> &bull; Email: <strong style="color:#c084fc;">vip-support@liveauction.vn</strong> &bull; Trụ sở thẩm định: Quận 1, TP.HCM &amp; Hoàn Kiếm, Hà Nội
+            Hotline VIP: <strong style="color:#00e5ff;">1900 888 999</strong> &bull; Chuyên viên trực tuyến: <strong style="color:#34d399;">Lê Hoàng Nam (Nhân viên)</strong> &bull; Yêu cầu đăng nhập để kết nối trực tiếp
           </p>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn-login-nav" onclick="alert('Chuyên viên tư vấn VIP sẽ liên hệ hỗ trợ bạn trong ít phút!')">💬 Chat với Chuyên viên Thẩm định</button>
-          <button class="btn-register-nav" onclick="directDemoLogin('staff')">➕ Đăng ký Ký gửi Tài sản Đấu giá</button>
+          <button class="btn-login-nav" onclick="openSupportCenter('chat')">💬 Chat với Chuyên viên Thẩm định</button>
+          <button class="btn-register-nav" onclick="openSupportCenter('consign')">➕ Đăng ký Ký gửi Tài sản Đấu giá</button>
         </div>
       </div>
     </section>
   </main>
+
+  <!-- ======================== MODAL HỖ TRỢ & KÝ GỬI LIÊN KẾT TRỰC TIẾP VỚI NHÂN VIÊN ======================== -->
+  <div id="supportStaffModal" class="modal-backdrop" onclick="if(event.target.id==='supportStaffModal') closeSupportModal()">
+    <div class="product-modal" style="max-width:680px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid rgba(0,229,255,0.28);background:rgba(5,10,24,0.96);">
+        <div>
+          <div style="font-weight:800;color:#00e5ff;font-size:1.02rem;">🎧 KẾT NỐI TRỰC TIẾP VỚI NHÂN VIÊN ĐIỀU HÀNH</div>
+          <div style="font-size:0.76rem;color:#34d399;">● Nhân viên phụ trách: <strong>Lê Hoàng Nam (Chuyên viên Thẩm định)</strong> — Mọi yêu cầu được đồng bộ sang màn hình Nhân viên</div>
+        </div>
+        <button class="btn-card-detail" onclick="closeSupportModal()">✕ Đóng</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;background:rgba(5,10,24,0.9);border-bottom:1px solid rgba(0,229,255,0.22);">
+        <button id="tabSupChatBtn" class="auth-tab-btn active" onclick="switchSupportTab('chat')">💬 Chat với Nhân viên</button>
+        <button id="tabSupConsignBtn" class="auth-tab-btn" onclick="switchSupportTab('consign')">➕ Gửi Hồ sơ Ký gửi Tài sản</button>
+      </div>
+
+      <!-- Tab 1: Chat trực tiếp với Nhân viên -->
+      <div id="supportChatPane" style="padding:18px 22px;">
+        <div id="landingChatHistoryBox" style="height:250px;overflow-y:auto;background:rgba(4,8,20,0.92);border:1px solid rgba(0,229,255,0.25);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;flex-direction:column;gap:8px;"></div>
+        <div style="display:flex;gap:10px;">
+          <input id="landingChatInput" type="text" placeholder="Nhập nội dung cần Nhân viên hỗ trợ (VD: Hỏi về chứng thư GIA, thủ tục đặt cọc...)" style="flex:1;background:rgba(5,10,24,0.96);border:1px solid rgba(0,229,255,0.4);color:#fff;padding:10px 14px;border-radius:10px;outline:none;" onkeydown="if(event.key==='Enter') sendLandingSupportMessage()" />
+          <button class="btn-register-nav" onclick="sendLandingSupportMessage()">Gửi cho Nhân viên</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:0.78rem;color:#94a3b8;">
+          <span>💡 Tin nhắn này được gửi thẳng vào tab <strong>Quản lý phiên &amp; Hỗ trợ</strong> của Nhân viên.</span>
+          <button class="btn-card-detail" onclick="enterAuctionHall()">🔨 Vào Sàn Đấu Giá ➔</button>
+        </div>
+      </div>
+
+      <!-- Tab 2: Đăng ký Ký gửi Tài sản chuyển cho Nhân viên duyệt -->
+      <div id="supportConsignPane" style="padding:18px 22px;display:none;">
+        <p style="font-size:0.83rem;color:#cbd5e1;margin-bottom:12px;">
+          Điền thông tin tài sản bạn muốn đưa lên sàn. Hồ sơ sẽ chuyển trực tiếp tới <strong>Nhân viên Thẩm định</strong> để phê duyệt và mở phiên đấu giá.
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <input id="consignNameInput" type="text" placeholder="Tên tài sản ký gửi (*)" value="Đồng hồ Patek Philippe Calatrava 18K" style="background:rgba(5,10,24,0.96);border:1px solid rgba(0,229,255,0.35);color:#fff;padding:10px 12px;border-radius:9px;outline:none;" />
+          <select id="consignCategoryInput" style="background:rgba(5,10,24,0.96);border:1px solid rgba(0,229,255,0.35);color:#fff;padding:10px 12px;border-radius:9px;outline:none;">
+            <option value="Đồng hồ xa xỉ">Đồng hồ xa xỉ</option>
+            <option value="Công nghệ">Công nghệ</option>
+            <option value="Siêu xe">Siêu xe</option>
+            <option value="Trang sức">Trang sức</option>
+            <option value="Nghệ thuật">Nghệ thuật</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <input id="consignPriceInput" type="number" placeholder="Giá khởi điểm mong muốn (VNĐ) (*)" value="450000000" step="1000000" style="background:rgba(5,10,24,0.96);border:1px solid rgba(0,229,255,0.35);color:#fff;padding:10px 12px;border-radius:9px;outline:none;" />
+          <input id="consignImageInput" type="text" placeholder="Link ảnh tài sản" value="https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=900&auto=format&fit=crop&q=80" style="background:rgba(5,10,24,0.96);border:1px solid rgba(0,229,255,0.35);color:#fff;padding:10px 12px;border-radius:9px;outline:none;" />
+        </div>
+        <textarea id="consignDescInput" rows="2" placeholder="Mô tả tình trạng, giấy tờ kiểm định..." style="width:100%;background:rgba(5,10,24,0.96);border:1px solid rgba(0,229,255,0.35);color:#fff;padding:10px 12px;border-radius:9px;outline:none;margin-bottom:10px;">Fullbox hộp gỗ, giấy chứng nhận xuất xứ Thụy Sĩ, chưa qua đánh bóng.</textarea>
+        <div id="consignFeedbackMsg" class="auth-notice"></div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;">
+          <button class="btn-register-nav" onclick="submitLandingConsignment()">📤 Gửi Hồ Sơ Cho Nhân Viên Duyệt</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ======================== MODAL XEM CHI TIẾT SẢN PHẨM & THÔNG SỐ ======================== -->
   <div id="productDetailModal" class="modal-backdrop" onclick="if(event.target.id==='productDetailModal') closeProductModal()">
@@ -2158,7 +2198,85 @@
       return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
     }
 
+    let landingModalStar = 5;
+
+    function syncCatalogStateFromStorage() {
+      try {
+        const customMap = JSON.parse(localStorage.getItem("live_auction_custom_state") || "{}");
+        catalogProducts.forEach(p => {
+          const custom = customMap[String(p.id).toLowerCase()];
+          if (custom) {
+            if (typeof custom.currentPrice === "number" && custom.currentPrice >= p.currentPrice) {
+              p.currentPrice = custom.currentPrice;
+            }
+            if (custom.currentWinner) p.winner = custom.currentWinner;
+            if (typeof custom.totalBids === "number") p.totalBids = Math.max(p.totalBids, custom.totalBids);
+          }
+        });
+      } catch {}
+    }
+
+    function getLandingReviewsMap() {
+      try {
+        const raw = localStorage.getItem("live_auction_product_reviews");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") return parsed;
+        }
+      } catch {}
+      const map = {};
+      catalogProducts.forEach((p, idx) => {
+        map[String(p.id).toLowerCase()] = [
+          {
+            id: "rev-seed-1-" + idx,
+            reviewer: "Chuyên viên Thẩm định: Lê Hoàng Nam",
+            role: "staff",
+            rating: 5,
+            verifiedTag: "Chứng thư Thẩm định Chính hãng",
+            comment: `Đã kiểm tra trực tiếp hồ sơ pháp lý, mã chứng thư ${p.certCode} và tình trạng thực tế của "${p.name}". Đạt chuẩn 100% nguyên bản, bảo hiểm vận chuyển toàn phần.`,
+            expertReply: null,
+            time: "Hôm nay, 08:30"
+          },
+          {
+            id: "rev-seed-2-" + idx,
+            reviewer: p.winner || "Đỗ Hải Đăng",
+            role: "customer",
+            rating: 5,
+            verifiedTag: "Nhà sưu tầm đã xác thực cọc",
+            comment: `Sản phẩm ${p.name} bên ngoài cực kỳ sắc nét, giấy tờ kiểm định xuất xứ (${p.origin}) minh bạch. Bước giá hợp lý, đặt giá mượt!`,
+            expertReply: "Cảm ơn Quý khách đã tham gia thẩm định và trả giá trên sàn LIVE AUCTION!",
+            time: "Hôm nay, 09:15"
+          },
+          {
+            id: "rev-seed-3-" + idx,
+            reviewer: idx % 2 === 0 ? "Nguyễn Thảo Vy" : "Vũ Quốc Khánh",
+            role: "customer",
+            rating: idx % 3 === 0 ? 5 : 4,
+            verifiedTag: "Thành viên Đấu giá VIP",
+            comment: `Đã đối chiếu mã chứng thư ${p.certCode}. Rất yên tâm về cơ chế hoàn cọc tự động 100% của sàn.`,
+            expertReply: null,
+            time: "Hôm nay, 09:45"
+          }
+        ];
+      });
+      localStorage.setItem("live_auction_product_reviews", JSON.stringify(map));
+      return map;
+    }
+
+    function getLandingProductReviewStats(productId) {
+      const map = getLandingReviewsMap();
+      const list = map[String(productId).toLowerCase()] || [];
+      if (!list.length) return { avg: "5.0", count: 0, list: [] };
+      const sum = list.reduce((s, r) => s + Number(r.rating || 5), 0);
+      return {
+        avg: (sum / list.length).toFixed(1),
+        count: list.length,
+        list
+      };
+    }
+
     function renderProductsGrid() {
+      syncCatalogStateFromStorage();
       const container = document.getElementById("productGridContainer");
       const keyword = (document.getElementById("productSearchInput")?.value || "").trim().toLowerCase();
       const sortBy = document.getElementById("sortSelect")?.value || "featured";
@@ -2192,6 +2310,7 @@
       container.innerHTML = list.map(p => {
         const isFav = favs.includes(p.id);
         const fallbackSrc = makeFallbackImage(p.name, p.category);
+        const revStats = getLandingProductReviewStats(p.id);
         return `
           <div class="product-card">
             <div class="product-img-wrap">
@@ -2204,12 +2323,15 @@
               </div>
               <div class="timer-pill-bottom">
                 <span>🟢 Đang đấu giá</span>
-                <span>⏳ ${formatClock(p.remainingSeconds)}</span>
+                <span data-card-clock-id="${p.id}">⏳ ${formatClock(p.remainingSeconds)}</span>
               </div>
             </div>
 
             <div class="product-body">
-              <div class="verified-line">✔ Thẩm định: ${p.certCode}</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <div class="verified-line" style="margin-bottom:0;">✔ Thẩm định: ${p.certCode}</div>
+                <span style="font-size:0.75rem;font-weight:800;color:#fbbf24;cursor:pointer;" onclick="openProductModal('${p.id}')">★ ${revStats.avg} (${revStats.count})</span>
+              </div>
               <div class="product-title" title="${p.name}">${p.name}</div>
               <div class="product-desc">${p.description}</div>
 
@@ -2230,7 +2352,7 @@
               </div>
 
               <div class="card-actions">
-                <button class="btn-card-detail" onclick="openProductModal('${p.id}')">🔍 Chi tiết</button>
+                <button class="btn-card-detail" onclick="openProductModal('${p.id}')">⭐ Xem &amp; Đánh giá</button>
                 <button class="btn-card-bid" onclick="goToProductAuction('${p.id}')">🔨 Đấu giá ngay</button>
               </div>
             </div>
@@ -2239,68 +2361,145 @@
       }).join("");
     }
 
+    function setLandingModalStar(id, stars) {
+      landingModalStar = stars;
+      openProductModal(id);
+    }
+
+    function submitLandingProductReview(productId) {
+      const input = document.getElementById("landingReviewInput");
+      const comment = (input?.value || "").trim();
+      if (!comment) {
+        alert("Vui lòng nhập nội dung đánh giá cho sản phẩm!");
+        return;
+      }
+      const reviewer = localStorage.getItem("live_auction_user") || "Trần Đức Nhân (Khách hàng)";
+      const role = localStorage.getItem("live_auction_role") || "customer";
+      const map = getLandingReviewsMap();
+      const key = String(productId).toLowerCase();
+      if (!Array.isArray(map[key])) map[key] = [];
+
+      map[key].unshift({
+        id: "rev-" + Date.now(),
+        reviewer,
+        role,
+        rating: landingModalStar || 5,
+        verifiedTag: role === "staff" ? "Chuyên viên Thẩm định" : role === "admin" ? "Quản trị viên" : "Khách hàng Đã xác thực",
+        comment,
+        expertReply: null,
+        time: "Vừa xong (" + new Date().toLocaleTimeString("vi-VN") + ")"
+      });
+
+      localStorage.setItem("live_auction_product_reviews", JSON.stringify(map));
+      openProductModal(productId);
+      renderProductsGrid();
+    }
+
     function openProductModal(id) {
+      syncCatalogStateFromStorage();
       const p = catalogProducts.find(x => x.id === id);
       if (!p) return;
       const fallbackSrc = makeFallbackImage(p.name, p.category);
       const modal = document.getElementById("productDetailModal");
       const content = document.getElementById("productModalContent");
+      const revStats = getLandingProductReviewStats(p.id);
 
       content.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid rgba(0,229,255,0.25);background:rgba(5,10,24,0.95);">
-          <div style="font-weight:800;color:#00e5ff;">💎 HỒ SƠ THẨM ĐỊNH &amp; CHI TIẾT SẢN PHẨM ĐẤU GIÁ</div>
+          <div style="font-weight:800;color:#00e5ff;">💎 HỒ SƠ THẨM ĐỊNH &amp; ĐÁNH GIÁ SẢN PHẨM (${revStats.avg} ★ / ${revStats.count} đánh giá)</div>
           <button class="btn-card-detail" onclick="closeProductModal()">✕ Đóng</button>
         </div>
-        <div class="modal-grid">
-          <div>
-            <img src="${p.image}" alt="${p.name}" onerror="this.onerror=null;this.src='${fallbackSrc}';" style="width:100%;height:280px;object-fit:cover;border-radius:14px;border:1px solid rgba(0,229,255,0.35);" />
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;font-size:0.8rem;">
-              <div style="background:rgba(5,10,24,0.9);padding:9px;border-radius:9px;border:1px solid rgba(148,163,184,0.2);">
-                <div style="color:#94a3b8;font-size:0.72rem;">MÃ CHỨNG THƯ</div>
-                <div style="color:#6ee7b7;font-weight:800;">${p.certCode}</div>
+        <div style="max-height:80vh;overflow-y:auto;">
+          <div class="modal-grid">
+            <div>
+              <img src="${p.image}" alt="${p.name}" onerror="this.onerror=null;this.src='${fallbackSrc}';" style="width:100%;height:260px;object-fit:cover;border-radius:14px;border:1px solid rgba(0,229,255,0.35);" />
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;font-size:0.8rem;">
+                <div style="background:rgba(5,10,24,0.9);padding:9px;border-radius:9px;border:1px solid rgba(148,163,184,0.2);">
+                  <div style="color:#94a3b8;font-size:0.72rem;">MÃ CHỨNG THƯ</div>
+                  <div style="color:#6ee7b7;font-weight:800;">${p.certCode}</div>
+                </div>
+                <div style="background:rgba(5,10,24,0.9);padding:9px;border-radius:9px;border:1px solid rgba(148,163,184,0.2);">
+                  <div style="color:#94a3b8;font-size:0.72rem;">XUẤT XỨ</div>
+                  <div style="color:#fff;font-weight:700;">${p.origin}</div>
+                </div>
               </div>
-              <div style="background:rgba(5,10,24,0.9);padding:9px;border-radius:9px;border:1px solid rgba(148,163,184,0.2);">
-                <div style="color:#94a3b8;font-size:0.72rem;">XUẤT XỨ</div>
-                <div style="color:#fff;font-weight:700;">${p.origin}</div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;justify-content:space-between;">
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span class="cat-pill">${p.category}</span>
+                  <span style="color:#fbbf24;font-weight:900;font-size:0.9rem;">★ ${revStats.avg} / 5.0 (${revStats.count} đánh giá)</span>
+                </div>
+                <h3 style="font-size:1.25rem;color:#fff;margin:8px 0;">${p.name}</h3>
+                <p style="font-size:0.86rem;color:#cbd5e1;margin-bottom:12px;">${p.description}</p>
+
+                <div style="background:rgba(5,10,24,0.92);border:1px solid rgba(0,229,255,0.3);border-radius:12px;padding:12px;margin-bottom:12px;">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.84rem;">
+                    <span style="color:#94a3b8;">Giá khởi điểm:</span>
+                    <strong>${formatVND(p.startingPrice)}</strong>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.95rem;">
+                    <span style="color:#94a3b8;">Giá dẫn đầu hiện tại:</span>
+                    <strong style="color:#00e5ff;font-size:1.15rem;">${formatVND(p.currentPrice)}</strong>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.84rem;">
+                    <span style="color:#94a3b8;">Bước giá tối thiểu:</span>
+                    <strong style="color:#34d399;">+${formatVND(p.minIncrement)}</strong>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.84rem;">
+                    <span style="color:#94a3b8;">Giá Mua Ngay (Chốt phiên):</span>
+                    <strong style="color:#f0abfc;">${formatVND(p.buyNowPrice)}</strong>
+                  </div>
+                </div>
+
+                <div style="font-size:0.82rem;color:#94a3b8;margin-bottom:12px;">
+                  🛡️ <strong>Tình trạng thẩm định:</strong> ${p.condition}<br/>
+                  👑 <strong>Người đang dẫn đầu:</strong> <span style="color:#fff;">${p.winner}</span> (${p.totalBids} lượt trả giá)
+                </div>
+              </div>
+
+              <div style="display:flex;gap:10px;">
+                <button class="btn-card-bid" style="flex:1;padding:11px;font-size:0.9rem;" onclick="goToProductAuction('${p.id}')">
+                  🔨 Vào Phòng Đấu Giá &amp; Đặt Giá Sản Phẩm Này ➔
+                </button>
               </div>
             </div>
           </div>
 
-          <div style="display:flex;flex-direction:column;justify-content:space-between;">
-            <div>
-              <span class="cat-pill">${p.category}</span>
-              <h3 style="font-size:1.3rem;color:#fff;margin:8px 0;">${p.name}</h3>
-              <p style="font-size:0.88rem;color:#cbd5e1;margin-bottom:14px;">${p.description}</p>
-
-              <div style="background:rgba(5,10,24,0.92);border:1px solid rgba(0,229,255,0.3);border-radius:12px;padding:12px;margin-bottom:12px;">
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.84rem;">
-                  <span style="color:#94a3b8;">Giá khởi điểm:</span>
-                  <strong>${formatVND(p.startingPrice)}</strong>
-                </div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.95rem;">
-                  <span style="color:#94a3b8;">Giá dẫn đầu hiện tại:</span>
-                  <strong style="color:#00e5ff;font-size:1.15rem;">${formatVND(p.currentPrice)}</strong>
-                </div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.84rem;">
-                  <span style="color:#94a3b8;">Bước giá tối thiểu:</span>
-                  <strong style="color:#34d399;">+${formatVND(p.minIncrement)}</strong>
-                </div>
-                <div style="display:flex;justify-content:space-between;font-size:0.84rem;">
-                  <span style="color:#94a3b8;">Giá Mua Ngay (Chốt phiên):</span>
-                  <strong style="color:#f0abfc;">${formatVND(p.buyNowPrice)}</strong>
+          <!-- KHU VỰC XEM & VIẾT ĐÁNH GIÁ SẢN PHẨM TRỰC TIẾP TRONG MODAL -->
+          <div style="padding:0 22px 22px 22px;">
+            <div style="border-top:1px solid rgba(0,229,255,0.22);padding-top:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                <strong style="color:#00e5ff;font-size:0.95rem;">⭐ Đánh giá &amp; Nhận xét Thẩm định về Sản phẩm (${revStats.count})</strong>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <span style="font-size:0.76rem;color:#94a3b8;">Chọn mức đánh giá:</span>
+                  ${[1, 2, 3, 4, 5].map(st => `
+                    <button type="button" class="btn-card-detail" style="padding:4px 9px;border-color:${st <= landingModalStar ? '#f59e0b' : 'rgba(148,163,184,0.3)'};color:${st <= landingModalStar ? '#fbbf24' : '#94a3b8'};" onclick="setLandingModalStar('${p.id}', ${st})">${st} ★</button>
+                  `).join("")}
                 </div>
               </div>
 
-              <div style="font-size:0.82rem;color:#94a3b8;margin-bottom:14px;">
-                🛡️ <strong>Tình trạng thẩm định:</strong> ${p.condition}<br/>
-                👑 <strong>Người đang dẫn đầu:</strong> <span style="color:#fff;">${p.winner}</span> (${p.totalBids} lượt trả giá)
+              <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <input id="landingReviewInput" type="text" placeholder="Viết nhận xét của bạn về sản phẩm này (VD: Chứng thư rõ ràng, tình trạng hoàn hảo...)" style="flex:1;background:rgba(5,10,24,0.96);border:1px solid rgba(0,229,255,0.38);color:#fff;padding:9px 13px;border-radius:9px;outline:none;" onkeydown="if(event.key==='Enter') submitLandingProductReview('${p.id}')" />
+                <button type="button" class="btn-card-bid" style="padding:9px 16px;" onclick="submitLandingProductReview('${p.id}')">Gửi đánh giá ★</button>
               </div>
-            </div>
 
-            <div style="display:flex;gap:10px;">
-              <button class="btn-card-bid" style="flex:1;padding:12px;font-size:0.92rem;" onclick="goToProductAuction('${p.id}')">
-                🔨 Tham gia Đấu giá Sản phẩm này ➔
-              </button>
+              <div style="display:flex;flex-direction:column;gap:8px;max-height:210px;overflow-y:auto;">
+                ${revStats.list.map(r => `
+                  <div style="background:rgba(5,10,24,0.9);border:1px solid rgba(148,163,184,0.22);border-radius:10px;padding:10px 13px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                      <div>
+                        <strong style="color:#fff;font-size:0.83rem;">${r.reviewer}</strong>
+                        <span style="color:#fbbf24;font-weight:800;margin-left:8px;">${"★".repeat(Number(r.rating || 5))}</span>
+                      </div>
+                      <span style="font-size:0.72rem;color:#94a3b8;">${r.time}</span>
+                    </div>
+                    <div style="font-size:0.82rem;color:#cbd5e1;">${r.comment}</div>
+                    ${r.expertReply ? `<div style="margin-top:6px;padding:6px 10px;background:rgba(245,158,11,0.12);border-left:3px solid #f59e0b;border-radius:5px;font-size:0.76rem;color:#fde68a;"><strong>Phản hồi Thẩm định:</strong> ${r.expertReply}</div>` : ''}
+                  </div>
+                `).join("")}
+              </div>
             </div>
           </div>
         </div>
@@ -2312,13 +2511,226 @@
       document.getElementById("productDetailModal").classList.remove("open");
     }
 
-    function goToProductAuction(productId) {
-      localStorage.setItem("live_auction_selected_id", productId);
-      if (!localStorage.getItem("live_auction_user")) {
-        localStorage.setItem("live_auction_user", "Trần Đức Nhân (Khách hàng)");
-        localStorage.setItem("live_auction_role", "customer");
+    function isUserAuthenticated() {
+      return localStorage.getItem("live_auction_logged_in") === "true" && Boolean(localStorage.getItem("live_auction_user"));
+    }
+
+    function updateLandingAuthUI() {
+      const loggedIn = isUserAuthenticated();
+      const guestBox = document.getElementById("guestNavButtons");
+      const loggedBox = document.getElementById("loggedInNavButtons");
+      const userLabel = document.getElementById("loggedUserLabel");
+
+      if (loggedIn) {
+        if (guestBox) guestBox.style.display = "none";
+        if (loggedBox) loggedBox.style.display = "flex";
+        if (userLabel) userLabel.textContent = localStorage.getItem("live_auction_user") || "Tài khoản";
+      } else {
+        if (guestBox) guestBox.style.display = "flex";
+        if (loggedBox) loggedBox.style.display = "none";
       }
+    }
+
+    function logoutFromLanding() {
+      localStorage.removeItem("live_auction_logged_in");
+      localStorage.removeItem("live_auction_user");
+      localStorage.removeItem("live_auction_role");
+      localStorage.removeItem("live_auction_account");
+      updateLandingAuthUI();
+      openAuthCard('login');
+      const notice = document.getElementById("loginNotice");
+      if (notice) {
+        notice.className = "auth-notice success";
+        notice.textContent = "Đã đăng xuất tài khoản. Vui lòng đăng nhập lại khi muốn vào Sàn Đấu Giá.";
+      }
+    }
+
+    let pendingSupportTabAfterLogin = null;
+
+    function getSupportChats() {
+      try {
+        const raw = localStorage.getItem("live_auction_support_chats");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length) return parsed;
+        }
+      } catch {}
+      const defaults = [
+        {
+          id: "msg-1",
+          sender: "Lê Hoàng Nam (Nhân viên)",
+          role: "staff",
+          text: "Xin chào Quý khách! Tôi là Chuyên viên Thẩm định & Điều hành phiên. Quý khách cần tư vấn chứng thư sản phẩm hay ký gửi tài sản lên sàn ạ?",
+          time: new Date(Date.now() - 300000).toLocaleTimeString("vi-VN")
+        }
+      ];
+      localStorage.setItem("live_auction_support_chats", JSON.stringify(defaults));
+      return defaults;
+    }
+
+    function getConsignmentRequests() {
+      try {
+        const raw = localStorage.getItem("live_auction_consignments");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch {}
+      const defaults = [
+        {
+          id: "csg-101",
+          customerName: "Trần Đức Nhân",
+          productName: "Đồng hồ Patek Philippe Calatrava 18K Rose Gold",
+          category: "Đồng hồ xa xỉ",
+          startingPrice: 450000000,
+          imageUrl: "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=900&auto=format&fit=crop&q=80",
+          description: "Fullbox hộp gỗ, giấy chứng nhận xuất xứ Thụy Sĩ.",
+          status: "Pending",
+          createdAt: new Date(Date.now() - 600000).toLocaleTimeString("vi-VN")
+        }
+      ];
+      localStorage.setItem("live_auction_consignments", JSON.stringify(defaults));
+      return defaults;
+    }
+
+    function openSupportCenter(tab = 'chat') {
+      // Nếu chưa đăng nhập -> Mở khung Đăng nhập trước, không cho dùng khi chưa đăng nhập
+      if (!isUserAuthenticated()) {
+        pendingSupportTabAfterLogin = tab;
+        openAuthCard('login');
+        const notice = document.getElementById("loginNotice");
+        if (notice) {
+          notice.className = "auth-notice error";
+          notice.textContent = "🔒 Vui lòng Đăng nhập tài khoản trước để liên kết trực tiếp với Nhân viên Hỗ trợ & Thẩm định!";
+        }
+        return;
+      }
+
+      const role = localStorage.getItem("live_auction_role") || "customer";
+      // Nếu đăng nhập là Nhân viên hoặc Admin -> Mở thẳng khu vực Nhân viên xử lý Hỗ trợ & Ký gửi trong Sàn Đấu Giá
+      if (role === "staff" || role === "admin") {
+        localStorage.setItem("live_auction_open_tab", "manage-sessions");
+        window.location.href = "auction.html#staffSupportSection";
+        return;
+      }
+
+      // Nếu là Khách hàng đã đăng nhập -> Mở Modal Chat & Ký gửi liên kết trực tiếp với Nhân viên
+      document.getElementById("supportStaffModal").classList.add("open");
+      switchSupportTab(tab);
+      renderLandingSupportChat();
+    }
+
+    function closeSupportModal() {
+      document.getElementById("supportStaffModal").classList.remove("open");
+    }
+
+    function switchSupportTab(tab) {
+      const isChat = tab === 'chat';
+      document.getElementById("tabSupChatBtn").classList.toggle("active", isChat);
+      document.getElementById("tabSupConsignBtn").classList.toggle("active", !isChat);
+      document.getElementById("supportChatPane").style.display = isChat ? "block" : "none";
+      document.getElementById("supportConsignPane").style.display = isChat ? "none" : "block";
+      document.getElementById("consignFeedbackMsg").className = "auth-notice";
+    }
+
+    function renderLandingSupportChat() {
+      const box = document.getElementById("landingChatHistoryBox");
+      if (!box) return;
+      const chats = getSupportChats();
+      box.innerHTML = chats.map(c => {
+        const isStaff = c.role === "staff" || c.role === "admin";
+        return `
+          <div style="align-self:${isStaff ? 'flex-start' : 'flex-end'};max-width:82%;padding:9px 13px;border-radius:11px;background:${isStaff ? 'rgba(15,23,42,0.95)' : 'linear-gradient(90deg, rgba(0,229,255,0.22), rgba(181,55,242,0.25))'};border:1px solid ${isStaff ? 'rgba(245,158,11,0.45)' : 'rgba(0,229,255,0.45)'};">
+            <div style="font-size:0.72rem;font-weight:800;color:${isStaff ? '#fbbf24' : '#00e5ff'};margin-bottom:2px;">
+              ${c.sender} <span style="font-weight:400;color:#94a3b8;margin-left:6px;">${c.time}</span>
+            </div>
+            <div style="font-size:0.84rem;color:#f8fafc;">${c.text}</div>
+          </div>
+        `;
+      }).join("");
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function sendLandingSupportMessage() {
+      const input = document.getElementById("landingChatInput");
+      const text = (input?.value || "").trim();
+      if (!text) return;
+      const sender = localStorage.getItem("live_auction_user") || "Khách hàng";
+      const role = localStorage.getItem("live_auction_role") || "customer";
+      const chats = getSupportChats();
+      chats.push({
+        id: "msg-" + Date.now(),
+        sender,
+        role,
+        text,
+        time: new Date().toLocaleTimeString("vi-VN")
+      });
+      localStorage.setItem("live_auction_support_chats", JSON.stringify(chats));
+      input.value = "";
+      renderLandingSupportChat();
+    }
+
+    function submitLandingConsignment() {
+      const productName = document.getElementById("consignNameInput").value.trim();
+      const category = document.getElementById("consignCategoryInput").value;
+      const startingPrice = Number(document.getElementById("consignPriceInput").value || 50000000);
+      const imageUrl = document.getElementById("consignImageInput").value.trim();
+      const description = document.getElementById("consignDescInput").value.trim();
+      const customerName = localStorage.getItem("live_auction_user") || "Trần Đức Nhân";
+
+      if (!productName) return;
+      const list = getConsignmentRequests();
+      list.unshift({
+        id: "csg-" + Math.floor(100 + Math.random() * 900),
+        customerName,
+        productName,
+        category,
+        startingPrice,
+        imageUrl,
+        description,
+        status: "Pending",
+        createdAt: new Date().toLocaleTimeString("vi-VN")
+      });
+      localStorage.setItem("live_auction_consignments", JSON.stringify(list));
+
+      // Đồng thời gửi thông báo vào luồng Chat với Nhân viên
+      const chats = getSupportChats();
+      chats.push({
+        id: "msg-" + Date.now(),
+        sender: customerName,
+        role: "customer",
+        text: `[Hồ sơ Ký gửi mới] Đề nghị Nhân viên thẩm định & mở phiên cho tài sản "${productName}" (${category}) - Giá khởi điểm: ${formatVND(startingPrice)}.`,
+        time: new Date().toLocaleTimeString("vi-VN")
+      });
+      localStorage.setItem("live_auction_support_chats", JSON.stringify(chats));
+
+      const fb = document.getElementById("consignFeedbackMsg");
+      fb.className = "auth-notice success";
+      fb.textContent = "✅ Đã gửi hồ sơ ký gửi trực tiếp tới Nhân viên điều hành! Nhân viên sẽ duyệt và mở phiên trong mục Quản lý phiên.";
+    }
+
+    function enterAuctionHall(productId = null) {
+      if (productId) {
+        localStorage.setItem("live_auction_selected_id", productId);
+      }
+      closeProductModal();
+
+      // Kiểm tra bắt buộc phải đăng nhập trước khi vào Sàn Đấu Giá
+      if (!isUserAuthenticated()) {
+        openAuthCard('login');
+        const notice = document.getElementById("loginNotice");
+        if (notice) {
+          notice.className = "auth-notice error";
+          notice.textContent = "🔒 Vui lòng Đăng nhập tài khoản trước khi vào Sàn Đấu Giá Trực Tiếp! (Bạn có thể chọn 1 tài khoản Demo bên dưới rồi bấm Đăng nhập)";
+        }
+        return;
+      }
+
       window.location.href = "auction.html";
+    }
+
+    function goToProductAuction(productId) {
+      enterAuctionHall(productId);
     }
 
     // ======================== HỆ THỐNG ĐĂNG KÝ LIÊN KẾT ĐĂNG NHẬP ========================
@@ -2397,12 +2809,8 @@
     }
 
     function directDemoLogin(role) {
-      const accounts = getStoredAccounts();
-      const found = accounts.find(a => a.role === role) || defaultAccounts[0];
-      localStorage.setItem("live_auction_user", found.fullName);
-      localStorage.setItem("live_auction_role", found.role);
-      localStorage.setItem("live_auction_account", found.account);
-      window.location.href = "auction.html";
+      openAuthCard('login');
+      fillDemoAccount(role);
     }
 
     function handleRegister(e) {
@@ -2454,20 +2862,60 @@
         return;
       }
 
+      if (matched.locked) {
+        const notice = document.getElementById("loginNotice");
+        notice.className = "auth-notice error";
+        notice.textContent = "⛔ Tài khoản này hiện đang bị khóa bởi Quản trị viên!";
+        return;
+      }
+
+      localStorage.setItem("live_auction_logged_in", "true");
       localStorage.setItem("live_auction_user", matched.fullName);
       localStorage.setItem("live_auction_role", matched.role);
       localStorage.setItem("live_auction_account", matched.account);
+      updateLandingAuthUI();
+
+      // Nếu khách vừa bấm Hỗ trợ / Ký gửi trước khi đăng nhập -> Liên kết ngay sau khi đăng nhập xong
+      if (pendingSupportTabAfterLogin) {
+        const targetTab = pendingSupportTabAfterLogin;
+        pendingSupportTabAfterLogin = null;
+        closeAuthCard();
+        if (matched.role === "staff" || matched.role === "admin") {
+          localStorage.setItem("live_auction_open_tab", "manage-sessions");
+          window.location.href = "auction.html#staffSupportSection";
+        } else {
+          openSupportCenter(targetTab);
+        }
+        return;
+      }
+
+      if (matched.role === "staff") {
+        localStorage.setItem("live_auction_open_tab", "manage-sessions");
+      }
       window.location.href = "auction.html";
     }
 
     // Khởi tạo trang
     getStoredAccounts();
+    updateLandingAuthUI();
+    if (window.location.search.includes("requireLogin=1")) {
+      openAuthCard('login');
+      const notice = document.getElementById("loginNotice");
+      if (notice) {
+        notice.className = "auth-notice error";
+        notice.textContent = "🔒 Vui lòng Đăng nhập tài khoản trước khi truy cập Sàn Đấu Giá Trực Tiếp!";
+      }
+    }
     renderProductsGrid();
     setInterval(() => {
       catalogProducts.forEach(p => {
         if (p.remainingSeconds > 0) p.remainingSeconds--;
       });
-      renderProductsGrid();
+      document.querySelectorAll("[data-card-clock-id]").forEach(el => {
+        const id = el.getAttribute("data-card-clock-id");
+        const prod = catalogProducts.find(x => x.id === id);
+        if (prod) el.textContent = "⏳ " + formatClock(prod.remainingSeconds);
+      });
     }, 1000);
   </script>
 </body>
